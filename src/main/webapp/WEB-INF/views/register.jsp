@@ -12,7 +12,7 @@
 
 	<div class="container mt-5">
 		<h2>회원가입</h2>
-		<form id="registrationForm">
+		<form id="registrationForm" action="/register" method="post">
 			<div class="form-group">
 				<label for="nickname">닉네임:</label> <input type="text"
 					class="form-control" id="nickname" name="nickname"
@@ -29,7 +29,7 @@
 			</div>
 			<div class="form-group">
 				<label for="password">비밀번호:</label> <input type="password"
-					class="form-control" id="password" name="password"
+					class="form-control" id="password1" name="password1"
 					placeholder="비밀번호" required> <small
 					class="form-text text-muted">비밀번호는 8~20자 사이이며, 숫자와 특수문자를
 					포함해야 합니다.</small>
@@ -52,16 +52,16 @@ $(document).ready(function() {
     $('#registrationForm').on('submit', function(e) {
         e.preventDefault();
 
-        var password = $('#password').val();
+        var password = $('#password1').val();
         var confirmPassword = $('#confirmPassword').val();
-        if(password !== confirmPassword) {
+        if(password != confirmPassword) {
             $('#confirmPassword').addClass('is-invalid');
             return false;
         } else {
             $('#confirmPassword').removeClass('is-invalid');
         }
 
-        // 비밀번호 패턴 검증
+        // 비밀번호 패턴 검증 //javascript 정규식 8~20 + 특수기호 1
         var passwordPattern = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
         if(!passwordPattern.test(password)) {
             alert('비밀번호는 8~20자 사이이며, 최소 하나의 숫자와 특수문자를 포함해야 합니다.');
@@ -73,13 +73,16 @@ $(document).ready(function() {
     });
 
     // 실시간 비밀번호 일치 검사
-    $('#password, #confirmPassword').on('keyup', function () {
-        if ($('#password').val() == $('#confirmPassword').val()) {
+    $('#password1, #confirmPassword').on('keyup', function () {
+    	console.log($('#password1').val());;
+    	console.log($('#confirmPassword').val())
+        if ($('#password1').val() == $('#confirmPassword').val()) {
             $('#confirmPassword').removeClass('is-invalid').addClass('is-valid');
         } else {
             $('#confirmPassword').removeClass('is-valid').addClass('is-invalid');
         }
     });
+    $('#')
 });
 </script>
 

@@ -31,11 +31,13 @@
             <scope>provided</scope>
         </dependency>
         <!-- JSP 페이지를 위한 JSTL -->
+        <!-- 
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
-        </dependency>
+        </dependency> 
+        -->
         <!-- Spring Boot Starter for JDBC -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -84,6 +86,20 @@
             <version>3.0.3</version>
             <scope>test</scope>
         </dependency>
+        <!-- jstl c tag error -->
+        	<!-- JSP 설정 -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
