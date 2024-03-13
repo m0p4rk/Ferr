@@ -29,4 +29,19 @@ public class TestController {
 	public String testScheduleDetail() {
 		return "schedule_detail";
 	}
+	
+	@GetMapping("/search")
+	public String testSearch() {
+		return "search_result";
+	}
+	
+	@GetMapping("/event-detail")
+	public String testEventDetail() {
+		return "event_detail";
+	}
+	
+	@GetMapping("/my-page")
+	public String testMyPage() {
+		return "my_page";
+	}
 }

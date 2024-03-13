@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ferr - Your Content</title>
+<title>Ferr - Main Page</title>
 <link
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -13,24 +13,50 @@
 .box-container {
 	overflow: hidden;
 	white-space: nowrap;
+	margin-left: 50px;
+	margin-right: 50px;
 }
 
 .image-item {
-	display: inline-block;
-	width: 300px;
-	height: 200px;
-	background-color: #ddd;
-	line-height: 200px;
+    position: relative; 
+    display: inline-block;
+    width: 300px;
+    height: 200px;
+    background-color: #ddd;
+    margin-right: 15px;
+    text-align: center;
+    vertical-align: top;
+    overflow: hidden; 
+    transition: transform 0.3s ease; 
+}
+
+.image-item:hover {
+    transform: scale(1.05); 
+}
+
+
+.image-text {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
 	text-align: center;
-	margin-right: 15px;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: white;
+	padding: 5px 0;
 }
 
-.container-fluid {
-	padding-top: 20px;
+.rank-number {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: rgba(255, 165, 0, 0.85);
+	color: white;
+	padding: 5px 10px;
+	font-weight: bold;
 }
 
-.row {
-	margin-top: 20px;
+.position-relative:hover .slider-btn {
+	opacity: 1;
 }
 
 .slider-btn {
@@ -38,12 +64,14 @@
 	cursor: pointer;
 	position: absolute;
 	top: 50%;
-	transform: translate(-50%, -50%);
+	transform: translateY(-50%);
 	z-index: 2;
 	font-size: 24px;
 	color: #fff;
 	background-color: rgba(0, 0, 0, 0.5);
 	border: none;
+	opacity: 0;
+	transition: opacity 0.5s ease;
 }
 
 .left {
@@ -53,102 +81,52 @@
 .right {
 	right: 0;
 }
-/* 추가된 스타일 */
+
 .title-container {
-	text-align: center;
+	text-align: left;
 	margin-bottom: 10px;
 	padding: 10px;
-	border: 2px dashed #007bff; /* 눈에 띄는 테두리 */
-}
-
-/* 네비게이션 바 스타일 조정 */
-.navbar {
-	font-size: 0.9rem; /* 폰트 크기 조정 */
-	padding-top: 0.00rem;
-	padding-bottom: 1rem;
-}
-
-/* 네비게이션 바 브랜드(로고) 크기 조정 */
-.navbar-brand {
-	font-size: 1.25rem; /* 브랜드 로고 폰트 크기 조정 */
-}
-
-/* 네비게이션 바 항목 패딩 조정 */
-.nav-link {
-	padding: 0.5rem 1rem; /* 상단 및 하단 패딩 줄임 */
-}
-
-/* 버튼 크기 조정 (로그인 및 회원가입 버튼 등) */
-.btn {
-	padding: 0.25rem 0.5rem; /* 버튼 내부 패딩 조정 */
-	font-size: 0.875rem; /* 버튼 폰트 크기 조정 */
 }
 </style>
 </head>
 <body>
 
 	<div class="container-fluid">
-		<div class="filter">
-			<select id="regionFilter" class="course_regionFilterSelect">
-				<option value="">전체</option>
-				<option value="1">서울</option>
-				<option value="6">부산</option>
-				<option value="4">대구</option>
-				<option value="2">인천</option>
-				<option value="5">광주</option>
-				<option value="3">대전</option>
-				<option value="7">울산</option>
-				<option value="8">세종</option>
-				<option value="31">경기</option>
-				<option value="32">강원</option>
-				<option value="33">충북</option>
-				<option value="34">충남</option>
-				<option value="35">경북</option>
-				<option value="36">경남</option>
-				<option value="37">전북</option>
-				<option value="38">전남</option>
-				<option value="39">제주</option>
-			</select>
-		</div>
-		<div class="filter">
-			<select id="hashtagFilter" class="course_hashtagFilterSelect">
-				<option value="">전체</option>
-				<option value="C0112">#가족코스</option>
-				<option value="C0113">#나홀로코스</option>
-				<option value="C0114">#힐링코스</option>
-				<option value="C0115">#도보코스</option>
-				<option value="C0116">#캠핑코스</option>
-				<option value="C0117">#맛코스</option>
-			</select>
-		</div>
-		<%-- Example Container 1 with title --%>
+		<%@ include file="/WEB-INF/views/filter_form.jsp"%>
+
+		<!-- Example Container 1 -->
 		<div class="row">
-			<!-- 타이틀 컨테이너 시작 -->
 			<div class="col-12">
 				<div class="title-container">
-					<h2>타이틀 컨테이너 1</h2>
-					<!-- 제목 -->
+					<h2>사용자의 설정된 추천 리스트</h2>
 				</div>
 			</div>
-			<!-- 타이틀 컨테이너 끝 -->
 			<div class="col-12 position-relative">
 				<div class="box-container" id="container1">
-					<!-- 이미지 아이템들 -->
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
+					<div class="image-item" data-event-id="1"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 1</div>
+					</div>
+					<div class="image-item" data-event-id="2"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 2</div>
+					</div>
+					<div class="image-item" data-event-id="3"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 3</div>
+					</div>
+					<div class="image-item" data-event-id="4"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 4</div>
+					</div>
+					<div class="image-item" data-event-id="5"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 5</div>
+					</div>
+					<div class="image-item" data-event-id="6"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 6</div>
+					</div>
 				</div>
 				<button class="slider-btn left"
 					onclick="scrollContainer('container1', 'left')">&#10094;</button>
@@ -156,38 +134,40 @@
 					onclick="scrollContainer('container1', 'right')">&#10095;</button>
 			</div>
 		</div>
-		<%-- 다른 컨테이너에 대해서도 같은 방식으로 타이틀 컨테이너를 추가할 수 있습니다. --%>
-	</div>
 
-	<div class="container-fluid">
-		<%-- Example Container 2 with title --%>
+		<!-- Example Container 2 -->
 		<div class="row">
-			<!-- 타이틀 컨테이너 시작 -->
 			<div class="col-12">
 				<div class="title-container">
-					<h2>타이틀 컨테이너 2</h2>
-					<!-- 제목 -->
+					<h2>현 지역의 행사 리스트 - 브라우저로 현 위치 정보 사용</h2>
 				</div>
 			</div>
-			<!-- 타이틀 컨테이너 끝 -->
 			<div class="col-12 position-relative">
 				<div class="box-container" id="container2">
-					<!-- 이미지 아이템들 -->
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
-					<div class="image-item">Item 1</div>
-					<div class="image-item">Item 2</div>
-					<div class="image-item">Item 3</div>
+					<div class="image-item" data-event-id="1"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 1</div>
+					</div>
+					<div class="image-item" data-event-id="2"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 2</div>
+					</div>
+					<div class="image-item" data-event-id="3"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 3</div>
+					</div>
+					<div class="image-item" data-event-id="4"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 4</div>
+					</div>
+					<div class="image-item" data-event-id="5"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 5</div>
+					</div>
+					<div class="image-item" data-event-id="6"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="image-text">Sample 6</div>
+					</div>
 				</div>
 				<button class="slider-btn left"
 					onclick="scrollContainer('container2', 'left')">&#10094;</button>
@@ -195,7 +175,33 @@
 					onclick="scrollContainer('container2', 'right')">&#10095;</button>
 			</div>
 		</div>
-		<%-- 다른 컨테이너에 대해서도 같은 방식으로 타이틀 컨테이너를 추가할 수 있습니다. --%>
+
+		<!-- Example Container 3 -->
+		<div class="row">
+			<div class="col-12">
+				<div class="title-container">
+					<h2>순위</h2>
+				</div>
+			</div>
+			<div class="col-12 position-relative">
+				<div class="box-container" id="container3">
+					<div class="image-item" data-event-id="1"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="rank-number">1</div>
+						<div class="image-text">Sample 1</div>
+					</div>
+					<div class="image-item" data-event-id="2"
+						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						<div class="rank-number">2</div>
+						<div class="image-text">Sample 2</div>
+					</div>
+				</div>
+				<button class="slider-btn left"
+					onclick="scrollContainer('container3', 'left')">&#10094;</button>
+				<button class="slider-btn right"
+					onclick="scrollContainer('container3', 'right')">&#10095;</button>
+			</div>
+		</div>
 	</div>
 
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -204,25 +210,65 @@
 	<script
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	<script>
-		function scrollContainer(containerId, direction) {
-			const container = document.getElementById(containerId);
-			const scrollAmount = 300; // 스크롤할 양을 지정
+function redirectToEventDetail(eventId) {
+	    window.location.href = `/event-detail?eventId=${eventId}`;
+	}	
+	
+function scrollContainer(containerId, direction) {
+    const container = document.getElementById(containerId);
+    const scrollAmount = 600;
+    let newScrollPosition;
+    if (direction === 'left') {
+        newScrollPosition = container.scrollLeft - scrollAmount;
+    } else if (direction === 'right') {
+        newScrollPosition = container.scrollLeft + scrollAmount;
+    }
+    container.scrollTo({
+        top : 0,
+        left : newScrollPosition,
+        behavior : 'smooth'
+    });
+}
 
-			let newScrollPosition;
+document.addEventListener("DOMContentLoaded", function() {
+    const sliders = document.querySelectorAll('.box-container');
 
-			if (direction === 'left') {
-				newScrollPosition = container.scrollLeft - scrollAmount;
-			} else if (direction === 'right') {
-				newScrollPosition = container.scrollLeft + scrollAmount;
-			}
+    sliders.forEach(function(slider) {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
 
-			// 스무스 스크롤 애니메이션을 적용
-			container.scrollTo({
-				top : 0, // 세로 스크롤 위치는 변경하지 않음
-				left : newScrollPosition, // 계산된 새로운 스크롤 위치
-				behavior : 'smooth' // 부드러운 스크롤 동작 활성화
-			});
-		}
-	</script>
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+        
+        slider.addEventListener('wheel', (e) => {
+            e.preventDefault(); // 기본 스크롤 동작 방지
+            slider.scrollLeft += e.deltaY + e.deltaX;
+        });// 수평 스크롤 조정
+
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 1.1; // 스크롤 속도 조정
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    });
+});
+</script>
 </body>
 </html>

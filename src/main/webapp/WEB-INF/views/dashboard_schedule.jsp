@@ -21,12 +21,13 @@
     <div class="row">
         <% for (int i = 0; i < 6; i++) { %>
         <div class="col-md-4 mb-4">
-            <div class="card h-100 card-clickable" onclick="location.href='상세페이지URL';">
+            <!-- Update: Add event ID or other parameters as needed -->
+            <div class="card h-100 card-clickable" onclick="location.href='/schedule-detail?id=<%= i %>';">
                 <div class="card-body bg-light">
                     <h5 class="card-title">행사명 #<%= i + 1 %></h5>
                     <p class="card-text"><small>일정: 2024-03-11</small></p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-secondary">그룹 수: <%= Math.random() * 10 %></span>
+                        <span class="badge bg-secondary">그룹 수: <%= (int)(Math.random() * 10) %></span>
                     </div>
                 </div>
             </div>
