@@ -4,12 +4,12 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.warr.ferr.dto.UserDto;
+import com.warr.ferr.model.Users;
 
 @Mapper
 public interface UserMapper {
 
-    public UserDto loginUser(Map<String, String> map);
+    public Users loginUser(Map<String, String> map);
 
-    public int insertUser(UserDto userDto);
+    public int insertUser(Users user);
 }

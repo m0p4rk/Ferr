@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.warr.ferr.dto.UserDto;
+import com.warr.ferr.model.Users;
 import com.warr.ferr.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,13 +33,13 @@ public class UserController {
     // 로그인 처리
     @PostMapping("/login")
     public ModelAndView loginUser(HttpServletRequest request, String email, String password) {
-        UserDto userDto = userService.loginUser(request, email, password);
+        Users user = userService.loginUser(request, email, password);
 
         ModelAndView mv = new ModelAndView();
-        if (userDto != null) {
+        if (user != null) {
             HttpSession session = request.getSession();
-            System.out.println("user DTO : " + userDto);
-            session.setAttribute("user", userDto);
+            System.out.println("user DTO : " + user);
+            session.setAttribute("user", user);
             mv.setViewName("redirect:/");
         } else {
             mv.setViewName("register");
@@ -60,8 +60,8 @@ public class UserController {
 
     // 회원가입 처리
     @PostMapping("/register")
-    public ModelAndView insertUser(UserDto userDto) {
-        int result = userService.insertUser(userDto);
+    public ModelAndView insertUser(Users user) {
+        int result = userService.insertUser(user);
 
         ModelAndView mv = new ModelAndView();
         mv.setViewName("register");
