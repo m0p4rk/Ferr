@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.warr.ferr.mapper.UserMapper">
+	<select id="loginUser" 
+			parameterType="map"
+			resultType="com.warr.ferr.dto.UserDto">
+		select * from users
+		where email = #{email} and password =#{password}
+	</select>
+	
+	<insert id="insertUser" 
+			parameterType="com.warr.ferr.dto.UserDto">
+		insert into users(
+					kakao_id,
+					email,
+					password,
+					nickname,
+					profile_image_url,
+					real_name,
+					created_at)
+		values(
+					#{kakaoId},
+					#{email},
+					#{password},
+					#{nickName},
+					#{profileImageUrl},
+					#{realName},
+					now())
+	</insert>
 </mapper>

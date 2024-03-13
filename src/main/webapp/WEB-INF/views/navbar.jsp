@@ -1,10 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ferr</title>
+<title>Navbar with Modal</title>
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -25,13 +26,12 @@
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav ml-auto">
-					<li class="nav-item"><a href="/my-page"
-						class="btn btn-warning">마이 페이지</a></li>
 					<li class="nav-item"><a href="/schedulelist"
 						class="btn btn-primary">일정 관리</a></li>
 					<li class="nav-item">
+						<!-- <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#loginModal">시작</button> -->
 						<button type="button" class="btn btn-secondary"
-							data-toggle="modal" data-target="#loginModal">시작</button>
+							data-toggle="modal" data-target="#loginModal" id="startButton">시작</button>
 					</li>
 				</ul>
 			</div>
@@ -50,7 +50,7 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<form id="loginForm">
+					<form id="loginForm" action="/login" method="post">
 						<div class="form-group">
 							<label for="email">이메일:</label> <input type="email"
 								class="form-control" id="email" name="email" required>
@@ -61,43 +61,65 @@
 						</div>
 						<button type="submit" class="btn btn-primary btn-block">로그인</button>
 					</form>
-					<div class="row">
-						<div class="col-md-6">
-							<a href="/signup" class="btn btn-link">회원가입</a>
-						</div>
-						<div class="col-md-6">
-							<button class="btn btn-warning btn-block" id="kakao-login-btn"
-								onclick="window.location.href='http://kauth.kakao.com/oauth/authorize?response_type=code&client_id=a1c0a96f3d1b22d355a2beb880950df0&redirect_uri=http://localhost:8080/login'">
-								<i class="fab fa-kakao"></i> 카카오 로그인
-							</button>
-						</div>
+					<hr>
+					<h5 class="text-center">또는</h5>
+					<button class="btn btn-warning btn-block" id="kakao-login-btn">
+						<i class="fab fa-kakao"></i> 카카오 로그인
+					</button>
+					<div class="text-center">
+						<a href="/signup" class="btn btn-link">회원가입</a> <a
+							href="/signup-social" class="btn btn-link">카카오로 시작하기</a>
 					</div>
-
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<script>
-		Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY');
-		$('#kakao-login-btn').click(function() {
-			Kakao.Auth.login({
-				success : function(authObj) {
-					console.log(authObj);
-				},
-				fail : function(err) {
-					alert(JSON.stringify(err));
-				}
-			});
-		});
+    Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY');
+    $('#kakao-login-btn').click(function() {
+        Kakao.Auth.login({
+            success: function(authObj) {
+                console.log(authObj);
+            },
+            fail: function(err) {
+                alert(JSON.stringify(err));
+            }
+        });
+    });
 
-		$(document).ready(function() {
-			$('#loginForm').submit(function(e) {
-				e.preventDefault();
-			});
-		});
-	</script>
+    $(document).ready(function() {
+    	console.log(${sessionScope.user});
+      $('#loginForm').submit(function(e) {
+            //e.preventDefault();
+            // 로그인 처리 로직
+        });
+        
+        
+        //1.세션 가져오기
+        //2. 세션 -> 있다-> 시작버튼 id -> style display none
+        //$('#startButton')
+        //userDTO - DB field match
+        
+        
+   });
+    
+    /* $(document).ready(function() {
+        // 세션 확인 및 시작 버튼 제어
+        $.ajax({
+            type: "GET",
+            url: "/checkSession", // 세션을 확인하는 서버의 엔드포인트
+            success: function(response) {
+                if (response.sessionExists) {
+                    $('#loginModal').on('shown.bs.modal', function () {
+                        $('#startButton').hide(); // 세션이 있는 경우 시작 버튼 숨기기
+                    });
+                }
+            }
+        }); */
+</script>
 
+	<!-- 부트스트랩 4와 Popper.js -->
 	<script
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
