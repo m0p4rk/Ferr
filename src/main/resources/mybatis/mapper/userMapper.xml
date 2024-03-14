@@ -36,7 +36,8 @@
 		parameterType="com.warr.ferr.model.Users">
 		UPDATE users
 		SET kakao_id = #{kakaoId}
-		WHERE email = #{email}
+		WHERE email =
+		#{email}
 	</update>
 
 
@@ -45,6 +46,9 @@
 		users WHERE email = #{email}
 	</select>
 
+	<select id="findNicknameByEmail" resultType="java.lang.String">
+		SELECT nickname FROM users WHERE email = #{email}
+	</select>
 
 
 </mapper>

@@ -86,12 +86,17 @@ public class KakaoAPI {
             JsonElement element = JsonParser.parseString(result);
             JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
             JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
+            JsonObject profile = kakaoAccount.getAsJsonObject().get("profile").getAsJsonObject();
 
+            long kakaoId = element.getAsJsonObject().get("id").getAsLong();
             String nickname = properties.get("nickname").getAsString();
             String email = kakaoAccount.get("email").getAsString();
+            String profileImageUrl = profile.get("profile_image_url").getAsString();
 
+            userInfo.put("kakaoId", kakaoId);
             userInfo.put("nickname", nickname);
             userInfo.put("email", email);
+            userInfo.put("profileImageUrl", profileImageUrl);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,6 +104,7 @@ public class KakaoAPI {
 
         return userInfo;
     }
+
 
     public void kakaoLogout(String accessToken) {
         String reqURL = "https://kapi.kakao.com/v1/user/logout";
