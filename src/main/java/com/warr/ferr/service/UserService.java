@@ -1,6 +1,7 @@
 package com.warr.ferr.service;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,12 @@ public class UserService {
         }
     }
 
-
+    // 채팅에서 임시로 사용중
+	public List<Users> findAllUser() {
+			
+	List<Users> userList = userMapper.findAllUser();
+	
+	return userList;
+	}
 
 }

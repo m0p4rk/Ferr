@@ -1,5 +1,7 @@
 package com.warr.ferr.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.warr.ferr.model.Users;
@@ -16,4 +18,7 @@ public interface UserMapper {
 	public void updateUser(Users existingUser);
 	
 	Integer findUserIdByEmail(String email);
+	
+	// 채팅에서 임시로 사용중
+	List<Users> findAllUser();
 }

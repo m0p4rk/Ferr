@@ -50,5 +50,10 @@
 		SELECT nickname FROM users WHERE email = #{email}
 	</select>
 
+	<!-- 채팅에서 임시로 사용중 -->
+	<select id="findAllUser"
+			resultMap="userResultMap">
+		SELECT * FROM Users
+	</select>
 
 </mapper>
