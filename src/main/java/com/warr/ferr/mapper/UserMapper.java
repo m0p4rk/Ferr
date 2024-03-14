@@ -1,7 +1,5 @@
 package com.warr.ferr.mapper;
 
-import java.util.Map;
-
 import org.apache.ibatis.annotations.Mapper;
 
 import com.warr.ferr.model.Users;
@@ -9,7 +7,13 @@ import com.warr.ferr.model.Users;
 @Mapper
 public interface UserMapper {
 
-    public Users loginUser(Map<String, String> map);
+    public Users loginUser(String email);
 
     public int insertUser(Users user);
+    
+    public int kakaoUsers(Users user);
+
+	public void updateUser(Users existingUser);
+	
+	Integer findUserIdByEmail(String email);
 }

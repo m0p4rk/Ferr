@@ -1,30 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.warr.ferr.mapper.UserMapper">
-	<select id="loginUser" 
-			parameterType="map"
-			resultType="com.warr.ferr.dto.UserDto">
-		select * from users
-		where email = #{email} and password =#{password}
+
+	<resultMap id="userResultMap"
+		type="com.warr.ferr.model.Users">
+		<id property="userId" column="user_id" />
+		<result property="kakaoId" column="kakao_id" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="nickname" column="nickname" />
+		<result property="profileImageUrl" column="profile_image_url" />
+		<result property="role" column="role" />
+		<result property="realName" column="real_name" />
+		<result property="accountStatus" column="account_status" />
+		<result property="createdAt" column="created_at" />
+	</resultMap>
+
+	<select id="loginUser" resultMap="userResultMap">
+		SELECT * FROM users WHERE email
+		= #{email}
 	</select>
-	
-	<insert id="insertUser" 
-			parameterType="com.warr.ferr.dto.UserDto">
-		insert into users(
-					kakao_id,
-					email,
-					password,
-					nickname,
-					profile_image_url,
-					real_name,
-					created_at)
-		values(
-					#{kakaoId},
-					#{email},
-					#{password},
-					#{nickName},
-					#{profileImageUrl},
-					#{realName},
-					now())
+
+	<insert id="insertUser"
+		parameterType="com.warr.ferr.model.Users">
+		INSERT INTO users (kakao_id, email, password, nickname,
+		profile_image_url,
+		role, real_name, account_status)
+		VALUES (#{kakaoId},
+		#{email}, #{password}, #{nickname}, #{profileImageUrl},
+		#{role},
+		#{realName}, #{accountStatus})
 	</insert>
+
+	<update id="updateUser"
+		parameterType="com.warr.ferr.model.Users">
+		UPDATE users
+		SET kakao_id = #{kakaoId}
+		WHERE email = #{email}
+	</update>
+
+
+	<select id="findUserIdByEmail" resultType="java.lang.Integer">
+		SELECT user_id FROM
+		users WHERE email = #{email}
+	</select>
+
+
+
 </mapper>
