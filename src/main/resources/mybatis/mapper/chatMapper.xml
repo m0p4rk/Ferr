@@ -1,4 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.warr.ferr.mapper.ChatMapper">
+<select id="findAllRooms"
+		resultMap="Chatrooms">
+		SELECT chatroom_id, name FROM chatrooms
+	
+	</select>
+	<select id="findRoomById"
+			parameterType="string"
+			resultMap="Chatrooms">
+		SELECT chatroom_id, name 
+		FROM chatrooms 
+		WHERE #{chatroomId} = chatroom_id
+	</select>
+	
+	<insert id="createRoom"
+			parameterType="com.warr.ferr.model.Chatrooms">
+			<!-- useGeneratedKeys="true"
+			keyColumn="chatroom_id"
+			keyProperty="chatroomId"> -->
+		insert into chatrooms
+			(name)
+		values
+			(#{name})	
+	</insert>
+	
+	<update id="roomNameUpdate"
+			parameterType="com.warr.ferr.model.Chatrooms">
+		UPDATE chatrooms
+		SET name = #{name}
+		WHERE chatroom_id = #{chatroomId};
+	</update>
+		
+	<delete id="deleteRoom"
+			parameterType="_int">
+		delete from chatrooms
+		where #{roomId} = chatroom_id;
+	</delete>
+	
+	
+	<resultMap type="com.warr.ferr.model.Chatrooms" id="Chatrooms">
+ 		<result property="chatroomId" column="chatroom_id"/>
+ 		<result property="name" column="name"/>
+ 	</resultMap>
 </mapper>
