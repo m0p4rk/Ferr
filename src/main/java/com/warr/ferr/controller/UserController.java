@@ -1,5 +1,7 @@
 package com.warr.ferr.controller;
 
+import java.util.HashMap;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,11 +64,14 @@ public class UserController {
     private ModelAndView handleKakaoLogin(String code, HttpServletRequest request) {
         ModelAndView mv = new ModelAndView();
         String accessToken = kakaoApi.getAccessToken(code);
-        var userInfo = kakaoApi.getUserInfo(accessToken);
+        HashMap<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
         if (userInfo.get("email") != null) {
-            userService.loginOrRegisterKakaoUser(userInfo.get("email").toString(), accessToken);
-            var userId = userService.findUserIdByEmail(userInfo.get("email").toString());
+            // 카카오 사용자 정보를 기반으로 사용자 로그인 또는 등록 처리
+            userService.loginOrRegisterKakaoUser(userInfo);
+            // 이메일을 기반으로 사용자 ID를 조회
+            Integer userId = userService.findUserIdByEmail(userInfo.get("email").toString());
             HttpSession session = request.getSession(true);
+            session.setAttribute("nickname", userInfo.get("nickname")); // 닉네임
             session.setAttribute("userId", userId); // 사용자 ID 세션에 저장
             session.setAttribute("access_token", accessToken); // 카카오 액세스 토큰도 세션에 저장
             mv.setViewName("redirect:/");
@@ -76,7 +81,6 @@ public class UserController {
         }
         return mv;
     }
-
 
 	@PostMapping("/register")
 	public ModelAndView registerUser(HttpServletRequest request, UserDto userDto) {
@@ -94,6 +98,7 @@ public class UserController {
 		if (success == 1) {
 			HttpSession session = request.getSession(true);
 			session.setAttribute("userId", user.getUserId());
+			session.setAttribute("nickname", user.getNickname());
 			mv.setViewName("redirect:/");
 		} else {
 			mv.addObject("registerError", "Registration failed. Please try again.");

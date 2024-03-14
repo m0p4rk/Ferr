@@ -1,5 +1,7 @@
 package com.warr.ferr.service;
 
+import java.util.HashMap;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,7 @@ public class UserService {
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             HttpSession session = request.getSession();
             session.setAttribute("userId", user.getUserId());
+            session.setAttribute("nickname", user.getNickname());
             return user;
         }
         return null;
@@ -48,23 +51,31 @@ public class UserService {
         }
     }
 
-    public void loginOrRegisterKakaoUser(String email, String accessToken) {
+    public void loginOrRegisterKakaoUser(HashMap<String, Object> userInfo) {
+        String email = userInfo.get("email").toString();
+        Long kakaoId = (Long) userInfo.get("kakaoId");
+        String profileImageUrl = userInfo.get("profileImageUrl").toString();
+        String nickname = userInfo.get("nickname").toString();
+
         Users existingUser = userMapper.loginUser(email);
         if (existingUser == null) {
             // 이메일에 해당하는 사용자가 없으면 새로 추가
             Users newUser = new Users();
             newUser.setEmail(email);
-            // 이메일에서 닉네임 추출 (이메일 앞부분을 닉네임으로 사용)
-            String nickname = email.substring(0, email.indexOf('@'));
-            newUser.setNickname(nickname);
-            newUser.setKakaoId(accessToken); // 카카오 로그인 시 비밀번호는 사용하지 않으므로, 토큰을 저장 / 토큰 해싱 처리 고려
+            newUser.setNickname(nickname); // 카카오 API에서 받은 닉네임 사용
+            newUser.setKakaoId(String.valueOf(kakaoId)); // 카카오 고유 ID 저장
+            newUser.setProfileImageUrl(profileImageUrl); // 프로필 이미지 URL 저장
+            // 카카오 로그인 시 비밀번호는 사용하지 않으므로 비밀번호 필드는 설정하지 않음
             userMapper.insertUser(newUser);
         } else {
-            // 기존 사용자가 있으면 카카오 ID만 업데이트
-            existingUser.setKakaoId(accessToken);
+            // 기존 사용자가 있으면 정보 업데이트
+            existingUser.setKakaoId(String.valueOf(kakaoId));
+            existingUser.setProfileImageUrl(profileImageUrl);
+            existingUser.setNickname(nickname);
             userMapper.updateUser(existingUser);
         }
     }
+
 
 
 }

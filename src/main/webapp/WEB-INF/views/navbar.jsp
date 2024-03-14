@@ -26,6 +26,12 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
                 <c:if test="${sessionScope.userId != null}">
+                    <!-- 닉네임이 세션에 있을 경우 환영 메시지 표시 -->
+                    <li class="nav-item">
+                        <span class="navbar-text">
+                            환영합니다, ${sessionScope.nickname}님!
+                        </span>
+                    </li>
                     <li class="nav-item"><a href="/schedulelist" class="btn btn-primary">일정 관리</a></li>
                     <li class="nav-item"><a href="/my-page" class="btn btn-warning">마이페이지</a></li>
                     <li class="nav-item"><a href="/logout" class="btn btn-danger">로그아웃</a></li>
@@ -37,6 +43,7 @@
         </div>
     </div>
 </nav>
+
 
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
