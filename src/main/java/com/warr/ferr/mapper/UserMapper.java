@@ -20,5 +20,5 @@ public interface UserMapper {
 	Integer findUserIdByEmail(String email);
 	
 	// 채팅에서 임시로 사용중
-	List<Users> findAllUser();
+	List<Users> findAllUser(Object userId);
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.warr.ferr.dto.ChatroomDto;
+import com.warr.ferr.dto.UserDto;
 import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Users;
 import com.warr.ferr.service.ChatService;
@@ -34,39 +35,44 @@ public class RoomController {
 
     // 채팅방 목록 조회
     @GetMapping(value = "/rooms")
-    public String getChatRooms(Model model){
-
-        log.info("RoomController : getChatRooms()");
-        model.addAttribute("rooms", chatService.findAllRooms());
+    public String getChatRooms(Model model, HttpSession session){
+    	log.info("RoomController : getChatRooms()");
+    	int userId = 0;
+    	
+		userId = (int) session.getAttribute("userId");
+		model.addAttribute("userId", userId);
+		model.addAttribute("rooms", chatService.findAllRoomsByUserId(userId));
+		System.out.println(model.getAttribute("rooms"));
         
-        List<Users> userList = userService.findAllUser();
-        
+        // user list
+        List<Users> userList = userService.findAllUser(session.getAttribute("userId"));
 		JSONArray jsonArray = new JSONArray();
-		model.addAttribute("json", jsonArray.fromObject(userList));
+		model.addAttribute("userList", jsonArray.fromObject(userList));
 	
         return "chat/rooms";
     }
 
     // 채팅방 개설
     @PostMapping("/room")
-    public String createChatRoom(@RequestBody List<String> name, Model model) {
+    public String createChatRoom(@RequestBody List<UserDto> userList, Model model, HttpSession session) {
         log.info("RoomController : createChatRoom()");
-        model.addAttribute("roomName", chatService.createChatRoom(name));
+        model.addAttribute("roomName", chatService.createChatRoom(userList, session));
        
         return "redirect:/chat/rooms";
     }
 
     // 채팅방 조회-상세보기
     @GetMapping("/room")
-    public void getChatRoom(String roomId, Model model){
+    public void getChatRoom(int roomId, Model model, HttpSession session){
         log.info("RoomController : getChatRoom(), chatroomId : " + roomId);
-        model.addAttribute("room", chatService.findRoomById(roomId));
+        model.addAttribute("room", chatService.findRoomById(roomId, (Integer) session.getAttribute("userId")));
+        System.out.println("asdsads" + chatService.findRoomById(roomId, (Integer) session.getAttribute("userId")));
     }
     
     // 채팅방 제목 수정
     @PostMapping("/roomName")
-    public String roomNameUpdate(@RequestBody ChatroomDto chatroom){
-    	boolean result = chatService.roomNameUpdate(chatroom);
+    public String roomNameUpdate(@RequestBody ChatroomDto chatroom, HttpSession session){
+    	boolean result = chatService.roomNameUpdate(chatroom, session);
     	System.out.println(result);
     	return "redirect:/chat/rooms";
     }

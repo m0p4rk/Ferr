@@ -78,9 +78,9 @@ public class UserService {
     }
 
     // 채팅에서 임시로 사용중
-	public List<Users> findAllUser() {
+	public List<Users> findAllUser(Object userId) {
 			
-	List<Users> userList = userMapper.findAllUser();
+	List<Users> userList = userMapper.findAllUser(userId);
 	
 	return userList;
 	}

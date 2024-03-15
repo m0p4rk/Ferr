@@ -35,6 +35,7 @@
                     <li class="nav-item"><a href="/schedulelist" class="btn btn-primary">일정 관리</a></li>
                     <li class="nav-item"><a href="/my-page" class="btn btn-warning">마이페이지</a></li>
                     <li class="nav-item"><a href="/logout" class="btn btn-danger">로그아웃</a></li>
+                    <li class="nav-item"><a href="/chat/rooms" class="btn btn-primary">채팅</a></li>
                 </c:if>
                 <c:if test="${sessionScope.userId == null}">
                     <li class="nav-item"><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#loginModal">시작</button></li>

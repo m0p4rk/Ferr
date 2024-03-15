@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="/WEB-INF/views/navbar.jsp"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -15,7 +16,7 @@
 <body>
 	<div class="container">
 	    <div class="col-6">
-	        <h1>${room.name}</h1>
+	        <h1>${room.chatroomName}</h1>
 	    </div>
 	    <%-- <div>
     	<!-- c:foreach -->
@@ -43,14 +44,14 @@
 	    		<input type="button" value="방 나가기" class="Btn" onclick="location.href='/chat/roomDel'">
 	    	</span>
 	</div>
-	<%! int num; %>
+	<%-- <%! int num; %>
 	<%  num++;   %>
 	<% 
 		session.setAttribute("userId", num);
-	%>
+	%> --%>
 	<div>세션 userId : ${userId }</div>
 	<script>
-		var roomName = "${room.name}";
+		var roomName = "${room.chatroomName}";
 		var roomId = "${room.chatroomId}";
 		var userId = "${userId}";
 		

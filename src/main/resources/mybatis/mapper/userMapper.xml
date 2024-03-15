@@ -54,6 +54,7 @@
 	<select id="findAllUser"
 			resultMap="userResultMap">
 		SELECT * FROM Users
+		WHERE user_id != #{userId};
 	</select>
 
 </mapper>
