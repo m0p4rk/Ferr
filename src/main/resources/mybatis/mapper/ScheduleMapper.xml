@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warr.ferr.mapper.ScheduleMapper">
+    
+    <resultMap id="scheduleResultMap" type="com.warr.ferr.model.Schedule">
+ 		<id property="userId" column="user_id" />   
+        <result property="contentId" column="content_id" />
+        <result property="eventTitle" column="event_title" />
+        <result property="eventStartDate" column="event_start_date" />
+        <result property="eventEndDate" column="event_end_date" />
+        <result property="latitude" column="latitude" />
+        <result property="longitude" column="longitude" />
+        <result property="createdAt" column="created_at" />
+    </resultMap>
+    
+    <insert id="saveSchedule" parameterType="com.warr.ferr.model.Schedule">
+        INSERT INTO user_events (user_id, content_id, event_title, event_start_date, event_end_date, latitude, longitude)
+        VALUES (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate}, #{latitude}, #{longitude})
+    </insert>
+    
+   	
+</mapper>
