@@ -103,12 +103,16 @@
 			</div>
 			<div class="col-12 position-relative">
 				<div class="box-container" id="container1">
+<%--					<div class="image-item" data-event-id="1"--%>
+<%--						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">--%>
 					<div class="image-item" data-event-id="1"
-						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						 onclick="window.location.href='event-detail?eventId=1';">
 						<div class="image-text">Sample 1</div>
 					</div>
+<%--					<div class="image-item" data-event-id="2"--%>
+<%--						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">--%>
 					<div class="image-item" data-event-id="2"
-						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
+						 onclick="window.location.href='event-detail?eventId=2';">
 						<div class="image-text">Sample 2</div>
 					</div>
 					<div class="image-item" data-event-id="3"

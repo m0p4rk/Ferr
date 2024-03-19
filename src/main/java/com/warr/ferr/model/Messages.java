@@ -17,7 +17,7 @@ public class Messages {
 	private String content; // nn
 	private Timestamp notificationTime;
 	private Timestamp sentAt; // 현재시간
-	private MessageType messageType;
+//	private MessageType messageType;
 	
 	public enum MessageType{ // nn
 		MESSAGE,

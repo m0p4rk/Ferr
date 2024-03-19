@@ -20,12 +20,12 @@
 <body>
 
 	<div class="container mt-5">
-		<h1 class="mb-4">Sample</h1>
+		<h1 class="mb-4">Sample2</h1>
 
 		<div class="row">
 			<div class="col-md-6">
 				<img
-					src="http://tong.visitkorea.or.kr/cms/resource/29/2809529_image2_1.jpg"
+					src="https://kfescdn.visitkorea.or.kr/kfes/upload/contents/db/c62d8ff0-8b38-4ef8-ad2e-28b70298092a_3.jpeg"
 					alt="Event Image" class="img-fluid">
 			</div>
 			<div class="col-md-6">
@@ -33,27 +33,27 @@
 					<tbody>
 						<tr>
 							<th scope="row">우편번호</th>
-							<td>03189</td>
+							<td>12345</td>
 						</tr>
 						<tr>
 							<th scope="row">전화명</th>
-							<td>서울특별시</td>
+							<td>부산광역시</td>
 						</tr>
 						<tr>
 							<th scope="row">전화번호</th>
-							<td>02-120</td>
+							<td>02-123-4567</td>
 						</tr>
 						<tr>
 							<th scope="row">홈페이지</th>
-							<td><a href="https://namsanbongsu.kr/" target="_blank">https://namsanbongsu.kr/</a></td>
+							<td><a href="https://blog.naver.com/letsrun2014" target="_blank">https://letsrun2014.kr/</a></td>
 						</tr>
 						<tr>
 							<th scope="row">주소</th>
-							<td>서울특별시 종로구 종로 54 보신각</td>
+							<td>경기도 과천시 경마공원대로 107</td>
 						</tr>
 						<tr>
 							<th scope="row">행사기간</th>
-							<td>2024.4.25(목) - 05.20(월)</td>
+							<td>2024.3.29(토) - 04.21(일)</td>
 						</tr>
 					</tbody>
 				</table>
@@ -63,7 +63,7 @@
 		<div class="row mt-4">
 			<div class="col-12">
 				<h2>개요</h2>
-				<p>- 보신각 타종행사 시민과 함께하는 천년의 종소리 ! 보신각 타종행사...</p>
+				<p>‘나만 알고 싶은’ 숨은 벚꽃 명소 렛츠런파크 서울에서 올해도 벚꽃축제가 개최된다.</p>
 				<!-- 개요 내용 추가 -->
 			</div>
 		</div>
