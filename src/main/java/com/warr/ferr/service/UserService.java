@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.warr.ferr.mapper.UserMapper;
+import com.warr.ferr.model.UserPreferences;
 import com.warr.ferr.model.Users;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,6 +76,26 @@ public class UserService {
             userMapper.updateUser(existingUser);
         }
     }
+
+    public int getUserIdByEmail(String email) {
+    	// 이메일로 사용자 정보 가져오기
+    	 int user = -1;
+    	 user = userMapper.getUserByEmail(email);
+    	 
+    	 return user;
+    }
+    
+	public UserPreferences getUserPreferences(int userId) {
+		return userMapper.getUserPreferences(userId);
+	}
+
+	public void saveUserPreferences(UserPreferences preferences) {
+		userMapper.saveUserPreferences(preferences);
+	}
+
+	public void updateUserPreferences(UserPreferences preferences) {
+		userMapper.updateUserPreferences(preferences);
+	}
 
 
 
