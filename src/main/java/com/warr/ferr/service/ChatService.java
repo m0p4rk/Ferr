@@ -1,9 +1,7 @@
 package com.warr.ferr.service;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,8 +10,6 @@ import com.warr.ferr.dto.ChatroomDto;
 import com.warr.ferr.mapper.ChatMapper;
 import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Chatrooms;
-
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class ChatService {

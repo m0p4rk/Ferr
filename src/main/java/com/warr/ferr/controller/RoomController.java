@@ -1,19 +1,15 @@
 package com.warr.ferr.controller;
 
 import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.warr.ferr.dto.ChatroomDto;
-import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Users;
 import com.warr.ferr.service.ChatService;
 import com.warr.ferr.service.UserService;
@@ -33,7 +29,8 @@ public class RoomController {
 	private final UserService userService;
 
     // 채팅방 목록 조회
-    @GetMapping(value = "/rooms")
+    @SuppressWarnings("static-access")
+	@GetMapping(value = "/rooms")
     public String getChatRooms(Model model){
 
         log.info("RoomController : getChatRooms()");
