@@ -21,10 +21,9 @@ public interface UserMapper {
 	
 	Integer findUserIdByEmail(String email);
 	
-<<<<<<< HEAD
 	// 채팅에서 임시로 사용중
 	List<Users> findAllUser();
-=======
+	
 	public int getUserByEmail(String email);
 	
 	UserPreferences getUserPreferences(int userId);
@@ -33,5 +32,4 @@ public interface UserMapper {
 
 	public void updateUserPreferences(UserPreferences preferences);
 
->>>>>>> origin/feature/my-page
 }

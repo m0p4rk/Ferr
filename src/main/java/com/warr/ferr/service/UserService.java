@@ -78,7 +78,6 @@ public class UserService {
         }
     }
 
-<<<<<<< HEAD
     // 채팅에서 임시로 사용중
 	public List<Users> findAllUser() {
 			
@@ -86,7 +85,7 @@ public class UserService {
 	
 	return userList;
 	}
-=======
+	
     public int getUserIdByEmail(String email) {
     	// 이메일로 사용자 정보 가져오기
     	 int user = -1;
@@ -106,8 +105,5 @@ public class UserService {
 	public void updateUserPreferences(UserPreferences preferences) {
 		userMapper.updateUserPreferences(preferences);
 	}
-
-
->>>>>>> origin/feature/my-page
 
 }
