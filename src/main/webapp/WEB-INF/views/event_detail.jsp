@@ -74,58 +74,76 @@
         <div id="map" style="width:100%;height:350px;"></div>
 		
 		<div class="row mt-4">
-			<div class="col-12">
-			        <!-- 일정 생성/저장 버튼 -->
+    	<div class="col-12">
+        <!-- 일정 생성/저장 버튼 -->
         <button type="button" class="btn btn-warning mt-3" id="createScheduleModal">일정 생성/저장</button>
+    	</div>
+		</div>
+		<!-- 로그인이 필요한 알림 모달 -->
+		<div class="modal fade" id="loginRequiredModal" tabindex="-1" role="dialog" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+    		<div class="modal-dialog" role="document">
+        		<div class="modal-content">
+            		<div class="modal-header">
+               		 <h5 class="modal-title" id="loginRequiredModalLabel">로그인 필요</h5>
+                		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                로그인이 필요한 서비스입니다. 로그인을 진행해주세요.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <!-- 일정 생성 모달 -->
-        <div class="modal" id="scheduleModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">일정 생성</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="scheduleForm">
-                            <div class="form-group">
-                                <label for="eventTitle">일정 이름:</label>
-                                <input type="text" class="form-control" id="eventTitle" required>
+
+                <!-- 일정 생성 모달 -->
+                <div class="modal" id="scheduleModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">일정 생성</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
-                    		<div class="form-group">
-                        		<label for="contentId">Content ID:</label>
-                        		<input type="text" class="form-control" id="contentId" required>
-                    		</div>
-                    		<div class="form-group">
-                        		<label for="contentId">user ID:</label>
-                        		<input type="text" class="form-control" id="userId" required>
-                    		</div>
-                            <div class="form-group">
-                                <label for="eventStartDate">시작 날짜:</label>
-                                <input type="date" class="form-control" id="eventStartDate" required>
+                            <div class="modal-body">
+                                <form id="scheduleForm">
+                                    <div class="form-group">
+                                        <label for="eventTitle">일정 이름:</label>
+                                        <input type="text" class="form-control" id="eventTitle" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="contentId">Content ID:</label>
+                                        <input type="text" class="form-control" id="contentId" required>
+                                    </div>
+                                    <!-- 사용자 세션에서 user ID 자동으로 가져오기 -->
+                                    <input type="hidden" id="userId" value="${sessionScope.userId}">
+                                    <div class="form-group">
+                                        <label for="eventStartDate">시작 날짜:</label>
+                                        <input type="date" class="form-control" id="eventStartDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="eventEndDate">종료 날짜:</label>
+                                        <input type="date" class="form-control" id="eventEndDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="latitude">위도:</label>
+                                        <input type="text" class="form-control" id="latitude" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="longitude">경도:</label>
+                                        <input type="text" class="form-control" id="longitude" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">저장</button>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <label for="eventEndDate">종료 날짜:</label>
-                                <input type="date" class="form-control" id="eventEndDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="latitude">위도:</label>
-                                <input type="text" class="form-control" id="latitude" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="longitude">경도:</label>
-                                <input type="text" class="form-control" id="longitude" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">저장</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-			</div>
-		</div>
-
 	
 	
 <script>
@@ -164,11 +182,20 @@
     	// 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
     	map.setCenter(coords);
 		} 
-		});    
+		}); 
+	    // 일정 생성 버튼 클릭 이벤트 처리
+	    $('#createScheduleModal').click(function() {
+	        // 로그인 여부 확인
+	        var userId = '${sessionScope.userId}';
+	        if (!userId) {
+	            // 로그인이 되어 있지 않은 경우, 로그인 필요 알림 모달 표시
+	            $('#loginRequiredModal').modal('show');
+	            return;
+	        }
 
-        $('#createScheduleModal').click(function() {
-            $('#scheduleModal').modal('show');
-        });
+	        // 로그인이 되어 있는 경우, 일정 생성 모달 표시
+	        $('#scheduleModal').modal('show');
+	    });
 
         // 일정 생성 폼 제출 시 실행되는 함수
         $('#scheduleForm').submit(function(event) {
