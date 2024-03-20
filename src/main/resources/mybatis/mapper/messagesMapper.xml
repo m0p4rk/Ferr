@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.warr.ferr.mapper.MessagesMapper">
+
+	<resultMap type="com.warr.ferr.model.Messages" id="Message">
+ 		<result property="messageId" column="message_id"/>
+ 		<result property="chatroomId" column="chatroom_id"/>
+ 		<result property="senderId" column="sender_id"/>
+ 		<result property="receiverId" column="receiver_id"/>
+ 		<result property="content" column="content"/>
+ 		<result property="messageType" column="message_type"/>
+ 		<result property="notificationTime" column="notification_time"/>
+ 		<result property="sentAt" column="sent_at"/>
+ 	</resultMap>
+ 	
+ 	<!-- 메세지 보내기 -->
+ 	<insert id="sendMessage"
+ 			parameterType="com.warr.ferr.model.Messages">
+ 		INSERT INTO messages 
+ 			(chatroom_id,
+ 			 sender_id,
+ 			 content,
+ 			 message_type,
+ 			 sent_at) 
+ 		VALUE 
+ 			(#{chatroomId},
+ 			 #{senderId},
+ 			 #{content},
+ 			 'MESSAGE',
+ 			 NOW()) 
+ 	</insert>
+ 	
+ 	<select id="findMessage"
+ 			resultMap="Message">
+ 		SELECT message_id, sender_id, chatroom_id, content, message_type, sent_at
+ 		FROM messages
+ 		ORDER BY message_id DESC
+ 		LIMIT 1
+ 	</select>
+ 	
+ 	<select id="preMsg"
+ 			parameterType="int"
+ 			resultMap="Message">
+ 		SELECT message_id, sender_id, chatroom_id, content, message_type, sent_at
+ 		FROM messages
+ 		WHERE chatroom_id = #{chatroomId}
+ 		ORDER BY message_id
+ 		
+ 	</select>
+ 	
+	<!-- SELECT * FROM messages
+ORDER BY message_id
+LIMIT 10 OFFSET 0; -->
+	
+</mapper>

@@ -2,25 +2,41 @@ package com.warr.ferr.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
-@Getter
-@Setter
 @AllArgsConstructor
-@NoArgsConstructor
-@ToString
+@Getter
 public class ChatroomDto {
-	private int chatroomId;
-	private String userId;
-	private int id;
-	private String roomName;
-//	private Status status;
-//	private Timestamp lastReadAt;
+	public int chatroomId;
+	public int userId;
+	public String chatroomName;
 	
-	public enum Status{
-		JOIN,
-		LEAVE
-	}
 }
+
+
+//import java.util.HashSet;
+//import java.util.Set;
+//import java.util.UUID;
+//
+//import org.springframework.web.socket.WebSocketSession;
+//
+//import lombok.Getter;
+//import lombok.Setter;
+//import lombok.ToString;
+//
+//@Getter
+//@Setter
+//@ToString
+//public class ChatroomDto {
+//	public int chatroomId; // ai nn
+//	public String name; // nn
+////	private Set<WebSocketSession> sessions = new HashSet<>();
+//	
+//	public static ChatroomDto create(){
+//        ChatroomDto room = new ChatroomDto();
+//
+//        room.name = UUID.randomUUID().toString();
+//        return room;
+//    }
+//}
+
+

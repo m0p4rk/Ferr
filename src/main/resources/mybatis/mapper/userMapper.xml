@@ -51,10 +51,17 @@
 		users WHERE email = #{email}
 	</select>
 
-	<!-- 채팅에서 임시로 사용중 -->
+	<!-- 채팅에서 임시로 사용중 사용자제외한 유저불러오기 -->
 	<select id="findAllUser"
 			resultMap="userResultMap">
-		SELECT * FROM Users
+		SELECT * FROM users
+		WHERE user_id != #{userId};
+	</select>
+	<!-- 채팅에서 임시로 사용중 사용자만 불러오기 -->
+	<select id="findUserById"
+			resultMap="userResultMap">
+		SELECT * FROM users
+		WHERE user_id = #{userId};
 	</select>
 
 	<resultMap id="userPreferencesResultMap"
