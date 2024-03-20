@@ -1,27 +1,40 @@
 package com.warr.ferr.service;
 
-import java.util.List;
-import java.util.Map;
+import com.warr.ferr.model.Schedule;
+import com.warr.ferr.dto.ScheduleListDto;
+import com.warr.ferr.mapper.ScheduleMapper;
+import com.warr.ferr.repository.ScheduleRepository;
+import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.warr.ferr.mapper.ScheduleMapper;
-import com.warr.ferr.model.Schedule;
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ScheduleService {
 
+    private final ScheduleRepository scheduleRepository;
     private final ScheduleMapper scheduleMapper;
 
-    @Autowired
-    public ScheduleService(ScheduleMapper scheduleMapper) {
-        this.scheduleMapper = scheduleMapper;
+    public List<Schedule> testDataInit() {
+        return scheduleRepository.createTestSchedule();
+    }
+
+    public void save(Schedule schedule) {
+        scheduleRepository.saveInDB(schedule);
+    }
+
+    public Optional<Schedule> findByEventId(String id) {
+        return scheduleRepository.findByEventId(id);
+    }
+
+    public List<ScheduleListDto> findSchedules() {
+        return scheduleRepository.findAllSchedules();
     }
 
     public void saveSchedule(Schedule schedule) {
         scheduleMapper.saveSchedule(schedule);
     }
-
-
 }

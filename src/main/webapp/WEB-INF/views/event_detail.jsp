@@ -57,6 +57,10 @@
 							<th scope="row">주소</th>
 							<td>서울특별시 종로구 종로 54 보신각</td>
 						</tr>
+						<tr>
+							<th scope="row">행사기간</th>
+							<td>2024.4.25(목) - 05.20(월)</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
@@ -127,6 +131,10 @@
                                     <div class="form-group">
                                         <label for="eventEndDate">종료 날짜:</label>
                                         <input type="date" class="form-control" id="eventEndDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="promiseDate">약속 날짜:</label>
+                                        <input type="date" class="form-control" id="promiseDate" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="latitude">위도:</label>
@@ -205,6 +213,7 @@
             var eventTitle = $('#eventTitle').val();
             var eventStartDate = $('#eventStartDate').val();
             var eventEndDate = $('#eventEndDate').val();
+            var promiseDate = $('#promiseDate').val();
             var latitude = $('#latitude').val();
             var longitude = $('#longitude').val();
             var contentId = $('#contentId').val();
@@ -215,6 +224,7 @@
                 eventTitle: eventTitle, 
                 eventStartDate: eventStartDate,
                 eventEndDate: eventEndDate,
+                promiseDate: promiseDate,
                 latitude: latitude,
                 longitude: longitude,
                 contentId: contentId,
