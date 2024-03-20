@@ -30,7 +30,7 @@
 	<select id="findRoomById"
 			parameterType="int"
 			resultMap="ChatroomMembers">
-		SELECT chatroom_id, user_id, chatroom_name, status
+		SELECT chatroom_id, user_id, chatroom_name, status, last_read_at
 		FROM chatroom_members 
 		WHERE chatroom_id = #{chatroomId} AND user_id = #{userId}
 	</select>
@@ -41,11 +41,11 @@
 			resultMap="ChatroomMembers">
 		SELECT s.chatroom_id, s.user_id
 		FROM chatroom_members s
-		WHERE s.status = 'JOIN' AND s.chatroom_id IN (SELECT f.chatroom_id
-													FROM chatroom_members f
-							                        WHERE f.user_id = #{userId});
+		WHERE s.status = 'JOIN' AND s.chatroom_id IN (
+												SELECT f.chatroom_id
+												FROM chatroom_members f
+								                WHERE f.user_id = #{userId});
 	</select>
-	
 	
 	<!-- chatroomId 생성 -->
 	<insert id="createRoomId"
@@ -58,28 +58,57 @@
 	
 	<!-- chatroom members 구성원 -->
 	<insert id="createRoom" parameterType="java.util.List">
-	    INSERT INTO chatroom_members (chatroom_id, chatroom_name, user_id, status)
+	    INSERT INTO chatroom_members 
+	    	(chatroom_id, 
+	    	chatroom_name, 
+	    	user_id, 
+	    	status,
+	    	last_read_at)
 	    VALUES
 	    <foreach collection="chatroomMembers" item="chatroomMember" separator=",">
-	        (#{chatroomMember.chatroomId}, #{chatroomMember.chatroomName}, #{chatroomMember.userId}, 'JOIN')
+	        (#{chatroomMember.chatroomId}, 
+	        #{chatroomMember.chatroomName}, 
+	        #{chatroomMember.userId}, 
+	        'JOIN',
+	        CURRENT_TIMESTAMP)
 	    </foreach>
 	</insert>
 		
 	<!-- 제목 수정 -->
-	<!-- <update id="roomNameUpdate"
+	<update id="roomNameUpdate"
 			parameterType="com.warr.ferr.model.ChatroomMembers">
 		UPDATE chatroom_members
 		SET chatroom_name = #{chatroomName}
-		WHERE chatroom_id = #{chatroomId};
-	</update> -->
-		
-	<!-- 방 삭제 -->
-	<!-- <delete id="deleteRoom"
-			parameterType="_int">
-		delete from Chatroom_members
-		where #{roomId} = chatroom_id;
-	</delete> -->
+		WHERE chatroom_id = #{chatroomId} AND user_id = #{userId}
+	</update>
 	
+	<!-- 그룹채팅에서 방나가기 -->
+	<update id="chatroomLeave"
+			parameterType="com.warr.ferr.model.ChatroomMembers">
+		UPDATE chatroom_members
+		SET status = 'LEAVE'
+		WHERE chatroom_id = #{chatroomId} AND user_id = #{userId} 	
+	</update>
+	
+	<!-- 채팅룸id 삭제 -->
+	<!-- <delete id="deleteRoom" parameterType="java.util.List">
+	    DELETE FROM chatrooms
+	    WHERE chatroom_id IN (
+	        SELECT chatroom_id
+	        FROM chatroom_members
+	        WHERE chatroom_id IN
+	        <foreach collection="chatroomIdList" item="chatroomId" open="(" separator="," close=")">
+	            #{chatroomId}
+	        </foreach>
+	        AND status = 'LEAVE'
+	    )
+	</delete> -->
+	<!-- 그룹방 자체를 삭제 -->
+	<!-- <delete id="deleteRoomUser"
+			parameterType="com.warr.ferr.model.Chatrooms">
+		DELETE FROM chatroom_members
+		WHERE chatroom_id = #{chatroomId} AND status = 'LEAVE'
+	</delete> -->
 	
 	
 </mapper>

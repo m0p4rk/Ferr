@@ -73,8 +73,10 @@
 <div class="container">
     <div>
     	<c:forEach items="${rooms}" var="room">
-	        <ul class="list-group">
-	            <li class="list-group-item"><a href="/chat/room?roomId=${room.chatroomId}">${room.chatroomName}</a></li>
+    		 <ul class="list-group">
+	            <li class="list-group-item">
+	            	<a href="javascript:void(0)" onclick="openChatRoom('${room.chatroomId}', '${room.chatroomName}')">${room.chatroomName}</a>
+	            </li>
 	        </ul>
     	</c:forEach>
     </div>
@@ -118,6 +120,15 @@
 int sessionId = (Integer)session.getAttribute("userId");
 %>
 var sessionId = '<%= sessionId %>';
+
+// 채팅창 띄우기
+function openChatRoom(roomId, roomName) {
+ 	var leftPosition = (window.screen.width * 2 / 3) // / 2) - (512 / 2); 가운데 띄울때
+	var topPosition = (window.screen.height * 2 / 5) // / 2) - (568 / 2);
+
+	window.open('http://localhost:8080/chat/room?roomId=' + roomId, 'win0', 'width=512,height=568,left=' + leftPosition + ',top=' + topPosition + ',status=no,toolbar=no,scrollbars=no');
+}
+
 // json 데이터 가져오기
 var userList = JSON.parse('${userList}');
 
@@ -136,14 +147,14 @@ var noBtn = modal2.querySelector("#noBtn"); // 모달2
 var closeBtn3 = modal3.querySelector(".close");
 
 //선택된 항목 초기화 함수
-function clearSelectedItems() {
-  // 선택된 항목 초기화 로직 추가
-}
+/* function clearSelectedItems() {
+	
+} */
 
 // 체크박스 초기화 함수
-function clearCheckboxes() {
-  // 체크박스 초기화 로직 추가
-}
+/* function clearCheckboxes() {
+
+} */
 
 // 모달 버튼 클릭 시 모달 열기
 modalBtn.onclick = function() {
@@ -153,11 +164,11 @@ modalBtn.onclick = function() {
 // 닫기 버튼 클릭 시 모달 닫기
 closeBtn.onclick = function() {
   closeModal(modal);
-  clearSelectedItems();
-  clearCheckboxes();
+  resetModalContent();
 };
 closeBtn3.onclick = function() {
   closeModal(modal3);
+  resetModalContent();
   var roomNameInput = document.getElementById("roomName");
   roomNameInput.value = ''; 
 };
@@ -179,14 +190,12 @@ function closeModal(modal) {
 window.onclick = function(event) {
   if (event.target == modal) {
     closeModal(modal);
-    clearSelectedItems();
-    clearCheckboxes();
   } else if (event.target == modal2) {
     closeModal(modal2);
   } else if (event.target == modal3) {
     closeModal(modal3);
-    var roomNameInput = document.getElementById("roomName");
-    roomNameInput.value = ''; 
+    /* var roomNameInput = document.getElementById("roomName");
+    roomNameInput.value = '';  */
   }
 };
 
@@ -209,7 +218,7 @@ function resetModalContent() {
   // 선택된 항목 초기화
   var selectedItemsContainer = document.getElementById("selectedItems");
   selectedItemsContainer.innerHTML = '';
-
+  selectedItems = [];	
   // 체크된 상태 초기화
   var checkboxes = document.querySelectorAll('#searchResults input[type="checkbox"]');
   checkboxes.forEach(function(checkbox) {
@@ -289,12 +298,6 @@ searchInput.addEventListener("input", function() {
 //선택된 항목을 저장할 배열
 var selectedItemsContainer = document.getElementById("selectedItems");
 var selectedItems = [];
-
-//선택된 항목을 추가하는 함수
-function addToSelectedItems(item) {
-  selectedItems.push(item);
-  renderSelectedItems();
-}
 
 // 선택된 항목을 제거하는 함수
 function removeSelectedItem(item) {
@@ -398,7 +401,7 @@ document.addEventListener('mousedown', function(event) {
         // 오른쪽 버튼 클릭된 요소가 li 요소인지 확인
         if (event.target.tagName === "A") {
             // 오른쪽 클릭된 room의 ID와 이름을 저장
-            clickedRoomId = event.target.getAttribute("href").split("=")[1];
+            clickedRoomId = event.target.getAttribute("onclick").split("'")[1];
             clickedRoomName = event.target.textContent.trim();
 
             // 메뉴를 표시할 위치를 정의.  오른쪽 클릭된 위치를 기준으로 함
@@ -483,7 +486,7 @@ if (modal2YesBtn) {
       // 방 나가기 요청 보내기
       $.ajax({
         type: "POST",
-        url: "/chat/deleteRoom",
+        url: "/chat/leave",
         contentType: "application/json",
         data: JSON.stringify(requestData),
         success: function(response) {
@@ -529,7 +532,7 @@ if (modal3SaveBtn) {
     // 요청 데이터 생성
     var requestData = {
       chatroomId: chatRoomId,
-      roomName: roomName,
+      chatroomName: roomName,
       userId: sessionId // 세션 아이디
     };
 

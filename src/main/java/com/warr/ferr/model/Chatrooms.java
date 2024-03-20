@@ -1,5 +1,7 @@
 package com.warr.ferr.model;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Chatrooms {
+public class Chatrooms implements Serializable {
 	private int chatroomId;
 	private String name;
 }

@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
+import com.warr.ferr.dto.ChatroomDto;
 import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Chatrooms;
 
@@ -12,27 +14,34 @@ import com.warr.ferr.model.Chatrooms;
 public interface ChatMapper {
 
 	// 모든 채팅방 리스트. 채팅방 생성시 사용
-	List<Chatrooms> findAllRooms();
+	public List<Chatrooms> findAllRooms();
 
 	// uesr와 관련있는 채팅방 리스트
-	List<ChatroomMembers> findAllRoomsByUserId(int userId);
+	public List<ChatroomMembers> findAllRoomsByUserId(int userId);
 
 	// 채팅방 들어가기
-	ChatroomMembers findRoomById(int chatroomId, int userId);
+	public ChatroomMembers findRoomById(int chatroomId, int userId);
 
 	// 방 생성
-	int createRoom(@Param("chatroomMembers") List<ChatroomMembers> chatroomMembers);
+	public int createRoom(@Param("chatroomMembers") List<ChatroomMembers> chatroomMembers);
 
 	// chatroomId 생성용 
-	int createRoomId(Chatrooms name);
+	public int createRoomId(Chatrooms name);
 
 	// 방 제목 수정
-	int roomNameUpdate(ChatroomMembers roomMembers);
+	public int roomNameUpdate(ChatroomMembers roomMembers);
 
-	// 방 삭제
-	int deleteRoom(int roomId);
+	// 모든유저가 leave 상태 채팅룸 삭제
+//	public void deleteRoom(List<Integer> chatroomIdList);  
+	// 방 삭제 : 모든유저가 leave 상태인 채팅룸 id 기준으로 삭제
+//	public int deleteRoomUser(List<Chatrooms> chatroomList);
 
-	List<ChatroomMembers> findRoomByUserIdByChatroomId(int userId);
+	// 사용자가 참여중인 룸 찾기
+	public List<ChatroomMembers> findRoomByUserIdByChatroomId(int userId);
+	
+	// 채팅방 떠나기
+	public int chatroomLeave(ChatroomDto chatroomDto);
+
 
 
 

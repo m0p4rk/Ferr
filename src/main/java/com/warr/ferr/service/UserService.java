@@ -84,5 +84,10 @@ public class UserService {
 	
 	return userList;
 	}
+	// 채팅에서 임시로 사용중
+	public Users findUserById(int userId) {
+		
+		return userMapper.findUserById(userId);
+	}
 
 }
