@@ -2,13 +2,17 @@ package com.warr.ferr.model;
 
 import java.sql.Timestamp;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Messages {
 	private int messageId; // ai, pk, nn
 	private int chatroomId; 

@@ -31,10 +31,6 @@
 			<input type="date" class="form-control" id="endDateFilter"
 				name="endDate" placeholder="종료일">
 		</div>
-		<div class="col-md-2">
-			<input type="text" class="form-control" placeholder="검색"
-				id="searchFilter" name="search">
-		</div>
 		<div class="col-md-1">
 			<button type="submit" class="btn btn-primary" id="searchButton">검색</button>
 		</div>

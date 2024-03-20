@@ -20,7 +20,6 @@
 	background-position: center; /* 이미지가 항상 중앙에 위치하도록 */
 }
 
-
 .image-item:hover {
 	transform: scale(1.05);
 }
@@ -77,3 +76,8 @@
 	margin-bottom: 10px;
 	padding: 10px;
 }
+
+.form-container {
+            width: 100%; /* 폼 컨테이너의 너비를 화면에 꽉 차게 설정 */
+            padding: 20px; /* 폼 내부의 여백 */
+        }

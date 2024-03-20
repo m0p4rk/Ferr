@@ -72,6 +72,7 @@ public class UserController {
 		ModelAndView mv = new ModelAndView();
 		String accessToken = kakaoApi.getAccessToken(code);
 		HashMap<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
+		System.out.println(userInfo);
 		if (userInfo.get("email") != null) {
 			// 카카오 사용자 정보를 기반으로 사용자 로그인 또는 등록 처리
 			userService.loginOrRegisterKakaoUser(userInfo);
@@ -80,6 +81,7 @@ public class UserController {
 			HttpSession session = request.getSession(true);
 			session.setAttribute("nickname", userInfo.get("nickname")); // 닉네임
 			session.setAttribute("userId", userId); // 사용자 ID 세션에 저장
+			session.setAttribute("profileImageUrl", userInfo.get("profileImageUrl"));
 			session.setAttribute("access_token", accessToken); // 카카오 액세스 토큰도 세션에 저장
 			mv.setViewName("redirect:/");
 		} else {
