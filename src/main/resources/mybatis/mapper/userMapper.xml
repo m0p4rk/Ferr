@@ -47,7 +47,8 @@
 	</select>
 
 	<select id="findNicknameByEmail" resultType="java.lang.String">
-		SELECT nickname FROM users WHERE email = #{email}
+		SELECT nickname FROM
+		users WHERE email = #{email}
 	</select>
 
 	<!-- 채팅에서 임시로 사용중 사용자제외한 유저불러오기 -->
@@ -63,4 +64,61 @@
 		WHERE user_id = #{userId};
 	</select>
 
+	<resultMap id="userPreferencesResultMap"
+		type="com.warr.ferr.model.UserPreferences">
+		<id property="preferenceId" column="preference_id" />
+		<result property="userId" column="user_id" />
+		<result property="preferredLocation"
+			column="preferred_location" />
+		<result property="admissionFeePreference"
+			column="admission_fee_preference" />
+		<result property="categoryCodeLarge"
+			column="category_code_large" />
+		<result property="categoryCodeMedium"
+			column="category_code_medium" />
+		<result property="categoryCodeSmall"
+			column="category_code_small" />
+	</resultMap>
+
+	<select id="getUserByEmail" resultType="int"
+		parameterType="String">
+		SELECT user_id FROM users WHERE email = #{email}
+	</select>
+
+	<select id="getUserPreferences" resultType="com.warr.ferr.model.UserPreferences">
+        SELECT * FROM user_preferences WHERE user_id = #{userId}  LIMIT 1
+    </select>
+	
+	<insert id="saveUserPreferences"
+		parameterType="com.warr.ferr.model.UserPreferences">
+		INSERT INTO user_preferences (user_id,
+		preferred_location,
+		admission_fee_preference, category_code_large,
+		category_code_medium,
+		category_code_small)
+		VALUES (#{userId},
+		#{preferredLocation}, #{admissionFeePreference},
+		#{categoryCodeLarge},
+		#{categoryCodeMedium}, #{categoryCodeSmall})
+		ON DUPLICATE KEY UPDATE
+		preferred_location = VALUES(preferred_location),
+		admission_fee_preference = VALUES(admission_fee_preference),
+		category_code_large = VALUES(category_code_large),
+		category_code_medium = VALUES(category_code_medium),
+		category_code_small = VALUES(category_code_small);
+	</insert>
+
+	<update id="updateUserPreferences"
+		parameterType="com.warr.ferr.model.UserPreferences">
+		UPDATE user_preferences
+		SET preferred_location =
+		#{preferredLocation},
+		admission_fee_preference =
+		#{admissionFeePreference},
+		category_code_large = #{categoryCodeLarge},
+		category_code_medium = #{categoryCodeMedium},
+		category_code_small =
+		#{categoryCodeSmall}
+		WHERE user_id = #{userId}
+	</update>
 </mapper>
