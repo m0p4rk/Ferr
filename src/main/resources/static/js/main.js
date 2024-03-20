@@ -16,7 +16,7 @@ let currentPageNo = 1; // 현재 페이지 번호
 
 function fetchEventData(latitude, longitude, append = false) {
     const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
-    const url = `http://apis.data.go.kr/B551011/KorService1/locationBasedList1?ServiceKey=${serviceKey}&contentTypeId=15&mapX=${longitude}&mapY=${latitude}&radius=2000&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
+    const url = `http://apis.data.go.kr/B551011/KorService1/locationBasedList1?ServiceKey=${serviceKey}&contentTypeId=15&mapX=${longitude}&mapY=${latitude}&radius=10000&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
 
     fetch(url)
     .then(response => response.text())
