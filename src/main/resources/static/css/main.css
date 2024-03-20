@@ -1,0 +1,79 @@
+.box-container {
+	overflow: hidden;
+	white-space: nowrap;
+	margin-left: 50px;
+	margin-right: 50px;
+}
+
+.image-item {
+	position: relative;
+	display: inline-block;
+	width: 300px;
+	height: 200px;
+	background-color: #ddd;
+	margin-right: 15px;
+	text-align: center;
+	vertical-align: top;
+	overflow: hidden;
+	transition: transform 0.3s ease;
+	background-size: cover; /* 이미지가 컨테이너를 가득 채우도록 */
+	background-position: center; /* 이미지가 항상 중앙에 위치하도록 */
+}
+
+
+.image-item:hover {
+	transform: scale(1.05);
+}
+
+.image-text {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: white;
+	padding: 5px 0;
+}
+
+.rank-number {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: rgba(255, 165, 0, 0.85);
+	color: white;
+	padding: 5px 10px;
+	font-weight: bold;
+}
+
+.position-relative:hover .slider-btn {
+	opacity: 1;
+}
+
+.slider-btn {
+	display: inline-block;
+	cursor: pointer;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	font-size: 24px;
+	color: #fff;
+	background-color: rgba(0, 0, 0, 0.5);
+	border: none;
+	opacity: 0;
+	transition: opacity 0.5s ease;
+}
+
+.left {
+	left: 0;
+}
+
+.right {
+	right: 0;
+}
+
+.title-container {
+	text-align: left;
+	margin-bottom: 10px;
+	padding: 10px;
+}
