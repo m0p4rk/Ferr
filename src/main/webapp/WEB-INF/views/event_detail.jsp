@@ -26,36 +26,26 @@
 <body>
 
 	<div class="container mt-5">
-		<h1 class="mb-4">Sample</h1>
+		<h1 id="eventTitle" class="mb-4">상세정보</h1>
 
 		<div class="row">
-			<div class="col-md-6">
-				<img
-					src="http://tong.visitkorea.or.kr/cms/resource/29/2809529_image2_1.jpg"
-					alt="Event Image" class="img-fluid">
+			<div class="col-md-6 image-container">
+				<img id="eventImage" alt="Event Image" class="img-fluid">
 			</div>
 			<div class="col-md-6">
 				<table class="table">
 					<tbody>
 						<tr>
-							<th scope="row">우편번호</th>
-							<td>03189</td>
-						</tr>
-						<tr>
-							<th scope="row">전화명</th>
-							<td>서울특별시</td>
+							<th scope="row">주소</th>
+							<td id="eventAddress"></td>
 						</tr>
 						<tr>
 							<th scope="row">전화번호</th>
-							<td>02-120</td>
+							<td id="eventTel"></td>
 						</tr>
 						<tr>
-							<th scope="row">홈페이지</th>
-							<td><a href="https://namsanbongsu.kr/" target="_blank">https://namsanbongsu.kr/</a></td>
-						</tr>
-						<tr>
-							<th scope="row">주소</th>
-							<td>서울특별시 종로구 종로 54 보신각</td>
+							<th scope="row">상세 설명</th>
+							<td id="eventOverview"></td>
 						</tr>
 						<tr>
 							<th scope="row">행사기간</th>
@@ -151,7 +141,6 @@
                     </div>
                 </div>
             </div>
-        </div>
 	
 	
 <script>
@@ -254,3 +243,5 @@
 
 </body>
 </html>
+
+
