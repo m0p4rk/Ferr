@@ -38,7 +38,7 @@
 			<button id="editScheduleBtn" class="btn btn-info mt-3 mr-2">일정
 				수정</button>
 			<button type="button" class="btn btn-danger mt-3"
-					onclick="location.href='/schedulelist/delete/${schedule.eventId}'">일정
+					onclick="location.href='/schedule-detail/delete/${schedule.eventId}'">일정
 				삭제</button>
 		</div>
 

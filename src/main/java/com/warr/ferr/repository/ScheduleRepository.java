@@ -60,6 +60,10 @@ public class ScheduleRepository {
         return scheduleMapper.findByEventId(id);
     }
 
+    public void deleteByEventId(Integer id) {
+        scheduleMapper.deleteByEventId(id);
+    }
+
     public List<ScheduleListDto> findAllSchedules() {
         return scheduleMapper.findAllSchedules();
     }

@@ -30,6 +30,10 @@ public class ScheduleService {
         return scheduleRepository.findByEventId(id);
     }
 
+    public void deleteSchedule(Integer id) {
+        scheduleRepository.deleteByEventId(id);
+    }
+
     public List<ScheduleListDto> findSchedules() {
         return scheduleRepository.findAllSchedules();
     }

@@ -15,6 +15,8 @@ public interface ScheduleMapper {
 
     Optional<Schedule> findByEventId(Integer id);
 
+    void deleteByEventId(Integer id);
+
     // 스케줄 리스트에서 사용
     List<ScheduleListDto> findAllSchedules();
 

@@ -65,6 +65,7 @@ public class ScheduleController {
         return "dashboard_schedule";
     }
 
+    // Dashboard -> Schedule-Detail
     @GetMapping("/schedule-detail")
     public String scheduleDetail(@RequestParam("id") Integer eventId,
                                  Model model) {
@@ -80,6 +81,17 @@ public class ScheduleController {
         }
 
         return "schedule_detail";
+    }
+
+    // Schedule-Detail -> Logic(Delete) -> Schedule List
+    @GetMapping("/schedule-detail/delete/{eventId}")
+    public String deleteSchedule(@PathVariable Integer eventId,
+                                 Model model) {
+        scheduleService.deleteSchedule(eventId);
+        List<ScheduleListDto> callSchedules = scheduleService.findSchedules();
+        log.info("callSchedules={}", callSchedules);
+        model.addAttribute("schedules", callSchedules);
+        return "dashboard_schedule";
     }
 }
 

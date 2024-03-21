@@ -37,6 +37,11 @@
 		where event_id=#{eventId}
 	</select>
 
+	<delete id="deleteByEventId" parameterType="java.lang.Integer">
+		delete from user_events
+		where event_id=#{eventId}
+	</delete>
+
 	<select id="findAllSchedules" resultMap="scheduleListDtoResultMap">
 		select event_id, event_title, event_start_date, event_end_date, promise_date, content_id
 		from user_events
