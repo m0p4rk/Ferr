@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ include file="/WEB-INF/views/navbar.jsp"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,7 +37,8 @@
 		<div>
 			<button id="editScheduleBtn" class="btn btn-info mt-3 mr-2">일정
 				수정</button>
-			<button id="deleteScheduleBtn" class="btn btn-danger mt-3">일정
+			<button type="button" class="btn btn-danger mt-3"
+					onclick="location.href='/schedulelist/delete/${schedule.eventId}'">일정
 				삭제</button>
 		</div>
 
@@ -113,10 +115,10 @@
 			// 수정 버튼 클릭 시 동작할 내용 추가
 		});
 
-		// 일정 삭제 버튼 클릭 시 동작
-		$('#deleteScheduleBtn').click(function() {
-			// 삭제 버튼 클릭 시 동작할 내용 추가
-		});
+		// // 일정 삭제 버튼 클릭 시 동작
+		// $('#deleteScheduleBtn').click(function() {
+		// 	// 삭제 버튼 클릭 시 동작할 내용 추가
+		// });
 	</script>
 </body>
 </html>

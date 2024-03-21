@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 @Setter
 @Entity
 public class Schedule {
+    @Id
     private int eventId;
     private int userId;
     private String contentId;

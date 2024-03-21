@@ -23,16 +23,6 @@ public class TestController {
 		return "register_social";
 	}
 	
-//	@GetMapping("/schedulelist")
-//	public String testDashboardSchedule() {
-//		return "dashboard_schedule";
-//	}
-	
-	@GetMapping("/schedule-detail")
-	public String testScheduleDetail() {
-		return "schedule_detail";
-	}
-	
 	@GetMapping("/search")
 	public String testSearch() {
 		return "search_result";
@@ -46,6 +36,7 @@ public class TestController {
             case 2 -> "event_detail2"; // event-detail2.jsp
             default -> "event_detail";
         };
+//		return "event_detail";
 	}
 	
 	@GetMapping("/my-page")

@@ -13,12 +13,13 @@ public interface ScheduleMapper {
 
     void saveInDB(Schedule schedule);
 
-    Optional<Schedule> findByEventId(String id);
+    Optional<Schedule> findByEventId(Integer id);
 
     // 스케줄 리스트에서 사용
     List<ScheduleListDto> findAllSchedules();
 
 //    void update(@Param("eventId") String eventId);
+
 	void saveSchedule(Schedule schedule);
 
 	Map<String, Double> getLatitudeAndLongitude(String condition);

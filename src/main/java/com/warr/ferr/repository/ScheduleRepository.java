@@ -56,7 +56,7 @@ public class ScheduleRepository {
         scheduleMapper.saveInDB(schedule);
     }
 
-    public Optional<Schedule> findByEventId(String id) {
+    public Optional<Schedule> findByEventId(Integer id) {
         return scheduleMapper.findByEventId(id);
     }
 

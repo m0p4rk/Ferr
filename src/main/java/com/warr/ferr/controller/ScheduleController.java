@@ -3,13 +3,13 @@ package com.warr.ferr.controller;
 
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.warr.ferr.dto.ScheduleListDto;
 import com.warr.ferr.model.Schedule;
@@ -24,7 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 
 public class ScheduleController {
 
-    private final ScheduleService scheduleService;   
+    private final ScheduleService scheduleService;
+
     @PostMapping("/saveSchedule")
     @ResponseBody
     public String saveSchedule(@RequestBody Schedule schedule) {
@@ -36,7 +37,6 @@ public class ScheduleController {
             return "일정 저장 중 오류가 발생했습니다.";
         }
     }
-
 
     // JSON Object가 뿌려졌다 가정
     // Test Data Init으로 Schedule 객체(유저아이디, 내용, 행사명, 시작 시간, 종료 시간, 위도, 경도, 생성 시간)를 추가
@@ -65,6 +65,21 @@ public class ScheduleController {
         return "dashboard_schedule";
     }
 
+    @GetMapping("/schedule-detail")
+    public String scheduleDetail(@RequestParam("id") Integer eventId,
+                                 Model model) {
+        log.info("id={}", eventId);
+        Optional<Schedule> optFindSchedule = scheduleService.findByEventId(eventId);
+        log.info("optFindSchedule={}", optFindSchedule);
 
+        if (optFindSchedule.isPresent()) {
+            Schedule findSchedule = optFindSchedule.get();
+            model.addAttribute("schedule", findSchedule);
+        } else {
+            return "error_page";
+        }
+
+        return "schedule_detail";
+    }
 }
 
