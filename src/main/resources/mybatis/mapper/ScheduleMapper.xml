@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warr.ferr.mapper.ScheduleMapper">
+
+	<resultMap id="scheduleResultMap"
+			   type="com.warr.ferr.model.Schedule">
+		<id property="eventId" column="event_id"/>
+		<result property="userId" column="user_id"/>
+		<result property="contentId" column="content_id"/>
+		<result property="eventTitle" column="event_title"/>
+		<result property="eventStartDate" column="event_start_date"/>
+		<result property="eventEndDate" column="event_end_date"/>
+		<result property="latitude" column="latitude"/>
+		<result property="longitude" column="longitude"/>
+		<result property="createdAt" column="created_at"/>
+		<result property="promiseDate" column="promise_date"/>
+	</resultMap>
+
+	<resultMap id="scheduleListDtoResultMap" type="com.warr.ferr.dto.ScheduleListDto">
+		<result property="eventId" column="event_id"/>
+		<result property="eventTitle" column="event_title"/>
+		<result property="eventStartDate" column="event_start_date"/>
+		<result property="eventEndDate" column="event_end_date"/>
+		<result property="promiseDate" column="promise_date"/>
+		<result property="contentId" column="content_id"/>
+	</resultMap>
+
+	<insert id="saveInDB" useGeneratedKeys="true" keyProperty="eventId" parameterType="com.warr.ferr.model.Schedule">
+		insert into user_events (user_id, content_id, event_title, event_start_date, event_end_date, latitude, longitude, created_at, promise_date)
+		values (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate}, #{latitude}, #{longitude}, #{createdAt}, #{promiseDate})
+	</insert>
+
+	<select id="findByEventId" resultMap="scheduleResultMap">
+		select user_id, content_id, event_start_date, event_end_date, latitude, longitude, created_at
+		from user_events
+		where event_id=#{event_id}
+	</select>
+
+	<select id="findAllSchedules" resultMap="scheduleListDtoResultMap">
+		select event_id, event_title, event_start_date, event_end_date, promise_date, content_id
+		from user_events
+	</select>
+	
+	<insert id="saveSchedule" parameterType="com.warr.ferr.model.Schedule">
+	 INSERT INTO user_events (user_id, content_id, event_title, event_start_date, event_end_date, latitude, longitude, promise_date)
+	 VALUES (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate}, #{latitude}, #{longitude}, #{promiseDate})
+	</insert>
+</mapper>

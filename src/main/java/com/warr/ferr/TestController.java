@@ -1,8 +1,11 @@
 package com.warr.ferr;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+@Slf4j
 @Controller
 public class TestController {
 	@GetMapping("/")
@@ -20,10 +23,10 @@ public class TestController {
 		return "register_social";
 	}
 	
-	@GetMapping("/schedulelist")
-	public String testDashboardSchedule() {
-		return "dashboard_schedule";
-	}
+//	@GetMapping("/schedulelist")
+//	public String testDashboardSchedule() {
+//		return "dashboard_schedule";
+//	}
 	
 	@GetMapping("/schedule-detail")
 	public String testScheduleDetail() {
@@ -34,10 +37,15 @@ public class TestController {
 	public String testSearch() {
 		return "search_result";
 	}
-	
+
 	@GetMapping("/event-detail")
-	public String testEventDetail() {
-		return "event_detail";
+	public String testEventDetail(@Param("contentId") Integer contentId) {
+		log.info("testEventDetail called with eventId: {}", contentId);
+        return switch (contentId) {
+            case 1 -> "event_detail"; // event-detail.jsp
+            case 2 -> "event_detail2"; // event-detail2.jsp
+            default -> "event_detail";
+        };
 	}
 	
 	@GetMapping("/my-page")
