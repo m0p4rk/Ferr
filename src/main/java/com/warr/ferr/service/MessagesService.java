@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.warr.ferr.mapper.MessagesMapper;
 import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Messages;
-import com.warr.ferr.model.Users;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +18,6 @@ public class MessagesService {
 
 	// 메시지 보내기
 	public Messages sendMessage(Messages messages) {
-		boolean result = false;
 		int res = 0;
 		res = messagesMapper.sendMessage(messages);
 		

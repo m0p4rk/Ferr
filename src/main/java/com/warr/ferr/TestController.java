@@ -39,9 +39,9 @@ public class TestController {
 	}
 
 	@GetMapping("/event-detail")
-	public String testEventDetail(@Param("eventId") Integer eventId) {
-		log.info("testEventDetail called with eventId: {}", eventId);
-        return switch (eventId) {
+	public String testEventDetail(@Param("contentId") Integer contentId) {
+		log.info("testEventDetail called with eventId: {}", contentId);
+        return switch (contentId) {
             case 1 -> "event_detail"; // event-detail.jsp
             case 2 -> "event_detail2"; // event-detail2.jsp
             default -> "event_detail";
