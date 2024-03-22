@@ -22,6 +22,7 @@
 		<h2>행사 위치와 날씨 정보</h2>
 		<div id="map" style="width: 100%; height: 350px;"></div>
 		<div id="weatherInfo" class="weather-widget"></div>
+=
 
 		<h2>스크래치 노트 추가 후 알림</h2>
 		<form id="noteForm">

@@ -1,6 +1,8 @@
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const contentId = urlParams.get('contentId');
+  	const contentId = urlParams.get('contentId');
     if (contentId) {
         fetchTouristDetail(contentId);
     } else {
@@ -107,6 +109,9 @@ document.getElementById('detailInfoBtn').addEventListener('click', function() {
         document.getElementById('goBackBtn').style.display = 'inline-block';
         document.getElementById('detailInfoBtn').style.display = 'none';
     }
+    
+
+
 });
 
 

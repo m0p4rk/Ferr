@@ -1,6 +1,7 @@
 package com.warr.ferr.service;
 
 import com.warr.ferr.model.Schedule;
+import com.warr.ferr.dto.ScheduleDto;
 import com.warr.ferr.dto.ScheduleListDto;
 import com.warr.ferr.mapper.ScheduleMapper;
 import com.warr.ferr.repository.ScheduleRepository;
@@ -37,4 +38,5 @@ public class ScheduleService {
     public void saveSchedule(Schedule schedule) {
         scheduleMapper.saveSchedule(schedule);
     }
+
 }
