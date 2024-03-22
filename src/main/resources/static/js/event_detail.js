@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fetchTouristDetail(contentId) {
-    const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
+    const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
     const url = `http://apis.data.go.kr/B551011/KorService1/detailCommon1?ServiceKey=${serviceKey}&contentTypeId=15&contentId=${contentId}&MobileOS=ETC&MobileApp=AppTest&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y
 `;
 
@@ -32,7 +32,7 @@ function fetchTouristDetail(contentId) {
         }
 
         const title = item.getElementsByTagName("title")[0].textContent;
-        const firstImage = item.getElementsByTagName("firstimage")[0]?.textContent || 'path/to/default/image.jpg';
+        const firstImage = item.getElementsByTagName("firstimage")[0]?.textContent || '/css/img/noimage_ferr.png';
         const addr1 = item.getElementsByTagName("addr1")[0].textContent;
         const addr2 = item.getElementsByTagName("addr2")[0].textContent;
         const tel = item.getElementsByTagName("tel")[0]?.textContent || 'No Telephone Information';
@@ -46,7 +46,7 @@ function fetchTouristDetail(contentId) {
         document.getElementById('eventTel').textContent = tel;
         document.getElementById('eventOverview').innerHTML = overview;
         
-        // 위도, 경도 세션 
+        sessionStorage.setItem('title', title);
         sessionStorage.setItem('mapx', mapx);
     	sessionStorage.setItem('mapy', mapy);
         
@@ -59,7 +59,7 @@ function fetchTouristDetail(contentId) {
 }
 
 function fetchTouristIntro(contentId) {
-    const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
+    const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
     const url = `http://apis.data.go.kr/B551011/KorService1/detailIntro1?ServiceKey=${serviceKey}&contentTypeId=15&contentId=${contentId}&MobileOS=ETC&MobileApp=AppTest`;
 
     fetch(url)
@@ -71,8 +71,11 @@ function fetchTouristIntro(contentId) {
             console.error('Item not found in the response');
             return;
         }
+            const eventStartDate = item.getElementsByTagName("eventstartdate")[0]?.textContent || 'No Start Date';
+            const eventEndDate = item.getElementsByTagName("eventenddate")[0]?.textContent || 'No End Date';
 
-        // 수정된 부분: 동적으로 테이블 헤더와 내용 업데이트
+            sessionStorage.setItem('eventStartDate', eventStartDate);
+            sessionStorage.setItem('eventEndDate', eventEndDate);
         updateTableForIntro(item);
     })
     .catch(error => {
@@ -86,7 +89,6 @@ function updateTableForIntro(item) {
     const playTime = item.getElementsByTagName("playtime")[0].textContent;
     const useTimeFestival = item.getElementsByTagName("usetimefestival")[0].textContent.replace(/&lt;br&gt;/g, '<br>');
 
-    // 동적으로 테이블 헤더 변경
     document.querySelectorAll('.table th').forEach((th, index) => {
         switch (index) {
             case 0: th.textContent = '행사 기간'; break;
@@ -95,7 +97,6 @@ function updateTableForIntro(item) {
         }
     });
 
-    // 테이블 내용 업데이트
     document.getElementById('eventAddress').innerHTML = `시작일: ${eventStartDate}<br>종료일: ${eventEndDate}`;
     document.getElementById('eventTel').textContent = playTime;
     document.getElementById('eventOverview').innerHTML = useTimeFestival;
@@ -103,16 +104,13 @@ function updateTableForIntro(item) {
 
 document.getElementById('detailInfoBtn').addEventListener('click', function() {
         fetchTouristIntro(contentId);
-        // "되돌아가기" 버튼을 보이게 하고 "상세 정보 보기" 버튼을 숨깁니다.
         document.getElementById('goBackBtn').style.display = 'inline-block';
         document.getElementById('detailInfoBtn').style.display = 'none';
     });
 
 
 document.getElementById('goBackBtn').addEventListener('click', function() {
-        // 초기 행사 상세 정보를 다시 불러옵니다.
         fetchTouristDetail(contentId);
-        // "되돌아가기" 버튼을 숨기고 "상세 정보 보기" 버튼을 다시 보이게 합니다.
         document.getElementById('goBackBtn').style.display = 'none';
         document.getElementById('detailInfoBtn').style.display = 'inline-block';
     });
