@@ -46,4 +46,5 @@ public class ScheduleService {
     public void saveSchedule(Schedule schedule) {
         scheduleMapper.saveSchedule(schedule);
     }
+
 }

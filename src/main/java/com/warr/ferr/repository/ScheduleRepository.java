@@ -73,4 +73,5 @@ public class ScheduleRepository {
         return scheduleMapper.findAllSchedules();
     }
 
+
 }

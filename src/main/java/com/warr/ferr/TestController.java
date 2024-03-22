@@ -43,4 +43,10 @@ public class TestController {
 	public String testMyPage() {
 		return "my_page";
 	}
+	
+	@GetMapping("/create_schedule")
+	public String testCreateSchedule() {
+	    return "create_schedule";
+	}
+	
 }
