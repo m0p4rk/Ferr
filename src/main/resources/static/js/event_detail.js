@@ -76,6 +76,7 @@ function fetchTouristIntro(contentId) {
 
             sessionStorage.setItem('eventStartDate', eventStartDate);
             sessionStorage.setItem('eventEndDate', eventEndDate);
+            
         updateTableForIntro(item);
     })
     .catch(error => {
