@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<form action="/search" method="get">
+<form  method="get">
 	<div class="row mb-3">
 		<div class="col-md-3">
 			<select id="regionFilter" name="region" class="form-control">
