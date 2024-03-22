@@ -1,5 +1,6 @@
 package com.warr.ferr.service;
 
+import com.warr.ferr.dto.ScheduleUpdateDto;
 import com.warr.ferr.model.Schedule;
 import com.warr.ferr.dto.ScheduleListDto;
 import com.warr.ferr.mapper.ScheduleMapper;
@@ -22,19 +23,29 @@ public class ScheduleService {
         return scheduleRepository.createTestSchedule();
     }
 
-    public void save(Schedule schedule) {
+    public Schedule createSchedule(Schedule schedule) {
         scheduleRepository.saveInDB(schedule);
+        return schedule;
     }
 
-    public Optional<Schedule> findByEventId(String id) {
+    public Optional<Schedule> findByEventId(Integer id) {
         return scheduleRepository.findByEventId(id);
+    }
+
+    public void deleteSchedule(Integer id) {
+        scheduleRepository.deleteByEventId(id);
+    }
+
+    public void updateSchedule(Integer id, ScheduleUpdateDto scheduleUpdateDto) {
+        scheduleRepository.updateByEventId(id, scheduleUpdateDto);
     }
 
     public List<ScheduleListDto> findSchedules() {
         return scheduleRepository.findAllSchedules();
     }
 
-    public void saveSchedule(Schedule schedule) {
-        scheduleMapper.saveSchedule(schedule);
-    }
+//    public void saveSchedule(Schedule schedule) {
+//        scheduleMapper.saveSchedule(schedule);
+//    }
+
 }
