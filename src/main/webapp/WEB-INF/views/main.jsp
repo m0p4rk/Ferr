@@ -20,34 +20,26 @@
 		<div class="row">
 			<div class="col-12">
 				<div class="title-container">
-					<h2>API Call test</h2>
+					<h2>검색결과</h2>
 				</div>
 			</div>
 			<div class="col-12 position-relative">
-				<div class="box-container" id="testcontainer">
+				<div class="box-container" id="searchcontainer">
 					<div class="image-item" data-event-id="1"
 						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
-						<div class="image-text">Sample 1</div>
+						<div class="image-text">위</div>
 					</div>
 					<div class="image-item" data-event-id="2"
 						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
-						<div class="image-text">Sample 2</div>
+						<div class="image-text">검색 기능을</div>
 					</div>
 					<div class="image-item" data-event-id="3"
 						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
-						<div class="image-text">Sample 3</div>
-					</div>
-					<div class="image-item" data-event-id="4"
-						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
-						<div class="image-text">Sample 4</div>
+						<div class="image-text">사용해 보세요!</div>
 					</div>
 					<div class="image-item" data-event-id="5"
 						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
-						<div class="image-text">Sample 5</div>
-					</div>
-					<div class="image-item" data-event-id="6"
-						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
-						<div class="image-text">Sample 6</div>
+						<div class="image-text">Ferr!</div>
 					</div>
 				</div>
 				<button class="slider-btn left"
@@ -89,6 +81,7 @@
 						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
 						<div class="image-text">Sample 6</div>
 					</div>
+					<div class="loading-indicator" style="display:none;"></div>
 				</div>
 				<button class="slider-btn left"
 					onclick="scrollContainer('recommendcontainer', 'left')">&#10094;</button>
@@ -129,6 +122,7 @@
 						onclick="redirectToEventDetail(this.getAttribute('data-event-id'));">
 						<div class="image-text">Sample 6</div>
 					</div>
+					<div class="loading-indicator" style="display:none;"></div>
 				</div>
 				<button class="slider-btn left"
 					onclick="scrollContainer('mylocationcontainer', 'left')">&#10094;</button>
@@ -155,6 +149,7 @@
 						<div class="rank-number">2</div>
 						<div class="image-text">Sample 2</div>
 					</div>
+					<div class="loading-indicator" style="display:none;"></div>
 				</div>
 				<button class="slider-btn left"
 					onclick="scrollContainer('rankcontainer', 'left')">&#10094;</button>

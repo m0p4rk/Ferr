@@ -15,6 +15,4 @@ public class UserPreferences {
    private int preferenceId;
    private int userId;
    private int preferredLocation;
- 
-
 }

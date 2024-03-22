@@ -3,7 +3,6 @@ package com.warr.ferr.controller;
 import java.util.HashMap;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,9 +81,11 @@ public class UserController {
 			HttpSession session = request.getSession(true);
 			session.setAttribute("nickname", userInfo.get("nickname")); // 닉네임
 			session.setAttribute("userId", userId); // 사용자 ID 세션에 저장
+			System.out.println("userId status" + session.getAttribute("userId"));
 			session.setAttribute("profileImageUrl", userInfo.get("profileImageUrl"));
 			session.setAttribute("access_token", accessToken); // 카카오 액세스 토큰도 세션에 저장
 			session.setAttribute("regionPreference", userService.getUserRegionPreference(userId) );
+			System.out.println("login session value" + session.getAttribute("regionPreference"));
 			mv.setViewName("redirect:/");
 		} else {
 			mv.setViewName("login");
@@ -140,20 +141,20 @@ public class UserController {
 	}
 
 	 // my-page
-	@GetMapping("/preferences")
-	public String showPreferencesForm(Model model, HttpSession session) {
-		
-		// 세션에서 사용자 ID 가져오기
-		Integer userId = (Integer) session.getAttribute("userId");
-		
-		// 사용자 ID로 선호 사항 불러오기
-		UserPreferences preferences = userService.getUserPreferences(userId);
-		int regionPreference = userService.getUserRegionPreference(userId);
-
-		model.addAttribute("preferences", preferences);
-		model.addAttribute("regionPreference", regionPreference);
-		return "my-page";
-	}
+//	@GetMapping("/preferences")
+//	public String showPreferencesForm(Model model, HttpSession session) {
+//		
+//		// 세션에서 사용자 ID 가져오기
+//		Integer userId = (Integer) session.getAttribute("userId");
+//		
+//		// 사용자 ID로 선호 사항 불러오기
+//		UserPreferences preferences = userService.getUserPreferences(userId);
+//		int regionPreference = userService.getUserRegionPreference(userId);
+//
+//		model.addAttribute("preferences", preferences);
+//		model.addAttribute("regionPreference", regionPreference);
+//		return "my-page";
+//	}
 
 
 	@PostMapping("/savePreferences")
@@ -173,16 +174,20 @@ public class UserController {
 	    
 	    System.out.println("regionPreference 값: " + regionPreference);
 	    
+	    // 세션에 regionPreference 값 저장하기
+	    session.setAttribute("regionPreference", regionPreference);
+	    
 	    // 기존 선호 설정 불러오기
 	    UserPreferences oldPreferences = userService.getUserPreferences(userId);
 
 	    // 만약 기존 선호 설정이 null이 아니고, 새로운 설정과 다르다면 업데이트
 	    if(oldPreferences != null && !oldPreferences.equals(newPreferences)) {    
-	    	userService.updateUserPreferences(newPreferences);
+	        userService.updateUserPreferences(newPreferences);
 	    } else if(oldPreferences == null) {
-	    	userService.saveUserPreferences(newPreferences);
+	        userService.saveUserPreferences(newPreferences);
 	    }
 
 	    return "redirect:/my-page";
 	}
+
 }

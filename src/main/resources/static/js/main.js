@@ -1,3 +1,12 @@
+document.addEventListener("DOMContentLoaded", function() {
+    fetchTouristInfo();
+    fetchRecommendedEvents();
+    setupSliders();
+    setupSearchButton();
+});
+
+let currentPageNo = 1; // 현재 페이지 번호
+
 function fetchTouristInfo() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
@@ -13,77 +22,125 @@ function fetchTouristInfo() {
 }
 
 function fetchRecommendedEvents() {
-    const regionPreferenceElement = document.getElementById('regionPreference');
-    console.log(regionPreferenceElement);
-    if (regionPreferenceElement) {
-        const regionPreference = regionPreferenceElement.value;
-        console.log('regionPreference:', regionPreference);
-        fetchRecommendData(regionPreference);
-    } else {
-        console.error('Element with id "regionPreference" not found.');
+    // 서버로부터 regionPreference 세션 값을 가져옵니다.
+    fetch('/api/region-preference')
+        .then(response => response.text()) // 서버 응답을 텍스트로 변환
+        .then(regionPreference => {
+            // 성공적으로 regionPreference 값을 가져온 경우
+            if(regionPreference) {
+                fetchRecommendData(regionPreference);
+            } else {
+                console.error('Region preference not found in session.');
+            }
+        })
+        .catch(error => console.error('Error fetching region preference:', error));
+}
+
+function fetchEventData(latitude, longitude, append = false) {
+    const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
+    const url = `http://apis.data.go.kr/B551011/KorService1/locationBasedList1?ServiceKey=${serviceKey}&contentTypeId=15&mapX=${longitude}&mapY=${latitude}&radius=10000&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
+    commonFetchEvent(url, 'mylocationcontainer', append);
+}
+
+function fetchRecommendData(regionPreference, append = false) {
+    const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
+    const url = `http://apis.data.go.kr/B551011/KorService1/searchFestival1?eventStartDate=20240322&eventEndDate=20240422&areaCode=${regionPreference}&sigunguCode=&ServiceKey=${serviceKey}&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
+    commonFetchEvent(url, 'recommendcontainer', append);
+}
+
+function fetchSearchData(region, startDate, endDate, pageNo) {
+    const url = `/api/searchFestival1?region=${region}&startDate=${startDate}&endDate=${endDate}&pageNo=${pageNo}`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => displaySearchResults(data, 'searchcontainer', pageNo !== 1))
+        .catch(error => console.error('Error fetching search results:', error));
+}
+
+
+function commonFetchEvent(url, containerParam, append = false) {
+    fetch(url)
+        .then(response => response.text())
+        .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+        .then(data => {
+            const items = data.getElementsByTagName("item");
+            const container = document.getElementById(containerParam);
+            if (!append) {
+                container.innerHTML = ''; // 추가 로드가 아닐 경우 기존 내용을 지웁니다.
+            }
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const title = item.getElementsByTagName("title")[0].textContent;
+                const firstImageURL = item.getElementsByTagName("firstimage")[0] ? item.getElementsByTagName("firstimage")[0].textContent : '/css/img/loading_ferr.png';
+                const contentId = item.getElementsByTagName("contentid")[0].textContent;
+                
+                const imageItem = document.createElement("div");
+                imageItem.className = "image-item";
+                imageItem.style.backgroundImage = `url('${firstImageURL}')`; // 초기 배경 이미지 설정
+
+                // 이미지 엘리먼트 생성
+                const imageElement = document.createElement("img");
+                imageElement.src = firstImageURL;
+                // 이미지 로드 성공 시 배경 이미지 비활성화
+                imageElement.onload = function() {
+                    imageItem.style.backgroundImage = 'none';
+                };
+                // 로딩 실패 시 대체 이미지 사용
+                imageElement.onerror = function() {
+                    this.onerror = null; // 무한 루프 방지
+                    this.src = '/css/img/noimage_ferr.png'; // 대체 이미지 경로로 변경
+                    imageItem.style.backgroundImage = 'none'; // 배경 이미지 비활성화
+                };
+
+                imageItem.appendChild(imageElement);
+
+                const imageText = document.createElement("div");
+                imageText.className = "image-text";
+                imageText.textContent = title;
+                imageItem.appendChild(imageText);
+
+                container.appendChild(imageItem);
+
+                // 클릭 이벤트 핸들러 추가
+                imageItem.addEventListener('click', function() {
+                    window.location.href = `/event-detail?contentId=${contentId}`;
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+
+
+function loadMoreDataIfRequired() {
+    const container = this;
+    if (container.offsetWidth + container.scrollLeft >= container.scrollWidth - 100) {
+        currentPageNo++;
+        if (container.id === 'mylocationcontainer') {
+            navigator.geolocation.getCurrentPosition(position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                fetchEventData(latitude, longitude, true);
+            }, error => {
+                console.error('Error getting location for more data:', error);
+            });
+        } else if (container.id === 'recommendcontainer') {
+            fetch('/api/region-preference')
+                .then(response => response.text())
+                .then(regionPreference => {
+                    if(regionPreference) {
+                        fetchRecommendData(regionPreference, true);
+                    } else {
+                        console.error('Region preference not found in session.');
+                    }
+                })
+                .catch(error => console.error('Error fetching region preference:', error));
+        } else if (container.id === 'searchcontainer') {
+            const { region, startDate, endDate } = searchQuery;
+            fetchSearchData(region, startDate, endDate, currentPageNo);
+        }
     }
 }
-
-
-let currentPageNo = 1; // 현재 페이지 번호
-
-function fetchEventData(latitude, longitude) {
-    const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
-    const url = `http://apis.data.go.kr/B551011/KorService1/locationBasedList1?ServiceKey=${serviceKey}&contentTypeId=15&mapX=${longitude}&mapY=${latitude}&radius=10000&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
-	 commonFetchEvent(url, 'mylocationcontainer');
-}
-
-function fetchRecommendData(regionPreference){
-	 const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
-     const url = `http://apis.data.go.kr/B551011/KorService1/searchFestival1?eventStartDate=20240322&eventEndDate=20240422&areaCode=${regionPreference}&sigunguCode=&ServiceKey=${serviceKey}&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
-	 commonFetchEvent(url, 'recommendcontainer');
-	
-}
-
-function commonFetchEvent(url, containerParam, append = false){
-	console.log(containerParam);
-	
-	fetch(url)
-    .then(response => response.text())
-    .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
-    .then(data => {
-        const items = data.getElementsByTagName("item");
-        const container = document.getElementById(containerParam);
-        if (!append) { // append가 false일 때만 초기화
-            container.innerHTML = '';
-        }
-
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i];
-            console.log(item);
-            const title = item.getElementsByTagName("title")[0].textContent;
-            const firstImageURL = item.getElementsByTagName("firstimage")[0] ? item.getElementsByTagName("firstimage")[0].textContent : '기본 이미지 URL';
-            const imageItem = document.createElement("div");
-            imageItem.className = "image-item";
-            imageItem.style.backgroundImage = `url('${firstImageURL}')`;
-            const imageText = document.createElement("div");
-            imageText.className = "image-text";
-            imageText.textContent = title;
-            imageItem.appendChild(imageText);
-            container.appendChild(imageItem);
-            
-            imageItem.addEventListener('click', function() {
-    const contentId = item.getElementsByTagName("contentid")[0] ? item.getElementsByTagName("contentid")[0].textContent : '';
-    window.location.href = `/event-detail?contentId=${contentId}`; // contentId를 URL 쿼리 스트링으로 전달
-});
-        }
-    })
-    .catch(error => console.error('Error:', error));
-	
-}
-
-document.addEventListener("DOMContentLoaded", fetchTouristInfo);
-document.addEventListener("DOMContentLoaded", fetchRecommendedEvents);
-
-
-function redirectToEventDetail(eventId) {
-    window.location.href = `/event-detail?eventId=${eventId}`;
-}   
 
 function scrollContainer(containerId, direction) {
     const container = document.getElementById(containerId);
@@ -101,28 +158,6 @@ function scrollContainer(containerId, direction) {
     });
 }
 
-function loadMoreDataIfRequired() {
-    const container = document.getElementById('mylocationcontainer');
-    // 슬라이더의 너비와 스크롤 위치를 기준으로 더 불러올지 결정
-    if (container.offsetWidth + container.scrollLeft >= container.scrollWidth - 100) {
-        currentPageNo++; // 페이지 번호 증가
-        navigator.geolocation.getCurrentPosition(position => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            fetchEventData(latitude, longitude, true);
-        });
-    }
-    
-     const container1 = document.getElementById('recommendcontainer'); 
-	// 슬라이더의 너비와 스크롤 위치를 기준으로 더 불러올지 결정
-	if (container1.offsetWidth + container1.scrollLeft >= container1.scrollWidth - 100) {
-    	currentPageNo++; // 페이지 번호 증가
-    		const regionPreference = document.getElementById('regionPreference').value;
-    		fetchRecommendData(regionPreference, true);
-	}
-}
-
-//main.jsp html loading after...
 document.addEventListener("DOMContentLoaded", function() {
     const sliders = document.querySelectorAll('.box-container');
 
@@ -160,41 +195,52 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById('searchButton').addEventListener('click', function(event) {
-        event.preventDefault();
-        var region = document.getElementById('regionFilter').value;
-        var startDate = document.getElementById('startDateFilter').value.replaceAll('-', '');
-        var endDate = document.getElementById('endDateFilter').value.replaceAll('-', '');
-
-        fetch(`/api/searchFestival1?region=${region}&startDate=${startDate}&endDate=${endDate}`)
-        .then(response => response.json())
-        .then(data => {
-            const items = data.response.body.items.item;
-            const container = document.getElementById('testcontainer');
-            container.innerHTML = '';
-
-            items.forEach((item, index) => {
-                const title = item.title;
-                const firstImage = item.firstimage || '기본이미지경로'; 
-                const addr1 = item.addr1 || '';
-                const contentId = item.contentid || '';
-                const imageItem = document.createElement('div');
-                imageItem.className = 'image-item';
-                imageItem.style.backgroundImage = `url(${firstImage})`;
-                const imageText = document.createElement('div');
-                imageText.className = 'image-text';
-                imageText.textContent = `${title} - ${addr1}`;
-                imageItem.appendChild(imageText);
-                container.appendChild(imageItem);
-
-                imageItem.addEventListener('click', function() {
-                    window.location.href = `/event-detail?contentId=${contentId}`;
-                });
-            });
-        })
-        .catch(error => console.error('Error:', error));
+function setupSliders() {
+    document.querySelectorAll('.box-container').forEach(container => {
+        container.addEventListener('scroll', function() {
+            loadMoreDataIfRequired.call(this);
+        });
     });
-});
+}
 
+function setupSearchButton() {
+    const searchButton = document.getElementById('searchButton');
+    searchButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        currentPageNo = 1; // 검색 시작 시 페이지 번호 초기화
+        const region = document.getElementById('regionFilter').value;
+        const startDate = document.getElementById('startDateFilter').value.replaceAll('-', '');
+        const endDate = document.getElementById('endDateFilter').value.replaceAll('-', '');
+        searchQuery = { region, startDate, endDate }; // 검색 쿼리 업데이트
+        fetchSearchData(region, startDate, endDate, currentPageNo);
+    });
+}
+
+function displaySearchResults(data, containerId, append) {
+    const container = document.getElementById(containerId);
+    if (!append) {
+        container.innerHTML = ''; // 기존 내용을 지우고 새로운 검색 결과를 표시합니다.
+    }
+    data.response.body.items.item.forEach(item => {
+        const imageItem = document.createElement('div');
+        imageItem.className = 'image-item';
+        imageItem.setAttribute('data-event-id', item.contentid); // 예시로 contentid를 사용
+
+        // 검색 결과에 따라 배경 이미지 설정
+        const imageUrl = item.firstimage || '/css/img/noimage_ferr.png'; // 검색 결과에 이미지가 없으면 기본 이미지 사용
+        imageItem.style.backgroundImage = `url(${imageUrl})`;
+
+        const imageText = document.createElement('div');
+        imageText.className = 'image-text';
+        imageText.textContent = item.title; // 검색 결과의 타이틀 사용
+        imageText.style.visibility = 'visible'; // 검색 결과 로딩 후 텍스트 보이게 설정
+
+        imageItem.appendChild(imageText);
+        container.appendChild(imageItem);
+
+        // 클릭 이벤트 리스너 추가
+        imageItem.addEventListener('click', function() {
+            redirectToEventDetail(this.getAttribute('data-event-id'));
+        });
+    });
+}

@@ -5,6 +5,24 @@
 	margin-right: 50px;
 }
 
+.loading-indicator {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 30px;
+    height: 30px;
+    border: 4px solid rgba(0,0,0,.1);
+    border-radius: 50%;
+    border-top-color: #007bff;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .image-item {
 	position: relative;
 	display: inline-block;
@@ -18,10 +36,17 @@
 	transition: transform 0.3s ease;
 	background-size: cover; /* 이미지가 컨테이너를 가득 채우도록 */
 	background-position: center; /* 이미지가 항상 중앙에 위치하도록 */
+	background-image: url('img/loading_ferr.png'); /* 초기 배경 이미지 설정 */
 }
 
 .image-item:hover {
 	transform: scale(1.05);
+}
+
+.image-item img {
+    width: 100%; /* 이미지 너비를 컨테이너에 맞춤 */
+    height: 100%; /* 이미지 높이를 컨테이너에 맞춤 */
+    object-fit: cover; /* 컨테이너 비율을 유지하면서 이미지를 가득 채움 */
 }
 
 .image-text {
