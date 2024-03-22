@@ -1,6 +1,8 @@
+let contentId;
+
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const contentId = urlParams.get('contentId');
+    contentId = urlParams.get('contentId'); // contentId는 전역 변수
     if (contentId) {
         fetchTouristDetail(contentId);
     } else {
@@ -32,14 +34,23 @@ function fetchTouristDetail(contentId) {
         const title = item.getElementsByTagName("title")[0].textContent;
         const firstImage = item.getElementsByTagName("firstimage")[0]?.textContent || 'path/to/default/image.jpg';
         const addr1 = item.getElementsByTagName("addr1")[0].textContent;
+        const addr2 = item.getElementsByTagName("addr2")[0].textContent;
         const tel = item.getElementsByTagName("tel")[0]?.textContent || 'No Telephone Information';
         const overview = item.getElementsByTagName("overview")[0].textContent;
+        const mapx = item.getElementsByTagName("mapx")[0]?.textContent || 'No mapx data';
+        const mapy = item.getElementsByTagName("mapy")[0]?.textContent || 'No mapy data';
 
         document.getElementById('eventTitle').textContent = title;
         document.getElementById('eventImage').src = firstImage;
-        document.getElementById('eventAddress').textContent = addr1;
+        document.getElementById('eventAddress').textContent = addr1 + ' ' + addr2;
         document.getElementById('eventTel').textContent = tel;
         document.getElementById('eventOverview').innerHTML = overview;
+        
+        // 위도, 경도 세션 
+        sessionStorage.setItem('mapx', mapx);
+    	sessionStorage.setItem('mapy', mapy);
+        
+        
     })
     .catch(error => {
         console.error('Error fetching event details:', error);
@@ -90,24 +101,21 @@ function updateTableForIntro(item) {
     document.getElementById('eventOverview').innerHTML = useTimeFestival;
 }
 
-document.getElementById('goBackBtn').addEventListener('click', function() {
-    // 초기 행사 상세 정보를 다시 불러옵니다.
-    fetchTouristDetail(contentId);
-
-    // "되돌아가기" 버튼을 숨기고 "상세 정보 보기" 버튼을 다시 보이게 합니다.
-    document.getElementById('goBackBtn').style.display = 'none';
-    document.getElementById('detailInfoBtn').style.display = 'inline-block';
-});
-
 document.getElementById('detailInfoBtn').addEventListener('click', function() {
-    if (contentId) {
         fetchTouristIntro(contentId);
-
         // "되돌아가기" 버튼을 보이게 하고 "상세 정보 보기" 버튼을 숨깁니다.
         document.getElementById('goBackBtn').style.display = 'inline-block';
         document.getElementById('detailInfoBtn').style.display = 'none';
-    }
-});
+    });
+
+
+document.getElementById('goBackBtn').addEventListener('click', function() {
+        // 초기 행사 상세 정보를 다시 불러옵니다.
+        fetchTouristDetail(contentId);
+        // "되돌아가기" 버튼을 숨기고 "상세 정보 보기" 버튼을 다시 보이게 합니다.
+        document.getElementById('goBackBtn').style.display = 'none';
+        document.getElementById('detailInfoBtn').style.display = 'inline-block';
+    });
 
 
 

@@ -43,6 +43,7 @@
             </table>
             <button id="detailInfoBtn" class="btn btn-primary">상세 정보 보기</button>
             <button id="goBackBtn" class="btn btn-secondary" style="display:none;">되돌아가기</button>
+            <button id="createSchedultBtn" onclick="location.href='/' ">일정 생성</button>
         </div>
     </div>
 </div>

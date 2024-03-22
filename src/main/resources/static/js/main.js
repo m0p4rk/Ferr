@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!isDown) return;
             e.preventDefault();
             const x = e.pageX - slider.offsetLeft;
-            const walk = (x - startX) * 3; // 스크롤 속도 조정
+            const walk = (x - startX) * 3;
             slider.scrollLeft = scrollLeft - walk;
         });
 
@@ -124,38 +124,39 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-	  document.getElementById('searchButton').addEventListener('click', function(event) {
-	        	console.log("searchButton click ");
-	            event.preventDefault(); // Form의 기본 제출 동작 방지
-	            var region = document.getElementById('regionFilter').value;
-	            var startDate = document.getElementById('startDateFilter').value.replaceAll('-', '');
-	            var endDate = document.getElementById('endDateFilter').value.replaceAll('-', '');
-	            var serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
-	            var url = `http://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=${serviceKey}&eventStartDate=${startDate}&eventEndDate=${endDate}&areaCode=${region}&listYN=Y&MobileOS=ETC&MobileApp=TestApp&_type=json&numOfRows=12&pageNo=1`;
-	
-	            fetch(`/api/searchFestival1?region=${region}&startDate=${startDate}&endDate=${endDate}`)
-	            .then(response => response.json())
-	            .then(data => {
-					console.log(data);
-	                const items = data.response.body.items.item;
-	                const container = document.getElementById('testcontainer');
-	                container.innerHTML = ''; // 기존 내용 초기화
-	                console.log(items.length);
-	                items.forEach(item => {
-	                    const title = item.title;
-	                    const firstImage = item.firstimage || ''; 
-	                    const addr1 = item.addr1 || '';
-	                    const imageItem = document.createElement('div');
-	                    imageItem.className = 'image-item';
-	                    imageItem.style.backgroundImage = `url(${firstImage})`;
-	                    const imageText = document.createElement('div');
-	                    imageText.className = 'image-text';
-	                    imageText.textContent = `${title} - ${addr1}`;
-	                    imageItem.appendChild(imageText);
-	                    container.appendChild(imageItem);
-	                }); 
-	            })
-	            .catch(error => console.log());
-	        });
-	
+    document.getElementById('searchButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        var region = document.getElementById('regionFilter').value;
+        var startDate = document.getElementById('startDateFilter').value.replaceAll('-', '');
+        var endDate = document.getElementById('endDateFilter').value.replaceAll('-', '');
+
+        fetch(`/api/searchFestival1?region=${region}&startDate=${startDate}&endDate=${endDate}`)
+        .then(response => response.json())
+        .then(data => {
+            const items = data.response.body.items.item;
+            const container = document.getElementById('testcontainer');
+            container.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const title = item.title;
+                const firstImage = item.firstimage || '기본이미지경로'; 
+                const addr1 = item.addr1 || '';
+                const contentId = item.contentid || '';
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+                imageItem.style.backgroundImage = `url(${firstImage})`;
+                const imageText = document.createElement('div');
+                imageText.className = 'image-text';
+                imageText.textContent = `${title} - ${addr1}`;
+                imageItem.appendChild(imageText);
+                container.appendChild(imageItem);
+
+                imageItem.addEventListener('click', function() {
+                    window.location.href = `/event-detail?contentId=${contentId}`;
+                });
+            });
+        })
+        .catch(error => console.error('Error:', error));
+    });
 });
+
