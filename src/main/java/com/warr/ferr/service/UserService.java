@@ -108,4 +108,13 @@ public class UserService {
 		userMapper.updateUserPreferences(preferences);
 	}
 
+	public int getUserRegionPreference(int userId) {
+		UserPreferences preferences = userMapper.getUserPreferences(userId);
+		
+		if(preferences != null) {
+			return preferences.getPreferredLocation();
+		}
+		return 0;
+	}
+
 }
