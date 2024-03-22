@@ -79,6 +79,7 @@ public class ScheduleController {
                                  Model model) {
 
         scheduleService.deleteSchedule(eventId);
+
         List<ScheduleListDto> callSchedules = scheduleService.findSchedules();
         log.info("callSchedules={}", callSchedules);
         model.addAttribute("schedules", callSchedules);

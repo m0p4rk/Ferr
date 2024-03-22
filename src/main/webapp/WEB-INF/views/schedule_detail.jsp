@@ -44,7 +44,7 @@
 					onclick="location.href='/schedule-detail/delete/${schedule.eventId}'">일정
 				삭제</button>
 		</div>
-
+	</div>
 	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -74,7 +74,6 @@
 			</div>
 		</div>
 	</div>
-
 
 	<!-- JavaScript 코드 -->
 	<script>
@@ -115,7 +114,8 @@
 
             // OpenWeatherMap API 호출하여 날씨 정보 가져오기
             $.ajax({
-                url: 'https://api.openweathermap.org/data/2.5/weather?lat=' + result[0].y + '&lon=' + result[0].x + '&appid=a62c831d0ac8f869133bcde70421b3b5',
+                url: 'https://api.openweathermap.org/data/2.5/weather?lat='
+						+ result[0].y + '&lon=' + result[0].x + '&appid=a62c831d0ac8f869133bcde70421b3b5',
                 method: 'GET',
                 success: function (response) {
                     var weatherInfo = '날씨: ' + response.weather[0].main + ', 온도: ' + (response.main.temp - 273.15).toFixed(1) + '°C';
