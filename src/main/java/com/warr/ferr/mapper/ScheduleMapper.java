@@ -25,7 +25,7 @@ public interface ScheduleMapper {
     void updateByEventId(@Param("eventId") Integer id,
                          @Param("scheduleUpdateDto") ScheduleUpdateDto scheduleUpdateDto);
 
-	void saveSchedule(Schedule schedule);
+//	void saveSchedule(Schedule schedule);
 
 	Map<String, Double> getLatitudeAndLongitude(String condition);
 }

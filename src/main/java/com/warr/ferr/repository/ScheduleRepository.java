@@ -32,7 +32,8 @@ public class ScheduleRepository {
                 new BigDecimal("37.5697673859634"),
                 new BigDecimal("126.983677617361"),
                 createTimestamp(2024, 3, 17),
-                Date.valueOf(LocalDate.now().plusWeeks(1)));
+                Date.valueOf(LocalDate.now().plusWeeks(1)),
+                "서울특별시 노원구 월계동 401-8");
 
         Schedule schedule2 = new Schedule(1,
                 "TestContentId2",
@@ -42,7 +43,8 @@ public class ScheduleRepository {
                 new BigDecimal("37.4412157413878"),
                 new BigDecimal("127.0162939669"),
                 createTimestamp(2024, 3, 19),
-                Date.valueOf(LocalDate.now().plusWeeks(1)));
+                Date.valueOf(LocalDate.now().plusWeeks(1)),
+                "서울특별시 노원구 중계동 502-3");
         testData.add(schedule1);
         testData.add(schedule2);
         return testData;

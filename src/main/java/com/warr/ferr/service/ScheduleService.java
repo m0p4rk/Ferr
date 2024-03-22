@@ -23,8 +23,9 @@ public class ScheduleService {
         return scheduleRepository.createTestSchedule();
     }
 
-    public void save(Schedule schedule) {
+    public Schedule createSchedule(Schedule schedule) {
         scheduleRepository.saveInDB(schedule);
+        return schedule;
     }
 
     public Optional<Schedule> findByEventId(Integer id) {
@@ -43,8 +44,8 @@ public class ScheduleService {
         return scheduleRepository.findAllSchedules();
     }
 
-    public void saveSchedule(Schedule schedule) {
-        scheduleMapper.saveSchedule(schedule);
-    }
+//    public void saveSchedule(Schedule schedule) {
+//        scheduleMapper.saveSchedule(schedule);
+//    }
 
 }

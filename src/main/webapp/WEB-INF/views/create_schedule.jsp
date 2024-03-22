@@ -18,16 +18,21 @@
 <body>
 
 <h1>일정 생성</h1>
-<!-- 달력 입력란 -->
-<div>
-    <label for="promiseDate">약속일:</label>
-    <input type="date" id="promiseDate" name="promiseDate" required>
-</div>
-
-<!-- 생성/수정 버튼 -->
-<div>
-    <button id="createScheduleBtn" class="btn btn-primary">일정 생성/수정</button>
-</div>
+<form id="createScheduleForm" action="/schedule/create" method="post">
+    <div>
+        <label for="contentId">일정 제목: </label>
+        <input type="text" id="contentId" name="contentId" required>
+    </div>
+    <div>
+        <label for="promiseDate">약속일: </label>
+        <input type="date" id="promiseDate" name="promiseDate" required>
+    </div>
+    <div>
+        <label for="startLocation">출발지: </label>
+        <input type="text" id="startLocation" name="startLocation" required>
+    </div>
+    <button type="submit" id="createScheduleBtn" class="btn btn-primary">일정 생성/수정</button>
+</form>
 
 <!-- 날씨 정보 표시 영역 -->
 <div id="weatherInfo"></div>
