@@ -1,7 +1,6 @@
 package com.warr.ferr.controller;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.warr.ferr.api.KakaoAPI;
 import com.warr.ferr.dto.UserDto;
 import com.warr.ferr.model.UserPreferences;
-import com.warr.ferr.model.UserPreferences.AdmissionFeePreference;
 import com.warr.ferr.model.Users;
 import com.warr.ferr.service.UserService;
 
@@ -59,6 +57,8 @@ public class UserController {
 			HttpSession session = request.getSession(true);
 			session.setAttribute("userEmail", user.getEmail()); // 이메일
 			session.setAttribute("userId", user.getUserId()); // 사용자 ID 세션에 저장
+			int regionPreference = userService.getUserRegionPreference((Integer)session.getAttribute("userId"));
+			session.setAttribute("regionPreference", regionPreference);
 			
 			mv.setViewName("redirect:/");
 		} else {
@@ -77,10 +77,12 @@ public class UserController {
 			userService.loginOrRegisterKakaoUser(userInfo);
 			// 이메일을 기반으로 사용자 ID를 조회
 			Integer userId = userService.findUserIdByEmail(userInfo.get("email").toString());
+			
 			HttpSession session = request.getSession(true);
 			session.setAttribute("nickname", userInfo.get("nickname")); // 닉네임
 			session.setAttribute("userId", userId); // 사용자 ID 세션에 저장
 			session.setAttribute("access_token", accessToken); // 카카오 액세스 토큰도 세션에 저장
+			session.setAttribute("regionPreference", userService.getUserRegionPreference(userId) );
 			mv.setViewName("redirect:/");
 		} else {
 			mv.setViewName("login");
@@ -144,19 +146,16 @@ public class UserController {
 		
 		// 사용자 ID로 선호 사항 불러오기
 		UserPreferences preferences = userService.getUserPreferences(userId);
-
-		// 불러온 선호 사항 확인
+		int regionPreference = userService.getUserRegionPreference(userId);
 
 		model.addAttribute("preferences", preferences);
+		model.addAttribute("regionPreference", regionPreference);
 		return "my-page";
 	}
 
 
 	@PostMapping("/savePreferences")
-	public String savePreferences(@RequestParam("regionPreference") String regionPreference,
-	                              @RequestParam("midCategory") String midCategory,
-	                              @RequestParam(value = "subCategory", required = false) List<String> subCategories,
-	                              HttpSession session) {
+	public String savePreferences(@RequestParam("regionPreference") int regionPreference, HttpSession session) {
 	    
 	    // 세션에서 사용자 ID 가져오기
 	    Integer userId = (Integer) session.getAttribute("userId");
@@ -167,37 +166,19 @@ public class UserController {
 	    // userId 설정
 	    newPreferences.setUserId(userId);
 	    
-	    newPreferences.setAdmissionFeePreference(AdmissionFeePreference.ALL);
-	    
 	    // 선호 지역 설정
 	    newPreferences.setPreferredLocation(regionPreference);
 	    
-	    // 대분류 설정은 고정값으로 설정 (인문)
-	    newPreferences.setCategoryCodeLarge("A02");
-	    
-	    // 중분류 설정
-	    newPreferences.setCategoryCodeMedium(midCategory);
-	    
-	    // 소분류 설정
-	    if (subCategories != null && !subCategories.isEmpty()) {
-	        // 여러 개의 소분류를 하나의 문자열로 합침
-	        String combinedSubCategories = String.join(",", subCategories);
-	        newPreferences.setCategoryCodeSmall(combinedSubCategories);
-	    } else {
-	        newPreferences.setCategoryCodeSmall(""); // 빈 문자열로 설정
-	    }
+	    System.out.println("regionPreference 값: " + regionPreference);
 	    
 	    // 기존 선호 설정 불러오기
 	    UserPreferences oldPreferences = userService.getUserPreferences(userId);
 
 	    // 만약 기존 선호 설정이 null이 아니고, 새로운 설정과 다르다면 업데이트
-	    if(oldPreferences == null) {    
-	        // 설정 저장
-	        userService.saveUserPreferences(newPreferences);
-	    } else {
-	        // 기존선호설정이 null이 아닌 경우 -> 한번이라도 설정한 경우
-	        // 업데이트
-	        userService.updateUserPreferences(newPreferences);
+	    if(oldPreferences != null && !oldPreferences.equals(newPreferences)) {    
+	    	userService.updateUserPreferences(newPreferences);
+	    } else if(oldPreferences == null) {
+	    	userService.saveUserPreferences(newPreferences);
 	    }
 
 	    return "redirect:/my-page";

@@ -52,8 +52,7 @@
 	</select>
 
 	<!-- 채팅에서 임시로 사용중 -->
-	<select id="findAllUser"
-			resultMap="userResultMap">
+	<select id="findAllUser" resultMap="userResultMap">
 		SELECT * FROM Users
 	</select>
 
@@ -78,40 +77,27 @@
 		SELECT user_id FROM users WHERE email = #{email}
 	</select>
 
-	<select id="getUserPreferences" resultType="com.warr.ferr.model.UserPreferences">
-        SELECT * FROM user_preferences WHERE user_id = #{userId}  LIMIT 1
-    </select>
-	
+	<select id="getUserPreferences"
+		resultType="com.warr.ferr.model.UserPreferences">
+		SELECT * FROM user_preferences WHERE user_id = #{userId} LIMIT 1
+	</select>
+
 	<insert id="saveUserPreferences"
 		parameterType="com.warr.ferr.model.UserPreferences">
 		INSERT INTO user_preferences (user_id,
-		preferred_location,
-		admission_fee_preference, category_code_large,
-		category_code_medium,
-		category_code_small)
+		preferred_location)
 		VALUES (#{userId},
-		#{preferredLocation}, #{admissionFeePreference},
-		#{categoryCodeLarge},
-		#{categoryCodeMedium}, #{categoryCodeSmall})
-		ON DUPLICATE KEY UPDATE
-		preferred_location = VALUES(preferred_location),
-		admission_fee_preference = VALUES(admission_fee_preference),
-		category_code_large = VALUES(category_code_large),
-		category_code_medium = VALUES(category_code_medium),
-		category_code_small = VALUES(category_code_small);
+		#{preferredLocation})
+		ON DUPLICATE
+		KEY UPDATE
+		preferred_location = VALUES(preferred_location);
 	</insert>
 
 	<update id="updateUserPreferences"
 		parameterType="com.warr.ferr.model.UserPreferences">
 		UPDATE user_preferences
 		SET preferred_location =
-		#{preferredLocation},
-		admission_fee_preference =
-		#{admissionFeePreference},
-		category_code_large = #{categoryCodeLarge},
-		category_code_medium = #{categoryCodeMedium},
-		category_code_small =
-		#{categoryCodeSmall}
+		#{preferredLocation}
 		WHERE user_id = #{userId}
 	</update>
 </mapper>

@@ -12,24 +12,50 @@ function fetchTouristInfo() {
     }
 }
 
+function fetchRecommendedEvents() {
+    const regionPreferenceElement = document.getElementById('regionPreference');
+    console.log(regionPreferenceElement);
+    if (regionPreferenceElement) {
+        const regionPreference = regionPreferenceElement.value;
+        console.log('regionPreference:', regionPreference);
+        fetchRecommendData(regionPreference);
+    } else {
+        console.error('Element with id "regionPreference" not found.');
+    }
+}
+
+
 let currentPageNo = 1; // 현재 페이지 번호
 
-function fetchEventData(latitude, longitude, append = false) {
+function fetchEventData(latitude, longitude) {
     const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
-    const url = `http://apis.data.go.kr/B551011/KorService1/locationBasedList1?ServiceKey=${serviceKey}&contentTypeId=15&mapX=${longitude}&mapY=${latitude}&radius=2000&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
+    const url = `http://apis.data.go.kr/B551011/KorService1/locationBasedList1?ServiceKey=${serviceKey}&contentTypeId=15&mapX=${longitude}&mapY=${latitude}&radius=10000&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
+	 commonFetchEvent(url, 'mylocationcontainer');
+}
 
-    fetch(url)
+function fetchRecommendData(regionPreference){
+	 const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
+     const url = `http://apis.data.go.kr/B551011/KorService1/searchFestival1?eventStartDate=20240322&eventEndDate=20240422&areaCode=${regionPreference}&sigunguCode=&ServiceKey=${serviceKey}&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
+	 commonFetchEvent(url, 'recommendcontainer');
+	
+}
+
+function commonFetchEvent(url, containerParam, append = false){
+	console.log(containerParam);
+	
+	fetch(url)
     .then(response => response.text())
     .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
     .then(data => {
         const items = data.getElementsByTagName("item");
-        const container = document.getElementById('mylocationcontainer');
+        const container = document.getElementById(containerParam);
         if (!append) { // append가 false일 때만 초기화
             container.innerHTML = '';
         }
 
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
+            console.log(item);
             const title = item.getElementsByTagName("title")[0].textContent;
             const firstImageURL = item.getElementsByTagName("firstimage")[0] ? item.getElementsByTagName("firstimage")[0].textContent : '기본 이미지 URL';
             const imageItem = document.createElement("div");
@@ -48,9 +74,12 @@ function fetchEventData(latitude, longitude, append = false) {
         }
     })
     .catch(error => console.error('Error:', error));
+	
 }
 
 document.addEventListener("DOMContentLoaded", fetchTouristInfo);
+document.addEventListener("DOMContentLoaded", fetchRecommendedEvents);
+
 
 function redirectToEventDetail(eventId) {
     window.location.href = `/event-detail?eventId=${eventId}`;
@@ -80,11 +109,20 @@ function loadMoreDataIfRequired() {
         navigator.geolocation.getCurrentPosition(position => {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
-            fetchEventData(latitude, longitude, true); // 추가 데이터 불러오기
+            fetchEventData(latitude, longitude, true);
         });
     }
+    
+     const container1 = document.getElementById('recommendcontainer'); 
+	// 슬라이더의 너비와 스크롤 위치를 기준으로 더 불러올지 결정
+	if (container1.offsetWidth + container1.scrollLeft >= container1.scrollWidth - 100) {
+    	currentPageNo++; // 페이지 번호 증가
+    		const regionPreference = document.getElementById('regionPreference').value;
+    		fetchRecommendData(regionPreference, true);
+	}
 }
 
+//main.jsp html loading after...
 document.addEventListener("DOMContentLoaded", function() {
     const sliders = document.querySelectorAll('.box-container');
 
