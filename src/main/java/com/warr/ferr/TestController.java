@@ -1,9 +1,9 @@
 package com.warr.ferr;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
@@ -29,7 +29,7 @@ public class TestController {
 	}
 
 	@GetMapping("/event-detail")
-	public String testEventDetail(@Param("contentId") Integer contentId) {
+	public String testEventDetail(@RequestParam("contentId") Integer contentId) {
 		log.info("testEventDetail called with eventId: {}", contentId);
         return switch (contentId) {
             case 1 -> "event_detail"; // event-detail.jsp

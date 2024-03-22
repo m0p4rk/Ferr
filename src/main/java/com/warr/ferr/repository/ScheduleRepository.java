@@ -1,6 +1,7 @@
 package com.warr.ferr.repository;
 
 import com.warr.ferr.dto.ScheduleListDto;
+import com.warr.ferr.dto.ScheduleUpdateDto;
 import com.warr.ferr.mapper.ScheduleMapper;
 import com.warr.ferr.model.Schedule;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,10 @@ public class ScheduleRepository {
 
     public void deleteByEventId(Integer id) {
         scheduleMapper.deleteByEventId(id);
+    }
+
+    public void updateByEventId(Integer id, ScheduleUpdateDto scheduleUpdateDto) {
+        scheduleMapper.updateByEventId(id, scheduleUpdateDto);
     }
 
     public List<ScheduleListDto> findAllSchedules() {

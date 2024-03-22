@@ -46,6 +46,13 @@
 		select event_id, event_title, event_start_date, event_end_date, promise_date, content_id
 		from user_events
 	</select>
+
+	<update id="updateByEventId" parameterType="map">
+		update user_events
+		set content_id=#{scheduleUpdateDto.contentId},
+			promise_date=#{scheduleUpdateDto.promiseDate}
+		where event_id=#{eventId}
+	</update>
 	
 	<insert id="saveSchedule" parameterType="com.warr.ferr.model.Schedule">
 	 INSERT INTO user_events (user_id, content_id, event_title, event_start_date, event_end_date, latitude, longitude, promise_date)

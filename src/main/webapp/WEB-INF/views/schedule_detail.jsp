@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <title>행사 일정 관리 페이지</title>
 <link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script
@@ -35,34 +35,52 @@
 
 		<!-- 일정 수정 및 삭제 버튼 -->
 		<div>
-			<button id="editScheduleBtn" class="btn btn-info mt-3 mr-2">일정
-				수정</button>
+			<button type="button" class="btn btn-info mt-3 mr-2 editScheduleBtn"
+					data-toggle="modal" data-target="#exampleModal"
+					data-event-id="${schedule.eventId}">
+				일정 수정
+			</button>
 			<button type="button" class="btn btn-danger mt-3"
 					onclick="location.href='/schedule-detail/delete/${schedule.eventId}'">일정
 				삭제</button>
 		</div>
 
-		<div class="modal" id="alertModal">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">알림 설정</h4>
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-					</div>
-					<div class="modal-body">모달 바디에 알림 설정 폼을 추가하세요.</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-success" data-dismiss="modal">저장</button>
-					</div>
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">일정 수정</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
 				</div>
+				<form id="updateScheduleForm" method="post" action="/schedule-detail/update/${schedule.eventId}">
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="contentId">일정 제목</label>
+							<input type="text" class="form-control" id="contentId" name="contentId" required>
+						</div>
+						<div class="form-group">
+							<label for="promiseDate">약속 날짜</label>
+							<input type="date" class="form-control" id="promiseDate" name="promiseDate" required>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+						<button type="submit" class="btn btn-primary">변경 사항 저장</button>
+					</div>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				</form>
 			</div>
 		</div>
 	</div>
+
 
 	<!-- JavaScript 코드 -->
 	<script>
     var mapContainer = document.getElementById('map'); // 지도를 표시할 div 
     var mapOption = {
-        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        center: new kakao.maps.LatLng(${schedule.latitude}, ${schedule.longitude}), // 지도의 중심좌표
         level: 3 // 지도의 확대 레벨
     };
 
@@ -110,15 +128,13 @@
         }
     });
 
-		// 일정 수정 버튼 클릭 시 동작
-		$('#editScheduleBtn').click(function() {
-			// 수정 버튼 클릭 시 동작할 내용 추가
+		// 모달을 열 때 이벤트 ID에 기반하여 form의 action URL을 설정합니다.
+		$('#exampleModal').on('show.bs.modal', function (event) {
+			var button = $(event.relatedTarget); // 모달을 트리거하는 버튼
+			var eventId = button.data('event-id'); // data-event-id 속성에서 이벤트 ID 추출
+			var modal = $(this);
+			modal.find('#updateScheduleForm').attr('action', '/schedule-detail/update/' + eventId);
 		});
-
-		// // 일정 삭제 버튼 클릭 시 동작
-		// $('#deleteScheduleBtn').click(function() {
-		// 	// 삭제 버튼 클릭 시 동작할 내용 추가
-		// });
 	</script>
 </body>
 </html>
