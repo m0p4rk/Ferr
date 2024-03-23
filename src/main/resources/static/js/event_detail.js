@@ -14,12 +14,19 @@ document.addEventListener('DOMContentLoaded', function() {
             fetchTouristIntro(contentId);
         }
     });
+
+    $('#createScheduleBtn').on('click', function() {
+        if (contentId) {
+            window.location.href = `/create_schedule/${contentId}`;
+        } else {
+            console.error('No contentId available for redirect');
+        }
+    });
 });
 
 function fetchTouristDetail(contentId) {
     const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
-    const url = `http://apis.data.go.kr/B551011/KorService1/detailCommon1?ServiceKey=${serviceKey}&contentTypeId=15&contentId=${contentId}&MobileOS=ETC&MobileApp=AppTest&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y
-`;
+    const url = `http://apis.data.go.kr/B551011/KorService1/detailCommon1?ServiceKey=${serviceKey}&contentTypeId=15&contentId=${contentId}&MobileOS=ETC&MobileApp=AppTest&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`;
 
     fetch(url)
     .then(response => response.text())

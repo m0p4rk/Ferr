@@ -14,7 +14,6 @@ import com.warr.ferr.service.ScheduleService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @Controller
@@ -113,6 +112,15 @@ public class ScheduleController {
         return "dashboard_schedule"; // Sample Data 안쓸때부터 Redirect:/schedulelist로 변경
     }
 
+    // Event-Detail -> create_schedule/{contentId}
+    @GetMapping("/create_schedule/{contentId}")
+    public String goCreateSchedule(@PathVariable("contentId") String contentId,
+                                   Model model) {
+
+        model.addAttribute("contentId", contentId);
+
+        return "create_schedule";
+    }
 }
 
 

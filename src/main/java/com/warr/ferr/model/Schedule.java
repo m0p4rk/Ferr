@@ -16,18 +16,18 @@ import java.math.BigDecimal;
 @Entity
 public class Schedule {
     @Id
-    private int eventId;
-    private int userId;
-    private String contentId;
-    private String eventTitle;
-    private Timestamp eventStartDate;
-    private Timestamp eventEndDate;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
-    private Timestamp createdAt;
+    private int eventId; // auto
+    private int userId; // static
+    private String contentId; // input
+    private String eventTitle; // title -> api1
+    private Timestamp eventStartDate; // eventStartDate -> api2
+    private Timestamp eventEndDate; // eventEndDate -> api2
+    private BigDecimal latitude; // mapx -> api1
+    private BigDecimal longitude; // mapy -> api1
+    private Timestamp createdAt; // auto(default: current_timestamp)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date promiseDate;
-    private String startLocation;
+    private Date promiseDate; // input
+    private String startLocation; // input
 
     public Schedule() {
 

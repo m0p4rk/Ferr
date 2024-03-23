@@ -31,6 +31,13 @@
         <label for="startLocation">출발지: </label>
         <input type="text" id="startLocation" name="startLocation" required>
     </div>
+
+    <input type="hidden" id="eventTitle" name="eventTitle">
+    <input type="hidden" id="latitude" name="latitude">
+    <input type="hidden" id="longitude" name="longitude">
+    <input type="hidden" id="eventStartDate" name="eventStartDate">
+    <input type="hidden" id="eventEndDate" name="eventEndDate">
+
     <button type="submit" id="createScheduleBtn" class="btn btn-primary">일정 생성/수정</button>
 </form>
 
@@ -152,8 +159,68 @@ function showError(error) {
 	}
     // 위치 정보를 가져오는 데 문제가 발생한 경우 처리할 내용을 여기에 작성합니다.
 }
-</script>
 
+// 일정 생성 버튼을 누를 때, Tour API로 필요한 값들 전달
+let contentId = "${contentId}";
+
+$(document).ready(function () {
+    $('#createScheduleBtn').click(function () {
+        fetchTouristDetail(contentId);
+        fetchTouristIntro(contentId);
+        setTimeout(function () {
+            $('#createScheduleForm').submit();
+        }, 1000);
+    });
+});
+
+function fetchTouristDetail(contentId) {
+    const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
+    const detailUrl = `http://apis.data.go.kr/B551011/KorService1/detailCommon1?ServiceKey=${serviceKey}&contentTypeId=15&contentId=${contentId}&MobileOS=ETC&MobileApp=AppTest&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`;
+
+    $.ajax({
+        url: detailUrl,
+        method: 'GET',
+        success: function (response) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(response, "text/xml");
+            const item = xmlDoc.getElementsByTagName("item")[0];
+            const title = item.getElementsByTagName("title")[0].textContent;
+            const mapx = parseFloat(item.getElementsByTagName("mapx")[0].textContent);
+            const mapy = parseFloat(item.getElementsByTagName("mapy")[0].textContent);
+
+            $('#eventTitle').val(title);
+            $('#latitude').val(mapx);
+            $('#longitude').val(mapy);
+        },
+        error: function (xhr, status, error) {
+            console.error('Tour API Error:', error);
+        }
+    });
+}
+
+function fetchTouristIntro(contentId) {
+    const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
+    const introUrl = `http://apis.data.go.kr/B551011/KorService1/detailIntro1?ServiceKey=${serviceKey}&contentTypeId=15&contentId=${contentId}&MobileOS=ETC&MobileApp=AppTest`;
+    $.ajax({
+        url: introUrl,
+        method: 'GET',
+        success: function(response) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(response, "text/xml");
+            const item = xmlDoc.getElementsByTagName("item")[0];
+            const eventStartDate = item.getElementsByTagName("eventstartdate")[0].textContent;
+            const eventEndDate = item.getElementsByTagName("eventenddate")[0].textContent;
+
+            $('#eventStartDate').val(eventStartDate);
+            $('#eventEndDate').val(eventEndDate);
+        },
+        error: function(xhr, status, error) {
+            console.log("Error fetching intro: ", error);
+        }
+    });
+}
+
+</script>
 
 </body>
 </html>

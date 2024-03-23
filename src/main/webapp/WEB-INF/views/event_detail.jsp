@@ -55,11 +55,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="/js/event_detail.js"></script>
 
-<script>
-$('#createScheduleBtn').on('click', function() {
-    window.location.href = '/create_schedule';
-});
-</script>
 </body>
 </html>
 
