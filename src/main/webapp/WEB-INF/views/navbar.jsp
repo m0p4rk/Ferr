@@ -43,7 +43,7 @@
                                 style="width: 40px; height: 40px; border-radius: 50%;">
                         </a>
                         </li>
-                        <li class="nav-item"><a href="/schedulelist"
+                        <li class="nav-item"><a href="/dashboard-schedule"
                             class="btn btn-primary">일정 관리</a></li>
                         <li class="nav-item"><a href="/logout" class="btn btn-danger">로그아웃</a></li>
                         <li class="nav-item"><a href="/chat/rooms" class="btn btn-primary">채팅</a></li>

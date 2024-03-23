@@ -115,6 +115,59 @@ document.getElementById('goBackBtn').addEventListener('click', function() {
         document.getElementById('goBackBtn').style.display = 'none';
         document.getElementById('detailInfoBtn').style.display = 'inline-block';
     });
+    
+document.addEventListener('DOMContentLoaded', function() {
+    // "일정 생성" 버튼 클릭 이벤트 처리: 모달을 표시합니다.
+    document.getElementById('createScheduleBtn').addEventListener('click', function() {
+        $('#createScheduleModal').modal('show');
+    });
+
+    // "입력" 버튼에 대한 클릭 이벤트 처리: 일정 제출 함수 호출합니다.
+    document.getElementById('enterSchedule').addEventListener('click', function() {
+        submitSchedule(); // 일정 제출 함수 호출
+    });
+});
+
+// 일정 제출 함수
+function submitSchedule() {
+    // 폼에서 입력 값을 가져옵니다.
+    var userId = 1; // 예시로 1을 사용. 실제로는 로그인한 사용자의 ID를 사용해야 합니다.
+    var contentId = document.getElementById('contentId').value;
+    var eventTitle = document.getElementById('eventTitle').textContent;
+    var eventStartDate = new Date(document.getElementById('eventStartDate').textContent).toISOString();
+    var eventEndDate = new Date(document.getElementById('eventEndDate').textContent).toISOString();
+    var latitude = parseFloat(document.getElementById('latitude').textContent);
+    var longitude = parseFloat(document.getElementById('longitude').textContent);
+    var promiseDate = new Date(document.getElementById('startDate').value).toISOString();
+
+    // AJAX 요청을 사용하여 서버에 데이터 전송
+    $.ajax({
+        url: '/saveSchedule', // 요청을 보낼 서버의 URL 주소
+        type: 'POST', // HTTP 요청 방식 (GET, POST 등)
+        contentType: 'application/json', // 보내는 데이터 타입
+        data: JSON.stringify({
+            userId: userId,
+            contentId: contentId,
+            eventTitle: eventTitle,
+            eventStartDate: eventStartDate,
+            eventEndDate: eventEndDate,
+            latitude: latitude,
+            longitude: longitude,
+            promiseDate: promiseDate
+        }), // 서버로 보낼 데이터
+        success: function(response) {
+            // 요청 성공 시 처리
+            alert(response); // 응답 메시지 알림
+            $('#createScheduleModal').modal('hide'); // 모달 숨기기
+        },
+        error: function(xhr, status, error) {
+            // 요청 실패 시 처리
+            alert("일정 저장에 실패하였습니다: " + error);
+        }
+    });
+}
+
+
 
 
 

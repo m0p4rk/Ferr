@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Create Schedule</title>
+    <title>일정 관리 대시보드</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
     <style>
@@ -13,142 +13,147 @@
             width: 100%;
             height: 400px;
         }
+        .card-clickable:hover {
+            cursor: pointer;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
 
-<h1>일정 생성</h1>
-<!-- 달력 입력란 -->
-<div>
-    <label for="promiseDate">약속일:</label>
-    <input type="date" id="promiseDate" name="promiseDate" required>
+<div class="container mt-5">
+    <h1>일정 관리</h1>
+    
+    <div id="map"></div>
+    <!-- 그룹원 추가 UI -->
+    <div class="mt-3">
+        <h2>그룹원 관리</h2>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="사용자 이름 또는 이메일">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button">추가</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 알림 기능 UI -->
+    <div class="mt-3">
+        <h2>알림</h2>
+        <ul class="list-group">
+            <!-- 알림 목록 동적 추가 -->
+        </ul>
+    </div>
+    
+    <!-- 최단경로 기능 UI -->
+    <div class="mt-3">
+        <h2>최단경로</h2>
+        <button id="showRouteBtn" class="btn btn-primary">최단 경로 보기</button>
+    </div>
+    
+    <!-- 후기/일지 및 평가 기능 페이지 링크 -->
+    <div class="mt-3">
+        <h2>후기 및 일지</h2>
+        <a href="/reviews" class="btn btn-primary">작성하기</a>
+    </div>
 </div>
 
-<!-- 생성/수정 버튼 -->
-<div>
-    <button id="createScheduleBtn" class="btn btn-primary">일정 생성/수정</button>
-</div>
-
-<!-- 날씨 정보 표시 영역 -->
-<div id="weatherInfo"></div>
-
-<!-- 카카오 맵 표시 영역 -->
-<div id="map"></div>
-
-<!-- JavaScript 파일 및 기타 스크립트 링크 추가 -->
-<button id="showRouteBtn" class="btn btn-primary">최단 경로 보기</button>
-<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<!-- 부트스트랩 JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<!-- flatpickr 날짜 선택 라이브러리 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
-<!-- 카카오맵 SDK를 동적으로 로드 -->
+<!-- 카카오맵 SDK와 관련된 자바스크립트 코드는 실제 사용 시에 적절한 appkey로 변경 필요 -->
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9496f9be338adc74c68fd22757fd2e12&libraries=LIBRARY"></script>
+<!-- 페이지의 기능을 위한 자바스크립트 코드 추가 -->
 <script>
-var exampleEventLatitude; // 예시 행사 위치 위도
-var exampleEventLongitude; // 예시 행사 위치 경도
+$(document).ready(function() {
+    // 지도를 표시할 div와 지도 옵션으로 지도를 생성합니다
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 초기 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
 
-$(document).ready(function () {
-    // 현재 위치를 가져오는 함수 호출
-    getLocation();
-});
+    // 지도를 생성합니다
+    var map = new kakao.maps.Map(mapContainer, mapOption);
 
-// 위치 정보를 가져오는 함수
-function getLocation() {
+    // 현재 위치를 가져오는 함수
     if (navigator.geolocation) {
-        // Geolocation을 지원하는 경우
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var lat = position.coords.latitude, // 위도
+                lon = position.coords.longitude; // 경도
+
+            var locPosition = new kakao.maps.LatLng(35.859191812305, 128.62910576135), // 현재 위치를 기반으로 한 좌표 생성
+                message = '<div style="padding:5px;">현재 위치</div>'; // 인포윈도우에 표시될 내용
+
+            // 지도 중심좌표를 현재 위치로 변경합니다
+            map.setCenter(locPosition);
+
+            // 마커와 인포윈도우를 표시합니다
+            displayMarker(locPosition, message);
+        }, function(error) {
+            console.error(error);
+            // 위치 정보를 가져오는데 실패한 경우, 기본 위치를 설정합니다.
+            var defaultPosition = new kakao.maps.LatLng(37.566826, 126.9786567),
+                message = '위치 정보를 가져올 수 없습니다.';
+            displayMarker(defaultPosition, message);
+            map.setCenter(defaultPosition);
+        });
     } else {
-        // Geolocation을 지원하지 않는 경우
-        console.error('Geolocation을 지원하지 않습니다.');
-        // 위치를 가져올 수 없는 경우 처리할 내용을 여기에 작성합니다.
+        console.error('이 브라우저에서는 Geolocation이 지원되지 않습니다.');
     }
-}
 
-// 위치 정보 가져오기 성공 시 실행되는 함수
-function showPosition(position) {
-    var currentlatitude = position.coords.latitude; // 위도
-    var currentlongitude = position.coords.longitude; // 경도
+    // 마커와 인포윈도우를 표시하는 함수입니다
+    function displayMarker(locPosition, message) {
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: locPosition
+        });
 
-    // 날씨 정보 가져오기
-    $.ajax({
-        url: 'https://api.openweathermap.org/data/2.5/weather?lat=' + currentlatitude + '&lon=' + currentlongitude + '&appid=a62c831d0ac8f869133bcde70421b3b5&units=metric',
-        method: 'GET',
-        success: function (response) {
-            // 날씨 정보를 가져온 후 화면에 표시합니다.
-            var weatherInfo = '<h3>날씨 정보</h3>' +
-                '<p>날씨: ' + response.weather[0].description + '</p>' +
-                '<p>온도: ' + response.main.temp + ' ℃</p>' +
-                '<p>습도: ' + response.main.humidity + ' %</p>';
-            $("#weatherInfo").html(weatherInfo);
-        },
-        error: function (xhr, status, error) {
-            console.error('날씨 정보를 불러오는 중 오류 발생:', error);
-            // 날씨 정보를 가져오는 데 실패한 경우 처리할 내용을 여기에 작성합니다.
-        }
+        var infowindow = new kakao.maps.InfoWindow({
+            content: message,
+            removable: true
+        });
+
+        infowindow.open(map, marker);
+    }
+
+    // 예시 행사 위치 마킹
+    var eventPosition = new kakao.maps.LatLng(37.5665, 126.9780); // 예시 행사 위치
+    new kakao.maps.Marker({
+        map: map,
+        position: eventPosition
     });
 
-    // 지도에 현재 위치 표시하기
-    var container = document.getElementById('map');
-    var center = new kakao.maps.LatLng(currentlatitude, currentlongitude);
-    var options = {center: center, level: 7};
-    var map = new kakao.maps.Map(container, options);
-    var marker = new kakao.maps.Marker({position: center});
-    marker.setMap(map);
-
-    // 행사 위치 마킹 (예시로만 표시)
-    exampleEventLatitude = 37.5665; // 예시 행사 위치 위도
-    exampleEventLongitude = 126.9780; // 예시 행사 위치 경도
-    var exampleEventCenter = new kakao.maps.LatLng(exampleEventLatitude, exampleEventLongitude);
-    var exampleEventMarker = new kakao.maps.Marker({position: exampleEventCenter});
-    exampleEventMarker.setMap(map);  
-
-    // 현재 위치와 행사 위치를 연결하는 선 그리기
-    var linePath = [center, exampleEventCenter];
+    // 지도에 현재 위치와 행사 위치를 연결하는 선을 그립니다
+    var linePath = [new kakao.maps.LatLng(lat, lon), eventPosition];
     var polyline = new kakao.maps.Polyline({
-        path: linePath, // 선을 구성하는 좌표배열 입니다
-        strokeWeight: 5, // 선의 두께 입니다
-        strokeColor: '#FF0000', // 선의 색깔입니다
-        strokeOpacity: 0.7, // 선의 불투명도 입니다
-        strokeStyle: 'solid' // 선의 스타일입니다
+        path: linePath,
+        strokeWeight: 5,
+        strokeColor: '#FFAE00',
+        strokeOpacity: 0.7,
+        strokeStyle: 'solid'
     });
     polyline.setMap(map);
-}
-
-// 최단 경로 보기 버튼 클릭 시
-$("#showRouteBtn").click(function () {
-    // 목적지의 위도와 경도
-    var destinationLat = exampleEventLatitude; // 예시 이벤트의 위도
-    var destinationLng = exampleEventLongitude; // 예시 이벤트의 경도
-
-    // Kakao Map 링크 URL 구성
-    var kakaoMapUrl = 'https://map.kakao.com/link/to/목적지,' + destinationLat + ',' + destinationLng;
-
-    // 팝업으로 Kakao Map 링크 열기
-    window.open(kakaoMapUrl);
 });
 
-// 위치 정보 가져오기 실패 시 실행되는 함수
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            console.error("사용자가 위치 정보를 허용하지 않았습니다.");
-            break;
-        case error.POSITION_UNAVAILABLE:
-            console.error("위치 정보를 사용할 수 없습니다.");
-			break;
-		case error.TIMEOUT:
-			console.error("위치 정보를 가져오는 데 시간이 너무 오래 걸립니다.");
-			break;
-		case error.UNKNOWN_ERROR:
-			console.error("알 수 없는 오류가 발생했습니다.");
-		break;
-	}
-    // 위치 정보를 가져오는 데 문제가 발생한 경우 처리할 내용을 여기에 작성합니다.
-}
-</script>
+$(document).ready(function() {
+    // 최단 경로 보기 버튼 클릭 이벤트
+    $("#showRouteBtn").click(function() {
+        // 현재 위치와 목적지 위치 (예시로 서울 시청 사용)
+        var currentLat = 37.5665; // 현재 위치의 위도 (임시 값)
+        var currentLng = 126.9780; // 현재 위치의 경도 (임시 값)
+        var destLat = 37.5665; // 목적지의 위도
+        var destLng = 126.9780; // 목적지의 경도
 
+        // 카카오맵에서 경로를 보여주는 URL 생성
+        var routeUrl = `https://map.kakao.com/?sX=${currentLat}&sY=${currentLng}&eX=${destLat}&eY=${destLng}&go=1&vehicle=0`;
+
+        // 새 창에서 카카오맵 경로 URL 열기
+        window.open(routeUrl, '_blank');
+    });
+});
+
+
+</script>
 
 </body>
 </html>
