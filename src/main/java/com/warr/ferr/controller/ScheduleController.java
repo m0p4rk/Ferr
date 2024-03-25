@@ -23,36 +23,6 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @PostMapping("/saveSchedule")
-    @ResponseBody
-    public String saveSchedule(@RequestBody Schedule schedule) {
-        try {
-            scheduleService.saveSchedule(schedule);
-            return "일정이 성공적으로 저장되었습니다.";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "일정 저장 중 오류가 발생했습니다.";
-        }
-    }
-
-    // Note 내용은 Notification Controller에서 받고 Notification 객체 생성
-
-    // Main -> Schedule List
-    @GetMapping("/schedulelist")
-    public String schedules(Model model) {
-
-        List<Schedule> testSchedules = scheduleService.testDataInit();
-        Schedule schedule1 = testSchedules.get(0);
-        Schedule schedule2 = testSchedules.get(1);
-        scheduleService.save(schedule1);
-        scheduleService.save(schedule2);
-
-        List<ScheduleListDto> callSchedules = scheduleService.findSchedules();
-        log.info("callSchedules={}", callSchedules);
-        model.addAttribute("schedules", callSchedules);
-
-        return "dashboard_schedule";
-    }
 
     // Dashboard -> Schedule-Detail
     @GetMapping("/schedule-detail")

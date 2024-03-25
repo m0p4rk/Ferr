@@ -244,3 +244,22 @@ function displaySearchResults(data, containerId, append) {
         });
     });
 }
+
+function updateScrollIndicator(containerId, indicatorId) {
+    const container = document.getElementById(containerId);
+    const indicator = document.getElementById(indicatorId);
+    container.addEventListener('scroll', function() {
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        const currentScroll = container.scrollTop;
+        const scrollPercentage = (currentScroll / maxScroll) * 100;
+        indicator.style.width = scrollPercentage + '%';
+    });
+}
+
+// 각 컨테이너에 대해 이 함수를 호출합니다.
+function setupScrollIndicator() {
+    updateScrollIndicator('rankcontainer', 'rankScrollIndicator');
+    updateScrollIndicator('searchcontainer', 'searchScrollIndicator');
+    updateScrollIndicator('recommendcontainer', 'recommendScrollIndicator');
+    updateScrollIndicator('mylocationcontainer', 'locationScrollIndicator');
+}

@@ -45,4 +45,20 @@ public class TourAPI {
 	    System.out.println("api region value" + regionPreference);
 	    return regionPreference; // 변환된 문자열 값을 반환합니다.
 	}
+	
+	@GetMapping("/api/userId")
+    public ResponseEntity<String> getUserId(HttpSession session) {
+        // 세션에서 "userId" 값을 가져옵니다.
+        Object userIdObj = session.getAttribute("userId");
+        // Object 타입의 값을 String으로 안전하게 변환하고, 없을 경우 null을 반환합니다.
+        String userId = (userIdObj != null) ? userIdObj.toString() : null;
+
+        if (userId == null) {
+            // userId가 세션에 없는 경우, 적절한 응답을 반환합니다.
+            return ResponseEntity.badRequest().body("User not logged in");
+        } else {
+            // userId가 있는 경우, 해당 값을 문자열로 반환합니다.
+            return ResponseEntity.ok(userId);
+        }
+    }
 }

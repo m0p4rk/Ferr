@@ -1,8 +1,9 @@
 .box-container {
-	overflow: hidden;
-	white-space: nowrap;
-	margin-left: 50px;
-	margin-right: 50px;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 50px;
+    margin-right: 50px;
 }
 
 .loading-indicator {
@@ -29,7 +30,7 @@
 	width: 300px;
 	height: 200px;
 	background-color: #ddd;
-	margin-right: 15px;
+	margin-right: 30px;
 	text-align: center;
 	vertical-align: top;
 	overflow: hidden;
@@ -98,6 +99,17 @@
 
 .title-container {
 	text-align: left;
+	margin-top: 10px;
 	margin-bottom: 10px;
+	margin-left: 35px;
 	padding: 10px;
+}
+
+.scroll-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background-color: #007bff; /* 인디케이터 색상 */
+    width: 0%; /* 초기 너비 */
 }

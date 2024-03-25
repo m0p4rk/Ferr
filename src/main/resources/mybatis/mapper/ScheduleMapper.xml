@@ -4,58 +4,80 @@
 <mapper namespace="com.warr.ferr.mapper.ScheduleMapper">
 
 	<resultMap id="scheduleResultMap"
-			   type="com.warr.ferr.model.Schedule">
-		<id property="eventId" column="event_id"/>
-		<result property="userId" column="user_id"/>
-		<result property="contentId" column="content_id"/>
-		<result property="eventTitle" column="event_title"/>
-		<result property="eventStartDate" column="event_start_date"/>
-		<result property="eventEndDate" column="event_end_date"/>
-		<result property="latitude" column="latitude"/>
-		<result property="longitude" column="longitude"/>
-		<result property="createdAt" column="created_at"/>
-		<result property="promiseDate" column="promise_date"/>
+		type="com.warr.ferr.model.Schedule">
+		<id property="eventId" column="event_id" />
+		<result property="userId" column="user_id" />
+		<result property="contentId" column="content_id" />
+		<result property="eventTitle" column="event_title" />
+		<result property="eventStartDate" column="event_start_date" />
+		<result property="eventEndDate" column="event_end_date" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="createdAt" column="created_at" />
+		<result property="promiseDate" column="promise_date" />
+		<result property="startLocation" column="start_location" />
 	</resultMap>
 
-	<resultMap id="scheduleListDtoResultMap" type="com.warr.ferr.dto.ScheduleListDto">
-		<result property="eventId" column="event_id"/>
-		<result property="eventTitle" column="event_title"/>
-		<result property="eventStartDate" column="event_start_date"/>
-		<result property="eventEndDate" column="event_end_date"/>
-		<result property="promiseDate" column="promise_date"/>
-		<result property="contentId" column="content_id"/>
+	<resultMap id="scheduleListDtoResultMap"
+		type="com.warr.ferr.dto.ScheduleListDto">
+		<result property="eventId" column="event_id" />
+		<result property="eventTitle" column="event_title" />
+		<result property="eventStartDate" column="event_start_date" />
+		<result property="eventEndDate" column="event_end_date" />
+		<result property="promiseDate" column="promise_date" />
+		<result property="contentId" column="content_id" />
 	</resultMap>
 
-	<insert id="saveInDB" useGeneratedKeys="true" keyProperty="eventId" parameterType="com.warr.ferr.model.Schedule">
-		insert into user_events (user_id, content_id, event_title, event_start_date, event_end_date, latitude, longitude, created_at, promise_date)
-		values (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate}, #{latitude}, #{longitude}, #{createdAt}, #{promiseDate})
+	<insert id="saveInDB" useGeneratedKeys="true"
+		keyProperty="eventId" parameterType="com.warr.ferr.model.Schedule">
+		insert into user_events (user_id,
+		content_id, event_title, event_start_date, event_end_date, latitude,
+		longitude, created_at, promise_date, start_location)
+		values (#{userId},
+		#{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate},
+		#{latitude}, #{longitude}, #{createdAt}, #{promiseDate},
+		#{startLocation})
 	</insert>
 
 	<select id="findByEventId" resultMap="scheduleResultMap">
-		select event_id, user_id, content_id, event_start_date, event_end_date, latitude, longitude, created_at, promise_date
+		select event_id, user_id,
+		content_id, event_start_date, event_end_date, latitude, longitude,
+		created_at, promise_date
 		from user_events
 		where event_id=#{eventId}
 	</select>
 
 	<delete id="deleteByEventId" parameterType="java.lang.Integer">
-		delete from user_events
+		delete from
+		user_events
 		where event_id=#{eventId}
 	</delete>
 
-	<select id="findAllSchedules" resultMap="scheduleListDtoResultMap">
-		select event_id, event_title, event_start_date, event_end_date, promise_date, content_id
+	<select id="findAllSchedules"
+		resultMap="scheduleListDtoResultMap">
+		select event_id, event_title, event_start_date,
+		event_end_date, promise_date, content_id
 		from user_events
 	</select>
 
 	<update id="updateByEventId" parameterType="map">
 		update user_events
 		set content_id=#{scheduleUpdateDto.contentId},
-			promise_date=#{scheduleUpdateDto.promiseDate}
+		promise_date=#{scheduleUpdateDto.promiseDate}
 		where event_id=#{eventId}
 	</update>
-	
-	<insert id="saveSchedule" parameterType="com.warr.ferr.model.Schedule">
-	 INSERT INTO user_events (user_id, content_id, event_title, event_start_date, event_end_date, latitude, longitude, promise_date)
-	 VALUES (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate}, #{latitude}, #{longitude}, #{promiseDate})
+
+	<insert id="saveSchedule"
+		parameterType="com.warr.ferr.model.Schedule">
+		insert into user_events (user_id, content_id,
+		event_title, event_start_date,
+		event_end_date, latitude, longitude,
+		promise_date,
+		start_location)
+		values (#{userId}, #{contentId},
+		#{eventTitle},
+		#{eventStartDate}, #{eventEndDate}, #{latitude},
+		#{longitude},
+		#{promiseDate}, #{startLocation})
 	</insert>
 </mapper>
