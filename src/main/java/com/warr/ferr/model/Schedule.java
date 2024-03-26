@@ -30,6 +30,10 @@ public class Schedule {
     private Date promiseDate;
     private String startLocation;
 
+    public Schedule() {
+
+    }
+
     public Schedule(int userId, String contentId, String eventTitle, Timestamp eventStartDate, Timestamp eventEndDate, BigDecimal latitude, BigDecimal longitude, Timestamp createdAt, Date promiseDate, String startLocation) {
         this.userId = userId;
         this.contentId = contentId;
@@ -42,7 +46,5 @@ public class Schedule {
         this.promiseDate = promiseDate;
         this.startLocation = startLocation;
     }
-
-
 
 }
