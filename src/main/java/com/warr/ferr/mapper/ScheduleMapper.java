@@ -28,4 +28,6 @@ public interface ScheduleMapper {
 	void saveSchedule(Schedule schedule);
 
 	Map<String, Double> getLatitudeAndLongitude(String condition);
+
+	Map<String, Double> getLatitudeLongitude(int eventId);
 }

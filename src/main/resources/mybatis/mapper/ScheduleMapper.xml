@@ -80,4 +80,11 @@
 		#{longitude},
 		#{promiseDate}, #{startLocation})
 	</insert>
+	
+	<select id="getLatitudeLongitude" resultType="map">
+		SELECT latitude, longitude 
+		FROM user_events
+		WHERE event_id=#{eventId}
+	</select>
+	
 </mapper>

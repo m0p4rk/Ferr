@@ -24,18 +24,21 @@
     </select>
 
     <insert id="addReview" parameterType="com.warr.ferr.model.ScheduleReview">
-        INSERT INTO schedule_reviews (event_id, user_id, title, content, rating, created_at, updated_at)
-        VALUES (#{eventId}, #{userId}, #{title}, #{content}, #{rating}, #{createdAt}, #{updatedAt})
+        INSERT INTO schedule_reviews (event_id, user_id, title, content, rating)
+        VALUES (#{eventId}, #{userId}, #{title}, #{content}, #{rating})
     </insert>
-
+	
+	<select id="findReviewById" resultMap="reviewResultMap" parameterType="int">
+        SELECT * FROM schedule_reviews WHERE review_id = #{id}
+    </select>
+    
     <update id="updateReview" parameterType="com.warr.ferr.model.ScheduleReview">
         UPDATE schedule_reviews
-        SET event_id = #{eventId}, user_id = #{userId}, title = #{title},
-            content = #{content}, rating = #{rating}, updated_at = #{updatedAt}
+        SET title = #{title}, content = #{content}, rating = #{rating}
         WHERE review_id = #{reviewId}
     </update>
-
-    <delete id="deleteReview">
+ 
+     <delete id="deleteReview" parameterType="int">
         DELETE FROM schedule_reviews WHERE review_id = #{id}
     </delete>
 

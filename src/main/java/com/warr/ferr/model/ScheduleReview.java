@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
@@ -31,15 +32,15 @@ public class ScheduleReview {
     
     private int rating;
     
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
     
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    private Timestamp createdAt;
+    
+ 
+    private Timestamp updatedAt;
     
     @Builder
 	public ScheduleReview(int reviewId, int eventId, int userId, String title, String content, int rating,
-			Date createdAt, Date updatedAt) {
+			Timestamp createdAt, Timestamp updatedAt) {
 		super();
 		this.reviewId = reviewId;
 		this.eventId = eventId;

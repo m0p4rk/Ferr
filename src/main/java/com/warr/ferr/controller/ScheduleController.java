@@ -1,6 +1,7 @@
 package com.warr.ferr.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -87,7 +88,18 @@ public class ScheduleController {
 
         return "redirect:/dashboard-schedule";
     }
-
+    
+    // 행사위치 지도표시
+    @GetMapping("/destination/{eventId}")
+    public String getDestination(@PathVariable int eventId, Model model) {
+    	Map<String, Double> locationInfo = scheduleService.getLatitudeLongitude(eventId); 
+    	model.addAttribute("latitude", locationInfo.get("latitude"));
+    	model.addAttribute("longitude", locationInfo.get("longitude"));
+    	return "schedule_detail";
+    	
+    }
+    
+    
 }
 
 

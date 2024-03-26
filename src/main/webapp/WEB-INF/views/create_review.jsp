@@ -19,10 +19,13 @@
 	response.setHeader("Cache-Control", "no-cache");
 	response.setHeader("Cache-Control", "no-store");
 	response.setDateHeader("Expires", 0L);
+	
+	// 세션에서 userId 가져오기
+	int userId = (int) session.getAttribute("userId");
 	%>
 	<div class="container form-container">
 		<h2>새 게시글 작성</h2>
-		<form action="${pageContext.request.contextPath}/reviews/add"
+		<form action="${pageContext.request.contextPath}/reviews/add/${eventId}"
 			method="post" enctype="multipart/form-data">
 			<div class="form-group">
 				<label for="title">제목</label> <input type="text"
@@ -48,11 +51,12 @@
 					<option value="5">5</option>
 				</select>
 			</div>
+			<!-- userId를 hidden input으로 전송 -->
+			<input type="hidden" name="userId" value="<%= userId %>">
+			<input type="hidden" name="eventId" value="${eventId}">
 			<button type="submit" class="btn btn-primary">게시글 작성</button>
 		</form>
 	</div>
-
-
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script

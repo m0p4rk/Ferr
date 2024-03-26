@@ -4,6 +4,7 @@ import com.warr.ferr.mapper.ScheduleReviewMapper;
 import com.warr.ferr.model.ScheduleReview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,14 +30,22 @@ public class ScheduleReviewService{
         scheduleReviewMapper.addReview(review);
     }
 
-	public void deletereview(int id) {
-		scheduleReviewMapper.deleteReview(id);
+	public ScheduleReview findReviewById(int reviewId) {
+		return scheduleReviewMapper.findReviewById(reviewId);
+	}
+
+
+	public void deleteReview(int reviewId) {
+		scheduleReviewMapper.deleteReview(reviewId);
 		
 	}
 
-	public void updateReview(int id) {
-		scheduleReviewMapper.updateReview(id);
+	public void updateReview(ScheduleReview review) {
+		scheduleReviewMapper.updateReview(review);		
 	}
+
+
+
 
 
 }

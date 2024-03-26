@@ -1,6 +1,7 @@
 package com.warr.ferr.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -59,6 +60,10 @@ public class ScheduleService {
             throw new IllegalStateException("User is not logged in.");
         }
     }
+
+	public Map<String, Double> getLatitudeLongitude(int eventId) {
+		return scheduleMapper.getLatitudeLongitude(eventId);
+	}
 
 
 }

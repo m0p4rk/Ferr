@@ -2,6 +2,7 @@ package com.warr.ferr.mapper;
 
 import com.warr.ferr.model.ScheduleReview;
 import org.apache.ibatis.annotations.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,9 +15,14 @@ public interface ScheduleReviewMapper {
     
     void addReview(ScheduleReview review);
 
-	void deleteReview(int id);
+	ScheduleReview findReviewById(int reviewId);
 
-	void updateReview(int id);
-    
+
+	void deleteReview(int reviewId);
+
+	void updateReview(ScheduleReview review);
+
+
+
 
 }

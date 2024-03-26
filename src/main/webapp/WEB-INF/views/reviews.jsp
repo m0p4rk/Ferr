@@ -76,12 +76,6 @@
                 </div>
             </div>
         </form>
-        <%-- 게시글 작성 버튼 --%>
-<div class="text-center mb-3">
-    <a href="/reviews/add" class="btn btn-primary">게시글 작성</a>
-</div>
-
-
         <%-- 검색 결과 표시 --%>
         <c:choose>
             <c:when test="${not empty reviews}">

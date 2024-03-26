@@ -57,10 +57,11 @@
 		<button id="navigateBtn" class="btn btn-primary">최단 경로 보기</button>
 	</div>
 	<!-- 후기/일지 및 평가 기능 페이지 링크 -->
-	<div class="mt-3">
-		<h2>후기 및 일지</h2>
-		<a href="/reviews" class="btn btn-primary">작성하기</a>
-	</div>
+<div class="mt-3">
+    <h2>후기 및 일지</h2>
+    <a href="/reviews/add?eventId=${schedule.eventId}" class="btn btn-primary">작성하기</a>
+</div>
+
 </div>
 <!-- 일정 수정 및 삭제 버튼 -->
 <div>
