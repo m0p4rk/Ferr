@@ -26,14 +26,27 @@
 	<h2>행사 위치와 날씨 정보</h2>
 	<div id="map" style="width: 100%; height: 350px;"></div>
 	<div id="weatherInfo" class="weather-widget"></div>
+
+	<!-- 노트 및 알림 입력 폼 -->
 	<h2>스크래치 노트 추가 후 알림</h2>
-	<form id="noteForm">
+	<form id="noteForm" action="/newNotification?id=${schedule.eventId}" method="post">
 		<div class="form-group">
-			<label for="noteContent">노트 내용:</label>
-			<textarea class="form-control" id="noteContent" rows="3"></textarea>
+			<label for="noteContent">노트 내용</label>
+			<textarea class="form-control" id="noteContent" name="content" rows="3"></textarea>
 		</div>
-		<button type="submit" class="btn btn-primary">노트 추가</button>
+		<div class="form-row align-items-center">
+			<div class="col-auto">
+				<label for="noteDate" class="sr-only">날짜 선택:</label>
+				<input type="date" class="form-control mb-2" id="noteDate" name="date">
+			</div>
+			<div class="col-auto">
+				<button type="submit" class="btn btn-primary mb-2">
+					노트 추가
+				</button>
+			</div>
+		</div>
 	</form>
+
 	<!-- 그룹원 추가 UI -->
 	<div class="mt-3">
 		<h2>그룹원 관리</h2>
