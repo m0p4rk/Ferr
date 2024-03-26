@@ -23,15 +23,39 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
+//    // Event Detail -> Logic(Create) -> Schedule Detail(Feat. Update, Delete, Note, Group Manage, PathFinder, Review)
+//    @PostMapping("/saveSchedule")
+//    public String saveSchedule(@ModelAttribute("Schedule") Schedule schedule,
+//                               HttpSession httpSession) {
+//        scheduleService.saveSchedule(schedule, httpSession);
+//        return "redirect:/schedule_detail";
+//    }
 
-    // Dashboard -> Schedule-Detail
+
+    // Main -> Event Detail
+    @GetMapping("/event-detail")
+    public String moveEventDetail(@RequestParam("contentId") Integer contentId) {
+        log.info("contentId={}", contentId);
+        return "event_detail";
+    }
+
+    // Main -> Schedule List
+    // Redirect : Schedule List
+    @GetMapping("/dashboard-schedule")
+    public String scheduleList(Model model) {
+
+        List<ScheduleListDto> callSchedules = scheduleService.findSchedules();
+        model.addAttribute("schedules", callSchedules);
+        return "dashboard_schedule";
+    }
+
+
+    // Schedule List -> Schedule Detail(Feat. Update, Delete, Note, Group Manage, PathFinder, Review)
     @GetMapping("/schedule-detail")
     public String scheduleDetail(@RequestParam("id") Integer eventId,
                                  Model model) {
 
-        log.info("id={}", eventId);
         Optional<Schedule> optFindSchedule = scheduleService.findByEventId(eventId);
-        log.info("optFindSchedule={}", optFindSchedule);
 
         if (optFindSchedule.isPresent()) {
             Schedule findSchedule = optFindSchedule.get();
@@ -50,11 +74,7 @@ public class ScheduleController {
 
         scheduleService.deleteSchedule(eventId);
 
-        List<ScheduleListDto> callSchedules = scheduleService.findSchedules();
-        log.info("callSchedules={}", callSchedules);
-        model.addAttribute("schedules", callSchedules);
-
-        return "dashboard_schedule"; // Sample Data 안쓸때부터 Redirect:/schedulelist로 변경
+        return "redirect:/dashboard-schedule";
     }
 
     // Schedule-Detail -> Logic(Update : contentId, promiseDate) -> Schedule List
@@ -63,14 +83,9 @@ public class ScheduleController {
                                  @ModelAttribute ScheduleUpdateDto scheduleUpdateDto,
                                  Model model) {
 
-        log.info("eventId={}, scheduleUpdateDto={}", eventId, scheduleUpdateDto);
         scheduleService.updateSchedule(eventId, scheduleUpdateDto);
 
-        List<ScheduleListDto> callSchedules = scheduleService.findSchedules();
-        log.info("callSchedules={}", callSchedules);
-        model.addAttribute("schedules", callSchedules);
-
-        return "dashboard_schedule"; // Sample Data 안쓸때부터 Redirect:/schedulelist로 변경
+        return "redirect:/dashboard-schedule";
     }
 
 }
