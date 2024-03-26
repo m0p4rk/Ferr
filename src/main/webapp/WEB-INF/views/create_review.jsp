@@ -38,13 +38,25 @@
 				<label for="file">파일 첨부</label> <input type="file"
 					class="form-control-file" id="file" name="file">
 			</div>
+			<div class="form-group">
+				<label for="rating">평점</label>
+				<select class="form-control" id="rating" name="rating">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+				</select>
+			</div>
 			<button type="submit" class="btn btn-primary">게시글 작성</button>
 		</form>
 	</div>
 
 
+
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>

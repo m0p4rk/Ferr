@@ -21,7 +21,7 @@ public class ScheduleReviewService{
         return scheduleReviewMapper.getAllReviews();
     }
 
-    public ScheduleReview getReviewById(long id) {
+    public ScheduleReview getReviewById(int id) {
         return scheduleReviewMapper.getReviewById(id);
     }
 
@@ -29,11 +29,14 @@ public class ScheduleReviewService{
         scheduleReviewMapper.addReview(review);
     }
 
-    public void updateReview(long id, ScheduleReview review) {
-        scheduleReviewMapper.updateReview(id, review);
-    }
+	public void deletereview(int id) {
+		scheduleReviewMapper.deleteReview(id);
+		
+	}
 
-    public void deleteReview(long id) {
-        scheduleReviewMapper.deleteReview(id);
-    }
+	public void updateReview(int id) {
+		scheduleReviewMapper.updateReview(id);
+	}
+
+
 }

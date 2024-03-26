@@ -18,11 +18,11 @@ import java.util.Date;
 public class ScheduleReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    private int reviewId;
     
-    private Long eventId;
+    private int eventId;
     
-    private Long userId;
+    private int userId;
     
     private String title;
     
@@ -38,7 +38,7 @@ public class ScheduleReview {
     private Date updatedAt;
     
     @Builder
-	public ScheduleReview(Long reviewId, Long eventId, Long userId, String title, String content, int rating,
+	public ScheduleReview(int reviewId, int eventId, int userId, String title, String content, int rating,
 			Date createdAt, Date updatedAt) {
 		super();
 		this.reviewId = reviewId;

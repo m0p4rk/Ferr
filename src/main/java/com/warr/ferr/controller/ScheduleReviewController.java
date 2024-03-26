@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/reviews")
@@ -28,7 +31,7 @@ public class ScheduleReviewController {
     }
 
     @GetMapping("/{id}")
-    public String getReviewById(@PathVariable long id, Model model) {
+    public String getReviewById(@PathVariable int id, Model model) {
         ScheduleReview review = scheduleReviewService.getReviewById(id);
         model.addAttribute("review", review);
         return "review_detail"; // 리뷰 상세 정보를 보여주는 JSP 파일의 경로
@@ -46,23 +49,22 @@ public class ScheduleReviewController {
         return "redirect:/reviews"; // 리뷰 목록으로 리다이렉트
     }
 
-    @GetMapping("/{id}/edit")
-    public String showEditReviewForm(@PathVariable long id, Model model) {
-        ScheduleReview review = scheduleReviewService.getReviewById(id);
-        model.addAttribute("review", review);
-        return "edit_review_form"; // 리뷰 수정 폼을 보여주는 JSP 파일의 경로
-    }
+	@GetMapping("/delete/{id}")
+	public String deletePost(@PathVariable("id") int id) {
+		scheduleReviewService.deletereview(id);
 
-    @PostMapping("/{id}/edit")
-    public String updateReview(@PathVariable long id, @ModelAttribute ScheduleReview review) {
-        scheduleReviewService.updateReview(id, review);
-        return "redirect:/reviews"; // 리뷰 목록으로 리다이렉트
-    }
+		return "redirect:/reviews";
+	}
 
-    @PostMapping("/{id}/delete")
-    public String deleteReview(@PathVariable long id) {
-        scheduleReviewService.deleteReview(id);
-        return "redirect:/reviews"; // 리뷰 목록으로 리다이렉트
-    }
+	@PostMapping("/update/{id}")
+	public String updatePost(@PathVariable("id") int id, @ModelAttribute ScheduleReview schedulereview,
+			RedirectAttributes redirectAttributes) {
+
+
+		
+		scheduleReviewService.updateReview(id);
+		redirectAttributes.addFlashAttribute("successMessage", "게시글이 수정되었습니다.");
+		return "redirect:/reviews/" + id;
+	}
 }
 

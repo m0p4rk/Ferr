@@ -13,8 +13,10 @@ public interface ScheduleReviewMapper {
     ScheduleReview getReviewById(long id);
     
     void addReview(ScheduleReview review);
+
+	void deleteReview(int id);
+
+	void updateReview(int id);
     
-    void updateReview(long id, ScheduleReview review);
-    
-    void deleteReview(long id);
+
 }

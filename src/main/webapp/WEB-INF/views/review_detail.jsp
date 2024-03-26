@@ -31,13 +31,12 @@
 			</p>
 			<small>작성자: ${review.userId}</small> <small>작성일:
 				${review.createdAt}</small>
-			<c:if
-				test="${review.userId == sessionScope.loggedInUserId}">
+
 				<button class="btn btn-primary btn-sm" data-toggle="modal"
 					data-target="#editPostModal">수정</button>
 				<a href="${pageContext.request.contextPath}/posts/delete/${review.reviewId}"
 					class="btn btn-danger btn-sm">삭제</a>
-			</c:if>
+			
 		</div>
 	<!-- 게시글 수정 모달 -->
 	<div class="modal fade" id="editPostModal" tabindex="-1" role="dialog"
