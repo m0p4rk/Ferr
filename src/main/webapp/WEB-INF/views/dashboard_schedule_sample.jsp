@@ -6,7 +6,13 @@
 <head>
     <meta charset="UTF-8">
     <title>추가한 일정 대시보드</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600&display=swap"
+	rel="stylesheet">
+	<link
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	rel="stylesheet">
     <style>
         .card-clickable:hover {
             cursor: pointer;

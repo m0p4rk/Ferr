@@ -4,9 +4,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>선호 설정</title>
+<title>My Page</title>
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet" href="/css/common.css">
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <style>
@@ -18,7 +22,10 @@
 <body>
 
 	<div class="container mt-5">
+		<h1>마이 페이지</h1>
+	 	<br>
 		<h2>선호 설정</h2>
+		<br>
 		<form action="/savePreferences" method="POST">
 			<div class="form-group">
 				<label for="regionPreference">선호 지역</label> <select

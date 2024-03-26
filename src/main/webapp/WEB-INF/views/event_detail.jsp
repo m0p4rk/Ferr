@@ -100,8 +100,20 @@
 							<label for="startDate">출발 날짜</label> <input type="date"
 								class="form-control" id="startDate" placeholder="출발 날짜">
 						</div>
-						<br>
-						<p>* 그룹원 추가 로직 연결</p>
+						<div class="form-group">
+							<label for="groupMemberSearch">그룹원 검색</label>
+							<div class="input-group mb-3">
+								<input type="text" class="form-control" id="groupMemberSearch"
+									placeholder="닉네임으로 검색">
+							</div>
+							<div id="searchResults" class="search-results"></div>
+						</div>
+						<div class="form-group selected-members">
+							<label for="selectedMembersList">선택된 그룹원</label>
+							<!-- for 속성 값 수정 -->
+							<ul id="selectedMembersList" class="list-group"></ul>
+							<!-- id 속성 값 수정 -->
+						</div>
 					</form>
 				</div>
 				<div class="modal-footer">

@@ -16,6 +16,11 @@
 		<result property="createdAt" column="created_at" />
 	</resultMap>
 
+	<select id="findByNickname"
+		resultType="com.warr.ferr.model.Users">
+		SELECT * FROM users WHERE nickname LIKE CONCAT('%', #{nickname}, '%')
+	</select>
+
 	<select id="loginUser" resultMap="userResultMap">
 		SELECT * FROM users WHERE email
 		= #{email}
@@ -68,7 +73,8 @@
 		type="com.warr.ferr.model.UserPreferences">
 		<id property="preferenceId" column="preference_id" />
 		<result property="userId" column="user_id" />
-		<result property="preferredLocation" column="preferred_location" />
+		<result property="preferredLocation"
+			column="preferred_location" />
 	</resultMap>
 
 	<select id="getUserByEmail" resultType="int"

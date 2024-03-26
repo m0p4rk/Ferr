@@ -37,13 +37,13 @@ function fetchRecommendedEvents() {
 }
 
 function fetchEventData(latitude, longitude, append = false) {
-    const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
+    const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
     const url = `http://apis.data.go.kr/B551011/KorService1/locationBasedList1?ServiceKey=${serviceKey}&contentTypeId=15&mapX=${longitude}&mapY=${latitude}&radius=10000&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
     commonFetchEvent(url, 'mylocationcontainer', append);
 }
 
 function fetchRecommendData(regionPreference, append = false) {
-    const serviceKey = 'RfKadspJxs7UlgWwFxrI3lk0a6EHQS%2FAbQl5soEhqGRVItvRMVFlDBZLJHF7FEMpTq0yLcT2E9%2BFntTR%2FM8PBg%3D%3D';
+    const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
     const url = `http://apis.data.go.kr/B551011/KorService1/searchFestival1?eventStartDate=20240322&eventEndDate=20240422&areaCode=${regionPreference}&sigunguCode=&ServiceKey=${serviceKey}&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
     commonFetchEvent(url, 'recommendcontainer', append);
 }
@@ -240,10 +240,12 @@ function displaySearchResults(data, containerId, append) {
 
         // 클릭 이벤트 리스너 추가
         imageItem.addEventListener('click', function() {
-            redirectToEventDetail(this.getAttribute('data-event-id'));
+            // 클릭 시 이벤트 상세 페이지로 넘어가기
+            window.location.href = `/event-detail?contentId=${item.contentid}`; // item에서 contentid 직접 참조
         });
     });
 }
+
 
 function updateScrollIndicator(containerId, indicatorId) {
     const container = document.getElementById(containerId);
@@ -256,6 +258,59 @@ function updateScrollIndicator(containerId, indicatorId) {
     });
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+    const sliders = document.querySelectorAll('.box-container');
+
+    sliders.forEach(slider => {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        // 마우스 이벤트 핸들러
+        slider.addEventListener('mousedown', e => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+        slider.addEventListener('mousemove', e => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 3; // 스크롤 양 조정
+            slider.scrollLeft = scrollLeft - walk;
+        });
+
+        // 터치 이벤트 핸들러
+        slider.addEventListener('touchstart', e => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.touches[0].pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('touchend', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+        slider.addEventListener('touchmove', e => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.touches[0].pageX - slider.offsetLeft;
+            const walk = (x - startX) * 3; // 스크롤 양 조정
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    });
+});
+
+
 // 각 컨테이너에 대해 이 함수를 호출합니다.
 function setupScrollIndicator() {
     updateScrollIndicator('rankcontainer', 'rankScrollIndicator');
@@ -263,3 +318,5 @@ function setupScrollIndicator() {
     updateScrollIndicator('recommendcontainer', 'recommendScrollIndicator');
     updateScrollIndicator('mylocationcontainer', 'locationScrollIndicator');
 }
+
+

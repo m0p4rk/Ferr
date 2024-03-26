@@ -171,39 +171,88 @@ function submitSchedule() {
     var longitude = eventInfo.mapx || 0;
     // 현재 날짜를 'YYYY-MM-DD' 포맷으로 변환
     var promiseDate = formatDate(document.getElementById('startDate').value.replace(/-/g, ''));
-	var startLocation = document.getElementById('departureLocation').value;
-    
-    // fetch API를 사용하여 일정 정보를 서버로 전송합니다.
+    var startLocation = document.getElementById('departureLocation').value;
+
+    // 선택된 그룹원의 userId만 추출
+    var participantUserIds = selectedMembers.map(member => member.userId);
+
+    // fetch API를 사용하여 일정 정보와 선택된 그룹원 정보를 서버로 전송합니다.
     fetch('/saveSchedule', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            contentId: contentId,
-            eventTitle: eventTitle,
-            eventStartDate: eventStartDate,
-            eventEndDate: eventEndDate,
-            latitude: latitude,
-            longitude: longitude,
-            promiseDate: promiseDate,
-            startLocation: startLocation
+            contentId,
+            eventTitle,
+            eventStartDate,
+            eventEndDate,
+            latitude,
+            longitude,
+            promiseDate,
+            startLocation,
+            participantUserIds // 선택된 그룹원 ID 추가
         }),
     })
-    .then(response => response.text())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
     .then(result => {
         alert('일정이 성공적으로 저장되었습니다.');
-        $('#createScheduleModal').on('hidden.bs.modal', function () {
-    // 모달이 완전히 닫힌 후 백드롭을 제거
-    $('.modal-backdrop').remove();
-    $('body').removeClass('modal-open'); // 필요한 경우
-});
-
+        // 모달 숨김 처리 및 관련 UI 초기화
+        $('#createScheduleModal').modal('hide');
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+        // 선택된 멤버 목록 초기화
+        selectedMembers = [];
+        updateSelectedMembersUI();
     })
     .catch(error => {
+        console.error("일정 저장에 실패하였습니다:", error);
         alert("일정 저장에 실패하였습니다: " + error);
     });
 }
+
+
+let selectedMembers = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('groupMemberSearch').addEventListener('input', function() {
+        const searchQuery = this.value.trim();
+        
+        // 여기서 실제 검색 로직을 구현합니다. 예시로는 단순히 로그를 찍는 것으로 처리합니다.
+        console.log(`검색된 사용자: ${searchQuery}`);
+        // displaySearchResults 함수를 호출하여 검색 결과를 화면에 표시해야 합니다.
+    });
+
+    document.getElementById('searchResults').addEventListener('click', function(e) {
+        if (e.target && e.target.dataset.userId) {
+            const userId = e.target.dataset.userId;
+            const nickname = e.target.textContent;
+            if (!selectedMembers.some(member => member.userId === userId)) {
+                selectedMembers.push({ userId, nickname });
+                updateSelectedMembersUI();
+            }
+        }
+    });
+});
+
+function updateSelectedMembersUI() {
+    const list = document.getElementById('selectedMembersList');
+    list.innerHTML = '';
+    selectedMembers.forEach(member => {
+        const li = document.createElement('li');
+        li.textContent = member.nickname;
+        li.classList.add('list-group-item');
+        list.appendChild(li);
+    });
+}
+
+
+
 
 
 

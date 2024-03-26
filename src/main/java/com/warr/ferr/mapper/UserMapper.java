@@ -3,6 +3,7 @@ package com.warr.ferr.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.warr.ferr.model.UserPreferences;
 import com.warr.ferr.model.Users;
@@ -35,5 +36,7 @@ public interface UserMapper {
 	public void saveUserPreferences(UserPreferences preferences);
 
 	public void updateUserPreferences(UserPreferences preferences);
+	
+	List<Users> findByNickname(@Param("nickname") String nickname);
 
 }

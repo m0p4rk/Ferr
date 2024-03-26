@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warr.ferr.model.EventParticipantMapper">
+
+    <insert id="insert" parameterType="com.warr.ferr.model.EventParticipant">
+        INSERT INTO ferr.event_participants (event_id, user_id, status, joined_at)
+        VALUES (#{eventId}, #{userId}, #{status}, #{joinedAt})
+    </insert>
+
+    <select id="selectByEventIdAndUserId" resultType="com.warr.ferr.model.EventParticipant">
+        SELECT event_id, user_id, status, joined_at
+        FROM ferr.event_participants
+        WHERE event_id = #{eventId} AND user_id = #{userId}
+    </select>
+
+    <select id="selectByEventId" resultType="com.warr.ferr.model.EventParticipant">
+        SELECT event_id, user_id, status, joined_at
+        FROM ferr.event_participants
+        WHERE event_id = #{eventId}
+    </select>
+
+    <update id="updateStatusByEventIdAndUserId">
+        UPDATE ferr.event_participants
+        SET status = #{status}
+        WHERE event_id = #{eventId} AND user_id = #{userId}
+    </update>
+
+    <delete id="deleteByEventIdAndUserId">
+        DELETE FROM ferr.event_participants
+        WHERE event_id = #{eventId} AND user_id = #{userId}
+    </delete>
+
+</mapper>

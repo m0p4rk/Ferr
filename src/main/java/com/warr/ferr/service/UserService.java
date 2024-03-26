@@ -23,6 +23,10 @@ public class UserService {
 		this.userMapper = userMapper;
 		this.passwordEncoder = passwordEncoder;
 	}
+	
+	public List<Users> searchByNickname(String nickname) {
+        return userMapper.findByNickname(nickname);
+    }
 
 	public Integer findUserIdByEmail(String email) {
 		Integer userId = userMapper.findUserIdByEmail(email);
