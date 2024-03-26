@@ -31,16 +31,16 @@ public class NotificationService {
         notificationMapper.createNotification(notification);
     }
 
-    public void deleteNotificationByEventId(Integer id) {
-        notificationMapper.deleteNotificationByEventId(id);
+    public void deleteNotificationById(Integer id) {
+        notificationMapper.deleteNotificationById(id);
     }
 
     Optional<Notification> findNotificationByEventId(Integer id) {
         return notificationMapper.findNotificationByEventId(id);
     }
 
-    public List<Notification> findAllNotifications() {
-        return notificationMapper.findAllNotifications();
+    public List<Notification> findAllNotificationsByEventId(Integer id) {
+        return notificationMapper.findAllNotificationsByEventId(id);
     }
 
 }

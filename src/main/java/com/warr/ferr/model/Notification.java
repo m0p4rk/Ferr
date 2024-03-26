@@ -6,7 +6,6 @@ import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Getter
@@ -19,14 +18,14 @@ public class Notification {
     private int eventId;
     private int userId;
     private String content;
-    private Date notificationTime;
+    private Timestamp notificationTime;
     private Timestamp createdAt;
 
     public Notification() {
 
     }
 
-    public Notification(int notificationId, int eventId, int userId, String content, Date notificationTime, Timestamp createdAt) {
+    public Notification(int notificationId, int eventId, int userId, String content, Timestamp notificationTime, Timestamp createdAt) {
         this.notificationId = notificationId;
         this.eventId = eventId;
         this.userId = userId;

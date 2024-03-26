@@ -11,10 +11,10 @@ public interface NotificationMapper {
 
     void createNotification(Notification notification);
 
-    void deleteNotificationByEventId(Integer id);
+    void deleteNotificationById(Integer id);
 
     Optional<Notification> findNotificationByEventId(Integer id);
 
-    List<Notification> findAllNotifications();
+    List<Notification> findAllNotificationsByEventId(Integer id);
 
 }

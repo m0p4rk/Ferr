@@ -7,12 +7,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Controller
@@ -24,13 +25,21 @@ public class NotificationController {
     // Schedule Detail -> Logic(Create) -> Schedule Detail(Redirect)
     @PostMapping("/newNotification")
     public String newNotification(@RequestParam("id") Integer eventId,
-                                  @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+                                  @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime date,
                                   @ModelAttribute Notification notification,
                                   HttpServletRequest request) {
 
-        notification.setNotificationTime(Date.valueOf(date));
+        notification.setNotificationTime(Timestamp.valueOf(date));
         notification.setEventId(eventId);
         notificationService.createNotification(notification, request);
+        return "redirect:/schedule-detail?id=" + eventId;
+    }
+
+    // Schedule Detail(Dropdown) -> Logic(Delete) -> Schedule Detail(Dropdown)(Redirect)
+    @GetMapping("/notification/delete")
+    public String deleteNotification(@RequestParam("id") Integer eventId,
+                                     @RequestParam("nid") Integer notificationId) {
+        notificationService.deleteNotificationById(notificationId);
         return "redirect:/schedule-detail?id=" + eventId;
     }
 }
