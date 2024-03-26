@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warr.ferr.mapper.NotificationMapper">
+
+	<resultMap id="notificationResultMap"
+		type="com.warr.ferr.model.Notification">
+		<id property="notificationId" column="notification_id" />
+		<result property="eventId" column="event_id" />
+		<result property="userId" column="user_id" />
+		<result property="content" column="content" />
+		<result property="notificationTime" column="notification_time" />
+		<result property="createdAt" column="created_at" />
+	</resultMap>
+
+	<insert id="createNotification" useGeneratedKeys="true"
+		keyProperty="notificationId" parameterType="com.warr.ferr.model.Notification">
+		insert into schedule_notifications (notification_id, event_id, user_id, content, notification_time)
+		values (#{notificationId}, #{eventId}, #{userId}, #{content}, #{notificationTime})
+	</insert>
+
+	<select id="findAllNotificationsByEventId" resultMap="notificationResultMap">
+		select notification_id, event_id, user_id, content,
+		       notification_time, created_at
+		from schedule_notifications
+		where event_id=#{eventId}
+	</select>
+
+	<delete id="deleteNotificationById" parameterType="java.lang.Integer">
+		delete from schedule_notifications
+		where notification_id=#{notificationId}
+	</delete>
+
+</mapper>

@@ -3,6 +3,8 @@ package com.warr.ferr.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.warr.ferr.model.Notification;
+import com.warr.ferr.service.NotificationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final NotificationService notificationService;
 
 //    // Event Detail -> Logic(Create) -> Schedule Detail(Feat. Update, Delete, Note, Group Manage, PathFinder, Review)
 //    @PostMapping("/saveSchedule")
@@ -57,9 +59,15 @@ public class ScheduleController {
 
         Optional<Schedule> optFindSchedule = scheduleService.findByEventId(eventId);
 
+        // Event가 존재할 경우
         if (optFindSchedule.isPresent()) {
+            // Schedule Object 넘기기
             Schedule findSchedule = optFindSchedule.get();
             model.addAttribute("schedule", findSchedule);
+
+            // Notification List 넘기기
+            List<Notification> notifications = notificationService.findAllNotificationsByEventId(eventId);
+            model.addAttribute("notifications", notifications);
         } else {
             return "error_page";
         }
@@ -69,8 +77,7 @@ public class ScheduleController {
 
     // Schedule-Detail -> Logic(Delete) -> Schedule List
     @GetMapping("/schedule-detail/delete/{eventId}")
-    public String deleteSchedule(@PathVariable Integer eventId,
-                                 Model model) {
+    public String deleteSchedule(@PathVariable Integer eventId) {
 
         scheduleService.deleteSchedule(eventId);
 
@@ -80,8 +87,7 @@ public class ScheduleController {
     // Schedule-Detail -> Logic(Update : contentId, promiseDate) -> Schedule List
     @PostMapping("/schedule-detail/update/{eventId}")
     public String updateSchedule(@PathVariable Integer eventId,
-                                 @ModelAttribute ScheduleUpdateDto scheduleUpdateDto,
-                                 Model model) {
+                                 @ModelAttribute ScheduleUpdateDto scheduleUpdateDto) {
 
         scheduleService.updateSchedule(eventId, scheduleUpdateDto);
 

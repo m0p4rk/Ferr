@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ include file="/WEB-INF/views/navbar.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,10 +9,23 @@
 	<title>일정 관리 대시보드</title>
 	<link rel="stylesheet"
 		  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet"
+		  href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
+		  integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+		  crossorigin="anonymous">
 	<script
 			src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script
 			src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+			crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
+			integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+			crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
+			integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+			crossorigin="anonymous"></script>
 	<!-- 카카오맵 SDK를 동적으로 로드 -->
 	<script type="text/javascript"
 			src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9496f9be338adc74c68fd22757fd2e12&libraries=services"></script>
@@ -26,14 +40,65 @@
 	<h2>행사 위치와 날씨 정보</h2>
 	<div id="map" style="width: 100%; height: 350px;"></div>
 	<div id="weatherInfo" class="weather-widget"></div>
+
+	<!-- 노트 및 알림 입력 폼 -->
 	<h2>스크래치 노트 추가 후 알림</h2>
-	<form id="noteForm">
+	<form id="noteForm" action="/newNotification?id=${schedule.eventId}" method="post">
 		<div class="form-group">
-			<label for="noteContent">노트 내용:</label>
-			<textarea class="form-control" id="noteContent" rows="3"></textarea>
+			<label for="noteContent">노트 내용</label>
+			<textarea class="form-control" id="noteContent" name="content" rows="3"></textarea>
 		</div>
-		<button type="submit" class="btn btn-primary">노트 추가</button>
+		<div class="form-row align-items-center">
+			<div class="col-auto">
+				<label for="noteDateTime" class="sr-only">알림 예약 :</label>
+				<input type="datetime-local" class="form-control mb-2" id="noteDateTime" name="date">
+			</div>
+			<div class="col-auto">
+				<button type="submit" class="btn btn-primary mb-2">
+					노트 추가
+				</button>
+			</div>
+			<!-- Dropdown Form -->
+			<div class="col-auto">
+				<button class="btn btn-primary mb-2 dropdown-toggle" type="button"
+						id="dropdownMenuButton" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false">
+					알림 보기
+				</button>
+				<!-- 스타일에 max-height와 overflow-y 속성을 추가 -->
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton"
+					 style="max-height: 500px; overflow-y: auto;">
+					<c:forEach var="notification" items="${notifications}" varStatus="status">
+						<div class="dropdown-item">
+							<span>${notification.userId}님의 알림 : </span>
+							<span>${notification.content}</span>
+						</div>
+						<div class="dropdown-item">알림 예정 시간 :
+							<fmt:formatDate value="${notification.notificationTime}" pattern="M월 d일 a h시 m분" />
+						</div>
+						<div style="display: flex; justify-content: end;">
+							<a href="/notification/delete
+									?id=${schedule.eventId}
+									&nid=${notification.notificationId}"
+							   class="btn btn-danger btn-sm" style="margin-right: 5px;">
+								삭제
+							</a>
+							<a href="/notification/update
+									?id=${schedule.eventId}
+									&nid=${notification.notificationId}"
+							   class="btn btn-primary btn-sm">
+								수정
+							</a>
+						</div>
+						<c:if test="${not status.last}">
+							<hr style="border-color: #2f2f2f;">
+						</c:if>
+					</c:forEach>
+				</div>
+			</div>
+		</div>
 	</form>
+
 	<!-- 그룹원 추가 UI -->
 	<div class="mt-3">
 		<h2>그룹원 관리</h2>
@@ -168,6 +233,7 @@
 		// 팝업으로 카카오 지도창 띄우기
 		window.open(kakaoMapUrl, '_blank');
 	});
+
 </script>
 </body>
 </html>
