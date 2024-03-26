@@ -109,9 +109,9 @@
 							<div id="searchResults" class="search-results"></div>
 						</div>
 						<div class="form-group selected-members">
-							<label for="selectedMembersList">선택된 그룹원</label>
+							<label for="addGroupMembersList">추가된 그룹원</label>
 							<!-- for 속성 값 수정 -->
-							<ul id="selectedMembersList" class="list-group"></ul>
+							<ul id="addGroupMembersList" class="list-group"></ul>
 							<!-- id 속성 값 수정 -->
 						</div>
 					</form>

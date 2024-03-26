@@ -68,16 +68,13 @@
 	</update>
 
 	<insert id="saveSchedule"
-		parameterType="com.warr.ferr.model.Schedule">
-		insert into user_events (user_id, content_id,
-		event_title, event_start_date,
-		event_end_date, latitude, longitude,
-		promise_date,
-		start_location)
-		values (#{userId}, #{contentId},
-		#{eventTitle},
-		#{eventStartDate}, #{eventEndDate}, #{latitude},
-		#{longitude},
-		#{promiseDate}, #{startLocation})
+		parameterType="com.warr.ferr.model.Schedule" useGeneratedKeys="true"
+		keyProperty="eventId">
+		INSERT INTO user_events (user_id, content_id, event_title, event_start_date,
+		event_end_date, latitude, longitude, promise_date, start_location)
+		VALUES (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate},
+		#{eventEndDate}, #{latitude}, #{longitude}, #{promiseDate},
+		#{startLocation})
 	</insert>
+
 </mapper>

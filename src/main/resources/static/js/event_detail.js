@@ -157,109 +157,142 @@ function formatDate(dateStr) {
     return `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6)}`;
 }
 
+// userId를 서버로부터 가져오는 함수
+function fetchUserId() {
+    return fetch('/api/userId')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch userId');
+            }
+            return response.text();
+        })
+        .catch(error => {
+            console.error('Error fetching userId:', error);
+            throw error;
+        });
+}
+
+// 일정 제출 함수
 function submitSchedule() {
-    // 세션 스토리지에서 이벤트 정보 가져오기
-    const eventInfo = JSON.parse(sessionStorage.getItem('eventInfo') || '{}');
-    
-    // 폼에서 입력 값을 가져옵니다.
-    var contentId = eventInfo.contentId || '';
-    var eventTitle = eventInfo.title || '';
-    // 날짜 포맷 적용
-    var eventStartDate = formatDate(eventInfo.eventStartDate || '');
-    var eventEndDate = formatDate(eventInfo.eventEndDate || '');
-    var latitude = eventInfo.mapy || 0;
-    var longitude = eventInfo.mapx || 0;
-    // 현재 날짜를 'YYYY-MM-DD' 포맷으로 변환
-    var promiseDate = formatDate(document.getElementById('startDate').value.replace(/-/g, ''));
-    var startLocation = document.getElementById('departureLocation').value;
+    fetchUserId().then(userId => {
+        const eventInfo = JSON.parse(sessionStorage.getItem('eventInfo') || '{}');
 
-    // 선택된 그룹원의 userId만 추출
-    var participantUserIds = selectedMembers.map(member => member.userId);
+        const schedule = {
+            // 일정 정보
+            contentId: eventInfo.contentId || '',
+            eventTitle: eventInfo.title || '',
+            eventStartDate: formatDate(eventInfo.eventStartDate || ''),
+            eventEndDate: formatDate(eventInfo.eventEndDate || ''),
+            latitude: eventInfo.mapy || 0,
+            longitude: eventInfo.mapx || 0,
+            promiseDate: formatDate(document.getElementById('startDate').value.replace(/-/g, '')),
+            startLocation: document.getElementById('departureLocation').value
+        };
 
-    // fetch API를 사용하여 일정 정보와 선택된 그룹원 정보를 서버로 전송합니다.
-    fetch('/saveSchedule', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            contentId,
-            eventTitle,
-            eventStartDate,
-            eventEndDate,
-            latitude,
-            longitude,
-            promiseDate,
-            startLocation,
-            participantUserIds // 선택된 그룹원 ID 추가
-        }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.text();
-    })
-    .then(result => {
-        alert('일정이 성공적으로 저장되었습니다.');
-        // 모달 숨김 처리 및 관련 UI 초기화
-        $('#createScheduleModal').modal('hide');
-        $('body').removeClass('modal-open');
-        $('.modal-backdrop').remove();
-        // 선택된 멤버 목록 초기화
-        selectedMembers = [];
-        updateSelectedMembersUI();
-    })
-    .catch(error => {
-        console.error("일정 저장에 실패하였습니다:", error);
-        alert("일정 저장에 실패하였습니다: " + error);
+        // 추가된 그룹원의 userId만 추출
+        const participantUserIds = addGroupMembers.map(member => member.userId);
+
+        fetch('/saveSchedule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                schedule,
+                participantUserIds,
+                userId
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(result => {
+            alert('일정이 성공적으로 저장되었습니다.');
+            $('#createScheduleModal').modal('hide');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+            addGroupMembers = [];
+            updateAddGroupMembersUI();
+        })
+        .catch(error => {
+            console.error("일정 저장에 실패하였습니다:", error);
+            alert("일정 저장에 실패하였습니다: " + error);
+        });
+    }).catch(error => {
+        alert('User ID fetch failed: ' + error.message);
     });
 }
 
 
-let selectedMembers = [];
+
+let addGroupMembers = []; // 추가할 그룹원들을 저장할 배열
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 사용자 검색 기능
     document.getElementById('groupMemberSearch').addEventListener('input', function() {
-        const searchQuery = this.value.trim();
-        
-        // 여기서 실제 검색 로직을 구현합니다. 예시로는 단순히 로그를 찍는 것으로 처리합니다.
-        console.log(`검색된 사용자: ${searchQuery}`);
-        // displaySearchResults 함수를 호출하여 검색 결과를 화면에 표시해야 합니다.
+        const nickname = this.value.trim();
+        if (nickname.length >= 2) {
+            fetch(`/api/users/search?nickname=${nickname}`)
+                .then(response => response.json())
+                .then(data => displaySearchResults(data))
+                .catch(error => console.error('Error:', error));
+        } else {
+            document.getElementById('searchResults').innerHTML = '';
+        }
     });
 
+    // 검색 결과 클릭 이벤트 리스너
     document.getElementById('searchResults').addEventListener('click', function(e) {
-        if (e.target && e.target.dataset.userId) {
-            const userId = e.target.dataset.userId;
-            const nickname = e.target.textContent;
-            if (!selectedMembers.some(member => member.userId === userId)) {
-                selectedMembers.push({ userId, nickname });
-                updateSelectedMembersUI();
-            }
+    // dataset에서 userId를 가져오는 로직 확인
+    const userId = e.target.dataset.userId;
+    const nickname = e.target.textContent;
+    console.log(`Clicked user: ${nickname} (ID: ${userId})`); // 클릭 이벤트 확인
+
+    // 중복 추가 방지 로직 점검
+    if (userId && !addGroupMembers.some(member => member.userId === userId)) {
+        console.log(`Adding user: ${nickname} (ID: ${userId}) to the group`); // 사용자 추가 로그
+        addGroupMembers.push({ userId, nickname }); // 새로운 사용자 추가
+        updateAddGroupMembersUI(); // 추가할 그룹원 목록 UI 업데이트
+    } else {
+        console.log(`User: ${nickname} (ID: ${userId}) is already in the group`); // 중복 추가 방지 로그
+    }
+});
+
+
+    // 추가된 그룹원 목록 클릭 이벤트 리스너
+    document.getElementById('addGroupMembersList').addEventListener('click', function(event) {
+        const userId = event.target.dataset.userId;
+        if (userId) {
+            addGroupMembers = addGroupMembers.filter(member => member.userId !== userId);
+            updateAddGroupMembersUI(); // UI 업데이트
         }
     });
 });
 
-function updateSelectedMembersUI() {
-    const list = document.getElementById('selectedMembersList');
-    list.innerHTML = '';
-    selectedMembers.forEach(member => {
+// 검색 결과를 화면에 표시하는 함수
+function displaySearchResults(users) {
+    const searchResults = document.getElementById('searchResults');
+    searchResults.innerHTML = ''; // 이전 검색 결과를 초기화
+    users.forEach(user => {
+        const userElement = document.createElement('div');
+        userElement.textContent = user.nickname; // 사용자 닉네임 표시
+        userElement.dataset.userId = user.userId; // dataset에 userId 저장
+        searchResults.appendChild(userElement);
+    });
+}
+
+// 추가할 그룹원 목록 UI를 업데이트하는 함수
+function updateAddGroupMembersUI() {
+    const list = document.getElementById('addGroupMembersList');
+    list.innerHTML = ''; // 목록 초기화
+    addGroupMembers.forEach(member => {
         const li = document.createElement('li');
-        li.textContent = member.nickname;
+        li.textContent = member.nickname; // 닉네임 표시
+        li.dataset.userId = member.userId; // 데이터 속성에 userId 저장
         li.classList.add('list-group-item');
         list.appendChild(li);
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

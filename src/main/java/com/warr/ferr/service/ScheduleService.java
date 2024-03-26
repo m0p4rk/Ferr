@@ -11,7 +11,6 @@ import com.warr.ferr.mapper.ScheduleMapper;
 import com.warr.ferr.model.Schedule;
 import com.warr.ferr.repository.ScheduleRepository;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -41,23 +40,12 @@ public class ScheduleService {
         return scheduleRepository.findAllSchedules();
     }
 
-    public void saveSchedule(Schedule schedule, HttpSession session) {
-        // 세션에서 사용자 ID 가져오기
-        Object userIdObject = session.getAttribute("userId");
-
-        if (userIdObject != null) {
-            // 세션에서 가져온 사용자 ID를 int 타입으로 캐스팅
-            int userId = ((Integer) userIdObject).intValue();
-
-            // 세션에서 가져온 사용자 ID를 Schedule 객체에 설정
-            schedule.setUserId(userId);
-            
-            // Schedule 객체를 데이터베이스에 저장
-            scheduleMapper.saveSchedule(schedule);
-        } else {
-            // 사용자 ID가 세션에 없는 경우, 예외 처리
-            throw new IllegalStateException("User is not logged in.");
-        }
+    public int saveSchedule(Schedule schedule) {
+        // Schedule 객체를 데이터베이스에 저장
+        scheduleMapper.saveSchedule(schedule);
+        
+        // 저장된 Schedule 객체로부터 eventId 반환
+        return schedule.getEventId();
     }
 
 

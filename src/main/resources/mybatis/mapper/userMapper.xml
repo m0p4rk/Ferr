@@ -17,7 +17,7 @@
 	</resultMap>
 
 	<select id="findByNickname"
-		resultType="com.warr.ferr.model.Users">
+		resultMap="userResultMap">
 		SELECT * FROM users WHERE nickname LIKE CONCAT('%', #{nickname}, '%')
 	</select>
 
