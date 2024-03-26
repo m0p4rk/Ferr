@@ -2,45 +2,34 @@ package com.warr.ferr.service;
 
 import com.warr.ferr.mapper.NotificationMapper;
 import com.warr.ferr.model.Notification;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final NotificationMapper notificationMapper;
+	private final NotificationMapper notificationMapper;
 
-    public void createNotification(Notification notification,
-                                   HttpServletRequest request) {
+	public void createNotification(Notification notification, Integer userId) {
+		// UserId가 유효한지 확인
+		if (userId == null || userId == 0) {
+			throw new IllegalArgumentException("Notification must have a valid userId");
+		}
 
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            Integer userId = (Integer) session.getAttribute("userId");
-            notification.setUserId(userId);
-        } else {
-            log.warn("경고 : Session 만료 상태로 알림 저장 시도");
-        }
-        notificationMapper.createNotification(notification);
-    }
+		// Notification 객체에 userId 설정
+		notification.setUserId(userId);
 
-    public void deleteNotificationById(Integer id) {
-        notificationMapper.deleteNotificationById(id);
-    }
+		// Mapper를 통해 Notification 저장
+		notificationMapper.createNotification(notification);
+	}
 
-    Optional<Notification> findNotificationByEventId(Integer id) {
-        return notificationMapper.findNotificationByEventId(id);
-    }
+	public void deleteNotificationById(int notificationId) {
+		notificationMapper.deleteNotificationById(notificationId);
+	}
 
-    public List<Notification> findAllNotificationsByEventId(Integer id) {
-        return notificationMapper.findAllNotificationsByEventId(id);
-    }
-
+	public List<Notification> findAllNotificationsByEventId(int eventId) {
+		return notificationMapper.findAllNotificationsByEventId(eventId);
+	}
 }
