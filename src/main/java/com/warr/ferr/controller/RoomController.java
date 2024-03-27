@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.Gson;
 import com.warr.ferr.dto.ChatroomDto;
+import com.warr.ferr.dto.MessageDto;
 import com.warr.ferr.dto.UserDto;
 import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Messages;
@@ -33,18 +36,19 @@ public class RoomController {
 	private final UserService userService;
 	private final MessagesService messagesService;
 
-    // 채팅방 목록 조회
+    // 채팅방 목록 조회 >> userList, chatroomList, messages sentAt
     @GetMapping(value = "/rooms")
     public String getChatRooms(Model model, HttpSession session){
     	log.info("RoomController : getChatRooms()");
     	int userId = 0;
     	
 		userId = (int) session.getAttribute("userId");
+		List<ChatroomDto> chatroomList = chatService.findAllRoomsByUserId(userId); // 유저가 참여중인 채팅룸 list
 		model.addAttribute("userId", userId);
-		model.addAttribute("rooms", chatService.findAllRoomsByUserId(userId));
+		model.addAttribute("rooms", chatroomList); 
         
         // user list
-        List<Users> userList = userService.findAllUser(session.getAttribute("userId"));
+        List<Users> userList = userService.searchUser(userId);
 		JSONArray jsonArray = new JSONArray();
 		model.addAttribute("userList", jsonArray.fromObject(userList));
 	
@@ -53,7 +57,7 @@ public class RoomController {
 
 //    // 채팅방개설시 중복검사
     @PostMapping("/duple")
-    public String duplicationCheck(@RequestBody List<UserDto> userList, Model model, HttpSession session) {
+    public String duplicationCheck(@RequestBody List<Users> userList, Model model, HttpSession session) {
     	Users user = userService.findUserById((Integer) session.getAttribute("userId"));
     	
     	return "redirect:/chat/rooms";
@@ -61,7 +65,7 @@ public class RoomController {
     
     // 채팅방 개설
     @PostMapping("/room")
-    public String createChatRoom(@RequestBody List<UserDto> userList, Model model, HttpSession session) {
+    public String createChatRoom(@RequestBody List<Users> userList, Model model, HttpSession session) {
         log.info("RoomController : createChatRoom()");
         Users user = userService.findUserById((Integer) session.getAttribute("userId"));
         model.addAttribute("roomName", chatService.createChatRoom(userList, user));
@@ -78,34 +82,101 @@ public class RoomController {
         ChatroomMembers chatroomId = chatService.findRoomById(roomId, userId);
         model.addAttribute("room", chatroomId);
         
-        // 채팅방 소속된 유저리스트 
-//        List<Users> userList = userService.findUserByRoomId(chatroomId.getChatroomId());
-//        model.addAttribute("userList", userList);
+        // 채팅방 소속된 유저리스트 채팅방으로 넘겨줄데이터
+        List<Users> roomUserList = chatService.findUserByRoomId(chatroomId.getChatroomId());
+        JSONArray jsonArray = new JSONArray();
+        model.addAttribute("roomUserList", jsonArray.fromObject(roomUserList));
+        
+        // 떠난 유저 정보 >> 이거말고 users가 필요할것같다
+        List<ChatroomMembers> leaveUser = chatService.findLeaveMember(roomId);
+        model.addAttribute("leaveUser", jsonArray.fromObject(leaveUser));
+        
+        // user list 검색할때 사용
+        List<Users> userList = userService.searchUser(userId);
+		model.addAttribute("userList", jsonArray.fromObject(userList));
+    }
+    
+    // room에서 최신화할때 사용함
+    @GetMapping("/ajaxInfo")
+    @ResponseBody
+    public List<MessageDto> ajaxInfo(int roomId, Model model, HttpSession session){
+        int userId = (Integer) session.getAttribute("userId");
+        ChatroomMembers chatroomId = chatService.findRoomById(roomId, userId); // roomId랑 userId로 채팅방 찾기
+        model.addAttribute("room", chatroomId);
+        
+        // 채팅방 소속된 유저리스트 채팅방으로 넘겨줄데이터
+        List<Users> userList = chatService.findUserByRoomId(chatroomId.getChatroomId());
+        JSONArray jsonArray = new JSONArray();
+        model.addAttribute("roomUserList", jsonArray.fromObject(userList));
 
         // 이전 채팅 이력
-        List<Messages> preMsgList = messagesService.preMsg(chatroomId);
-        model.addAttribute("preMsg", preMsgList);
-
+        List<MessageDto> preMsgList = messagesService.preMsg(chatroomId, userList);
+        model.addAttribute("preMsg", jsonArray.fromObject(preMsgList));
         
+        // 마지막 읽은 시간 갱신
+        chatService.lastReadAtUpdate(roomId, (Integer) session.getAttribute("userId"));
+        
+        return preMsgList;
+    }
+    
+    // 채팅방 마지막사용시간 최신화
+    @GetMapping("/lastRead")
+    public void lastReadAtUpdate (int roomId, HttpSession session){
+    	chatService.lastReadAtUpdate(roomId, (Integer) session.getAttribute("userId"));
+    }
+    
+    
+    // 채팅방 목록 최신화
+    @GetMapping("/listUpdate")
+    @ResponseBody
+    public List<ChatroomDto> chatroomUpdate(HttpSession session){
+    	JSONArray jsonArray = new JSONArray();
+    	ChatroomMembers chatroomMember = new ChatroomMembers(); // message 받아와야될듯? roomId랑 userId 필요
+    	List<ChatroomDto> chatroomList = chatService.findAllRoomsByUserId((Integer)session.getAttribute("userId"));
+    	
+    	return chatroomList;
     }
     
     // 채팅방 제목 수정
     @PostMapping("/roomName")
-    public String roomNameUpdate(@RequestBody ChatroomDto chatroomDto){
-    	boolean result = chatService.roomNameUpdate(chatroomDto);
+    public String roomNameUpdate(@RequestBody ChatroomMembers chatroomMembers){
+    	boolean result = chatService.roomNameUpdate(chatroomMembers);
     	return "redirect:/chat/rooms";
     }
     
     // 방 나가기
     @PostMapping("/leave")
-    public String chatroomLeave(@RequestBody ChatroomDto chatroomDto){
-        log.info("RoomController : deleteRoom(), roomId : " + chatroomDto);
-        System.out.println("chatroomDto : " + chatroomDto.getChatroomId());
-        System.out.println("chatroomDto : " + chatroomDto.getUserId());
-        boolean result = chatService.chatroomLeave(chatroomDto);
+    public String chatroomLeave(@RequestBody ChatroomMembers chatroom){
+        log.info("RoomController : deleteRoom(), roomId : " + chatroom);
+        boolean result = chatService.chatroomLeave(chatroom);
 
         return "redirect:/chat/rooms";
     }
+    
+    // 채팅방 구분없이 안읽은 메시지 갯수 가져오기
+    @GetMapping("/alarm")
+    @ResponseBody
+    public int MsgAlarm(HttpSession session){
+    	int alarm = messagesService.msgAlarm((Integer)session.getAttribute("userId"));
+    	System.out.println("alarm :  " + alarm);
+    	return alarm;
+    }
+    
+    // 채팅방에서 유저 초대하기
+    @PostMapping("/invite")
+    @ResponseBody
+    public void inviteChat(@RequestBody List<Users> userList, int chatroomId) {
+        chatService.inviteChat(userList, chatroomId);
+    }
+    
+    // room 에서 유저 검색
+    @PostMapping("/search")
+    @ResponseBody
+    public List<Users> searchUser(HttpSession session) {
+    	List<Users> searchList = userService.searchUser((Integer)session.getAttribute("userId"));
+    	return searchList;
+    }
+    
     
     // 채팅방 삭제 - 모든유저가 leave 상태인 채팅룸 id 기준으로 삭제
 //    @PostMapping("/deleteRoom")

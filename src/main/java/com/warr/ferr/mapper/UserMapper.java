@@ -22,11 +22,10 @@ public interface UserMapper {
 	Integer findUserIdByEmail(String email);
 	
 	// 채팅에서 임시로 사용중
-	public List<Users> findAllUser(Object userId);
+	public List<Users> findAllUser();
 	// 채팅에서 임시로 사용중
-	public Users findUserById(int userId);
+	public Users findUserByUserId(int userId);
 	
-	List<Users> findAllUser();
 	
 	public int getUserByEmail(String email);
 	
@@ -35,5 +34,6 @@ public interface UserMapper {
 	public void saveUserPreferences(UserPreferences preferences);
 
 	public void updateUserPreferences(UserPreferences preferences);
+
 
 }

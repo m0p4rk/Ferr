@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.Builder.Default;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class ChatroomMembers {
 	private int chatroomId;
 	private int userId;
 	private String chatroomName;
-	private Status status = Status.JOIN;
+	@Default private Status status = Status.JOIN;
 	private Timestamp lastReadAt;
 	
 	public enum Status{

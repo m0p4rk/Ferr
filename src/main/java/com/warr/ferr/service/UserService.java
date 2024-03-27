@@ -1,5 +1,6 @@
 package com.warr.ferr.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -78,14 +79,21 @@ public class UserService {
         }
     }
 
-    // 채팅에서 임시로 사용중
-	public List<Users> findAllUser(Object userId) {
-	List<Users> userList = userMapper.findAllUser(userId);
-	return userList;
+    // 채팅에서 사용중: 유저 검색 리스트 생성(본인제외 모든유저)
+	public List<Users> searchUser(int userId) {
+	List<Users> userList = userMapper.findAllUser();
+	List<Users> searchUser = new ArrayList<>();
+	
+	for (int i = 0; i < userList.size(); i++) {
+		if(userList.get(i).getUserId() != userId) {
+			searchUser.add(userList.get(i));
+		}
 	}
-	// 채팅에서 임시로 사용중
+	return searchUser;
+	}
+	// 채팅에서 사용중: userId로 user검색
 	public Users findUserById(int userId) {
-		return userMapper.findUserById(userId);
+		return userMapper.findUserByUserId(userId);
 	}
 	
     public int getUserIdByEmail(String email) {
@@ -107,5 +115,15 @@ public class UserService {
 	public void updateUserPreferences(UserPreferences preferences) {
 		userMapper.updateUserPreferences(preferences);
 	}
+	// 채팅에서 임시로 사용
+//	public List<Users> findUserByRoomId(int chatroomId) {
+//		List<Users> allUsers = userMapper.findUserByRoomId(chatroomId);
+//		List<Users> chatroomUsers = new ArrayList<>();
+//		for (int i = 0; i < allUsers.size(); i++) {
+//			if(allUsers.get(i).)
+//		}
+//		
+//        return ;
+//    }
 
 }

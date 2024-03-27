@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ include file="/WEB-INF/views/navbar.jsp"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,6 +9,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <title>chat room</title>
 <style>
   /* 모달 스타일링 */
@@ -66,16 +69,21 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-<% // 테스트용 세션
-	/* session.setAttribute("userId", "유저네임 1"); */
-	%>
 <button id="openModalBtn">채팅룸 생성</button>
 <div class="container">
-    <div>
+    <div id="chatroomList">
     	<c:forEach items="${rooms}" var="room">
     		 <ul class="list-group">
 	            <li class="list-group-item">
-	            	<a href="javascript:void(0)" onclick="openChatRoom('${room.chatroomId}', '${room.chatroomName}')">${room.chatroomName}</a>
+	            	<a href="javascript:void(0)" onclick="openChatRoom('${room.chatroomId}')" data-room-id="${room.chatroomId}">${room.chatroomName}</a>
+	            	<div id="lastMsg">
+	            		${room.userId} : ${room.content} <br>
+	            		<fmt:formatDate value="${room.sentAt }" pattern="yyyy년 MM월 dd일 HH:mm"/>
+	            		<!-- receiveCount가 0보다 크고 null이 아닐 때에만 출력 -->
+					    <c:if test="${room.receiveCount > 0 and room.receiveCount ne null}">
+					        <span id="receiveCount">안읽은메시지 : ${room.receiveCount}</span>
+					    </c:if>
+	            	</div>
 	            </li>
 	        </ul>
     	</c:forEach>
@@ -118,15 +126,136 @@
 <script>
 <%
 int sessionId = (Integer)session.getAttribute("userId");
+String sessionNickname = (String)session.getAttribute("nickname");
 %>
 var sessionId = '<%= sessionId %>';
+var sessionNickname = '<%= sessionNickname %>';
+var rooms = document.querySelectorAll('.list-group-item a[data-room-id]');
+var lastMsg = document.getElementById("lastMsg");
+
+
+//채팅방 리스트를 업데이트하는 함수
+function updateChatroomList() {
+    $.ajax({
+        url: '/chat/listUpdate', // 채팅방 리스트를 가져올 URL
+        type: 'GET',
+        success: function(response) {
+            displayChatrooms(response); // 가져온 데이터를 화면에 표시하는 함수 호출
+        },
+        error: function(xhr, status, error) {
+            // 오류 발생 시 처리하는 부분
+            console.error('Failed to update chatroom list:', error);
+        }
+    });
+}
+
+//각 방의 ID를 출력
+rooms.forEach(function(room) {
+    var roomId = room.getAttribute('data-room-id');
+    console.log("Room ID:", roomId);
+    
+    var sockJs = new SockJS("/stomp/chat");
+	// SockJS를 STOMP로 전달
+	var stomp = Stomp.over(sockJs);
+    // 연결
+    stomp.connect({}, function () {
+        // subscribe(path, callback) 서버로부터 메세지를 수신
+        let content = '';
+        stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
+            var messages = JSON.parse(chat.body);
+            console.log(messages);
+            updateChatroomList();
+        });
+    });
+});
+
+//페이지 로드 시 실행되는 함수
+$(document).ready(function() {
+    // AJAX를 통해 채팅방 리스트를 업데이트하는 함수 호출
+    updateChatroomList();
+});
+
+// 날짜 형태 변환
+function dateConversion(chatroom) {
+    // 주어진 날짜 문자열을 Date 객체로 변환
+    var sentAtDate = new Date(chatroom.sentAt);
+
+    // 현재 날짜
+    var currentDate = new Date();
+
+ 	// 날짜가 다르면 무조건 하루로 간주
+    var dayDiff = sentAtDate.getDate() !== currentDate.getDate() ? 1 : 0;
+
+    // 년, 월, 일을 가져오기
+    var month = sentAtDate.getMonth() + 1; // 월 (0부터 시작하기 때문에 1을 더해줍니다.)
+    var day = sentAtDate.getDate(); // 일
+
+    // 시간을 가져오기
+    var hours = sentAtDate.getHours(); // 시간 (0부터 23까지)
+    var minutes = sentAtDate.getMinutes(); // 분 (0부터 59까지)
+
+    // 시간을 두 자리 숫자로 표시하기 위해 10 미만의 값에는 앞에 0을 추가
+    var ampm = hours < 12 ? '오전' : '오후';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 시간이 0시인 경우 12시로 표시
+    minutes = (minutes < 10 ? '0' : '') + minutes;
+
+    // 현재 날짜와의 차이에 따라 날짜를 표시하는 방식 선택
+    var formattedDate = '';
+    if (dayDiff === 0) {
+        // 오늘일 경우 시간만 표시
+        formattedDate = ampm + ' ' + hours + ':' + minutes;
+    } else if (dayDiff === 1) {
+        // 어제일 경우 '어제' 표시
+        formattedDate = '어제';
+    } else {
+        // 그 외에는 월 일 표시
+        formattedDate = month + '월 ' + day + '일';
+    }
+
+    // 반환
+    return formattedDate;
+}
+
+// 채팅방 리스트를 화면에 표시하는 함수
+function displayChatrooms(chatrooms) {
+    chatroomList.innerHTML = ''; // 기존에 표시되어 있던 채팅방 리스트 초기화
+
+    // 받아온 채팅방 리스트를 순회하면서 화면에 표시
+    chatrooms.forEach(function(chatroom) {
+    	console.log(chatroom);
+        var str = '';
+        // 각 채팅방을 표시할 HTML 코드 생성
+        str += "<ul class='list-group'>";
+        str += "<li class='list-group-item'>";
+        str += "<a href='#' onclick='openChatRoom(" + chatroom.chatroomId + ")' value=" + chatroom.chatroomId + ">" + chatroom.chatroomName + "</a>" + " 참여인원 : " + chatroom.members;
+        str += "<div id='lastMsg_" + chatroom.chatroomId + "'>";
+        if(chatroom.content != null){
+	        str += chatroom.nickname + " : " +  chatroom.content + "<br>";
+        }
+        str += dateConversion(chatroom); // 변환된 날짜와 시간을 추가
+        
+     	// receiveCount가 0보다 크고 null이 아닌 경우에만 출력
+        if (chatroom.receiveCount > 0 && chatroom.receiveCount != null) {
+            str += "<span id='receiveCount'>  안 읽은 메시지 : " + chatroom.receiveCount + "</span>";
+        }
+        
+        // 안읽은 메시지 등 추가 정보도 여기에 표시
+        str += "</div>" + "</li>" + "</ul>";
+        chatroomList.innerHTML += str; // 생성한 HTML 코드를 컨테이너에 추가
+    });
+}
+// ----------------------------------------------------------------------------------------------------
 
 // 채팅창 띄우기
-function openChatRoom(roomId, roomName) {
+function openChatRoom(roomId) {
  	var leftPosition = (window.screen.width * 2 / 3) // / 2) - (512 / 2); 가운데 띄울때
 	var topPosition = (window.screen.height * 2 / 5) // / 2) - (568 / 2);
-
 	window.open('http://localhost:8080/chat/room?roomId=' + roomId, 'win0', 'width=512,height=568,left=' + leftPosition + ',top=' + topPosition + ',status=no,toolbar=no,scrollbars=no');
+	updateChatroomList();
+	
+	// 페이지 이동으로 할때 사용
+	//window.location.href = 'http://localhost:8080/chat/room?roomId=' + roomId;
 }
 
 // json 데이터 가져오기
@@ -145,16 +274,6 @@ var closeBtn = modal.querySelector(".close");
 var yesBtn = modal2.querySelector("#yesBtn"); // 모달2
 var noBtn = modal2.querySelector("#noBtn"); // 모달2
 var closeBtn3 = modal3.querySelector(".close");
-
-//선택된 항목 초기화 함수
-/* function clearSelectedItems() {
-	
-} */
-
-// 체크박스 초기화 함수
-/* function clearCheckboxes() {
-
-} */
 
 // 모달 버튼 클릭 시 모달 열기
 modalBtn.onclick = function() {
@@ -202,7 +321,7 @@ window.onclick = function(event) {
 //input 초기화 함수
 function clearInput() {
     var roomNameInput = document.getElementById("roomName");
-    roomNameInput.value = ''; // input 값을 비웁니다.
+    roomNameInput.value = ''; // input 빈값으로 초기화
 }
 
 //모달 내용 초기화 함수
@@ -265,7 +384,7 @@ searchInput.addEventListener("input", function() {
       listItem.appendChild(checkbox);
       
       // 검색된 항목의 텍스트 표시
-      var textNode = document.createTextNode(userList[i].nickname);
+      var textNode = document.createTextNode(userList[i].nickname + " (" + userList[i].email + ")");
       listItem.appendChild(textNode);
       
       // 
@@ -343,7 +462,6 @@ document.getElementById("createBtn").addEventListener("click", function() {
   var selectedItems = document.querySelectorAll("#selectedItems .selected-item");
   var selectedValues = [];
 
-  // 추가된부분
   selectedItems.forEach(function(item) {
 	    selectedValues.push({
 	      userId: item.getAttribute("data-user-id"),
@@ -401,7 +519,7 @@ document.addEventListener('mousedown', function(event) {
         // 오른쪽 버튼 클릭된 요소가 li 요소인지 확인
         if (event.target.tagName === "A") {
             // 오른쪽 클릭된 room의 ID와 이름을 저장
-            clickedRoomId = event.target.getAttribute("onclick").split("'")[1];
+            clickedRoomId = event.target.getAttribute("onclick").match(/\d+/)[0];
             clickedRoomName = event.target.textContent.trim();
 
             // 메뉴를 표시할 위치를 정의.  오른쪽 클릭된 위치를 기준으로 함
@@ -437,6 +555,91 @@ document.addEventListener('mousedown', function(event) {
     }
 });
 
+//문서에서 터치 시작 이벤트를 감지하여 터치 타이머 시작
+document.addEventListener('touchstart', function(event) {
+    // 터치 타이머 시작
+    touchTimer = setTimeout(function() {
+        // 터치가 일정 시간 동안 유지되었을 때 메뉴를 열도록 처리
+        openMenu();
+    }, 1000); // 1초 후에 메뉴를 엽니다.
+});
+
+// 문서에서 터치 종료 이벤트를 감지하여 터치 타이머 초기화
+document.addEventListener('touchend', function(event) {
+    clearTimeout(touchTimer); // 터치 타이머 초기화
+});
+document.addEventListener('contextmenu', function(event) {
+    // 오른쪽 클릭된 요소가 <a> 태그인지 확인
+    if (event.target.tagName === "A") {
+        // 클릭된 room의 ID와 이름을 저장
+        clickedRoomId = event.target.getAttribute("onclick").match(/\d+/)[0];
+        clickedRoomName = event.target.textContent.trim();
+
+        // 메뉴를 표시할 위치를 정의.  오른쪽 클릭된 위치를 기준으로 함
+        var menuX = event.pageX;
+        var menuY = event.pageY;
+
+        // 기존에 메뉴가 있다면 제거
+        var existingMenu = document.querySelector(".context-menu");
+        if (existingMenu) {
+            existingMenu.remove();
+        }
+
+        // 원하는 메뉴를 생성하고 위치를 설정
+        var menu = document.createElement("div");
+        menu.classList.add("context-menu");
+        menu.style.position = "fixed";
+        menu.style.left = menuX + "px";
+        menu.style.top = menuY + "px";
+        menu.style.backgroundColor = "white";
+        menu.style.border = "1px solid black";
+
+        // 메뉴에 내용 추가
+        menu.innerHTML = `
+            <ul>
+                <li onclick="handleMenuAction('edit')">제목 수정</li>
+                <li onclick="handleMenuAction('delete')">방 나가기</li>
+            </ul>
+        `;
+
+        // body에 메뉴 추가
+        document.body.appendChild(menu);
+
+        // contextmenu 이벤트의 기본 동작을 막음
+        event.preventDefault();
+    }
+});
+
+function openMenu() {
+    console.log('Menu opened');
+    
+
+}
+
+// 메뉴 항목 처리 함수
+function handleMenuAction(action) {
+    // 각 메뉴 항목에 대한 동작
+    if (action === 'edit') {
+        // 제목수정 
+        console.log('Edit room');
+    } else if (action === 'delete') {
+        // 방나가기
+        console.log('Leave room');
+    }
+}
+
+// 메뉴 항목 처리 함수
+function handleMenuAction(action) {
+    // 각 메뉴 항목에 대한 동작을 처리합니다.
+    if (action === 'edit') {
+        console.log('Edit room');
+        // 여기에 제목 수정에 대한 동작을 추가합니다.
+    } else if (action === 'delete') {
+        console.log('Leave room');
+        // 여기에 방 나가기에 대한 동작을 추가합니다.
+    }
+}
+
 // 문서 전체에 클릭 이벤트 리스너 추가하여 메뉴 숨김
 document.addEventListener("click", function(event) {
     var menu = document.querySelector(".context-menu");
@@ -448,10 +651,10 @@ document.addEventListener("click", function(event) {
 function handleMenuAction(action, roomName) {
     switch (action) {
         case "delete":
-            openModal(modal2); // 삭제 항목을 선택했을 때 모달2를 엽니다.
+            openModal(modal2); // 삭제 항목 선택시 모달2 오픈
             break;
         case "edit":
-            openModal(modal3); // 수정 항목을 선택했을 때 모달3를 엽니다.
+            openModal(modal3); // 수정 항목 선택시 모달3 오픈
         	// 모달3에 클릭된 링크의 텍스트 설정
             var roomNameInput = document.getElementById("roomName");
             roomNameInput.value = clickedRoomName;
@@ -464,6 +667,22 @@ function handleMenuAction(action, roomName) {
     if (menu) {
         menu.remove();
     }
+}
+
+
+// 방 나갈때 시스템메시지 보내기
+function leaveMessage() {
+	var sockJs = new SockJS("/stomp/chat");
+	// SockJS를 STOMP로 전달
+	var stomp = Stomp.over(sockJs);
+    // 연결
+    stomp.connect({}, function () {
+    	
+    var msg = sessionNickname + '님이 나갔습니다.';
+    var messageType = 'SYSTEM';
+    stomp.send('/pub/chat/message', {}, 
+    		JSON.stringify({chatroomId: clickedRoomId, content: msg, senderId: sessionId, messageType: messageType}));
+    });
 }
 
 //모달2의 예 버튼 클릭 시 AJAX 요청 보내기
@@ -490,14 +709,15 @@ if (modal2YesBtn) {
         contentType: "application/json",
         data: JSON.stringify(requestData),
         success: function(response) {
-          // 요청이 성공한 경우 처리
-          console.log("방 나가기 요청이 성공했습니다.");
+          console.log("방 나가기 요청 성공");
+          // 누가 방 나갔는지 시스템메시지 보내기
+          leaveMessage();
           // 새로고침
           location.reload();
         },
         error: function(xhr, status, error) {
           // 요청이 실패한 경우 처리
-          console.error("방 나가기 요청이 실패했습니다:", error);
+          console.error("방 나가기 요청 실패:", error);
         }
       });
     } else {
@@ -561,10 +781,6 @@ if (modal3SaveBtn) {
     roomNameInput.value = ''; 
   };
 }
-
-// 삭제해도 무방
-console.log("1번유저 닉네임: " + userList[0].nickname);
-console.log(sessionId);
 
 </script>
 

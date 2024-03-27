@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.warr.ferr.dto.ChatroomDto;
 import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Chatrooms;
+import com.warr.ferr.model.Users;
 
 @Mapper
 public interface ChatMapper {
@@ -40,11 +41,15 @@ public interface ChatMapper {
 	public List<ChatroomMembers> findRoomByUserIdByChatroomId(int userId);
 	
 	// 채팅방 떠나기
-	public int chatroomLeave(ChatroomDto chatroomDto);
+	public int chatroomLeave(ChatroomMembers chatroom);
 
+	// 채팅방에 소속된 유저 탐색
+	public List<ChatroomMembers> findUserByRoomId(int chatroomId);
 
+	public int lastReadAtUpdate(ChatroomMembers member);
 
-
+	// 룸에서 떠난 유저 찾기
+	public List<ChatroomMembers> findLeaveMember(int chatroomId);
 
 
 }
