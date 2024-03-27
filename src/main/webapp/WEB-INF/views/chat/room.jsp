@@ -126,12 +126,20 @@ span {
 <!-- 대화상대 리스트 -->
 <div id="myModal4" class="modal">
   <div class="modal-content">
+      <div class="countUser">
+        <ul id="userList"></ul>
+        <button id="modalBtn" class="btn user-insert-btn" type="button">+ 대화상대 초대</button>
+      </div>
+  </div>
+</div>
+<!-- <div id="myModal4" class="modal">
+  <div class="modal-content">
 	<ul class="countUser">
-	<ul id="userList"></ul>
+		<ul id="userList"></ul>
 		<button id="modalBtn" class="btn user-insert-btn" type="button">+ 대화상대 초대</button>
     </ul>
   </div>
-</div>
+</div> -->
 <!-- 대화상대 추가 모달 -->
 <div id="myModal5" class="modal5">
   <div class="modal-content">

@@ -1,10 +1,8 @@
 package com.warr.ferr.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.warr.ferr.dto.ChatroomDto;
-import com.warr.ferr.dto.UserDto;
 import com.warr.ferr.mapper.ChatMapper;
 import com.warr.ferr.mapper.MessagesMapper;
 import com.warr.ferr.mapper.UserMapper;
@@ -43,7 +40,7 @@ public class ChatService {
     	for (int i = 0; i < roomList.size(); i++) {
     		Messages lastMsg = messagesMapper.findLastMsg(roomList.get(i)); // 마지막 메시지
     		int receiveCount = messagesMapper.receiveMsgCount(roomList.get(i)); // 안읽은 메시지 갯수
-    		Users user = userMapper.findUserByUserId(roomList.get(i).getUserId()); // 닉네임값 가져오기위해
+    		//Users user = userMapper.findUserByUserId(roomList.get(i).getUserId()); // 닉네임값 가져오기위해
     		List<Users> member = findUserByRoomId(roomList.get(i).getChatroomId()); // 방에속한 모든 유저
     		List<ChatroomMembers> leaveMember = findLeaveMember(roomList.get(i).getChatroomId()); // 방에서 떠난유저 
     		if(lastMsg != null) {
@@ -253,7 +250,7 @@ public class ChatService {
 	}
 
 	public void inviteChat(List<Users> userList, int chatroomId) {
-		List<ChatroomMembers> inviteList = new ArrayList<>();
+		//List<ChatroomMembers> inviteList = new ArrayList<>();
 		System.out.println("연결확인중");
 		for (int i = 0; i < userList.size(); i++) {
 			List<ChatroomMembers> leaveMembers =  chatMapper.findLeaveMember(chatroomId);

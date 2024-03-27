@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.warr.ferr.dto.ChatroomDto;
 import com.warr.ferr.dto.MessageDto;
 import com.warr.ferr.mapper.ChatMapper;
 import com.warr.ferr.mapper.MessagesMapper;

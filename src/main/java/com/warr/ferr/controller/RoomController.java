@@ -10,12 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
 import com.warr.ferr.dto.ChatroomDto;
 import com.warr.ferr.dto.MessageDto;
-import com.warr.ferr.dto.UserDto;
 import com.warr.ferr.model.ChatroomMembers;
-import com.warr.ferr.model.Messages;
 import com.warr.ferr.model.Users;
 import com.warr.ferr.service.ChatService;
 import com.warr.ferr.service.MessagesService;
@@ -49,19 +46,19 @@ public class RoomController {
         
         // user list
         List<Users> userList = userService.searchUser(userId);
-		JSONArray jsonArray = new JSONArray();
-		model.addAttribute("userList", jsonArray.fromObject(userList));
+		//JSONArray jsonArray = new JSONArray();
+		model.addAttribute("userList", JSONArray.fromObject(userList));
 	
         return "chat/rooms";
     }
 
 //    // 채팅방개설시 중복검사
-    @PostMapping("/duple")
-    public String duplicationCheck(@RequestBody List<Users> userList, Model model, HttpSession session) {
-    	Users user = userService.findUserById((Integer) session.getAttribute("userId"));
-    	
-    	return "redirect:/chat/rooms";
-    }
+//    @PostMapping("/duple")
+//    public String duplicationCheck(@RequestBody List<Users> userList, Model model, HttpSession session) {
+//    	Users user = userService.findUserById((Integer) session.getAttribute("userId"));
+//    	
+//    	return "redirect:/chat/rooms";
+//    }
     
     // 채팅방 개설
     @PostMapping("/room")
@@ -84,16 +81,16 @@ public class RoomController {
         
         // 채팅방 소속된 유저리스트 채팅방으로 넘겨줄데이터
         List<Users> roomUserList = chatService.findUserByRoomId(chatroomId.getChatroomId());
-        JSONArray jsonArray = new JSONArray();
-        model.addAttribute("roomUserList", jsonArray.fromObject(roomUserList));
+        //JSONArray jsonArray = new JSONArray();
+        model.addAttribute("roomUserList", JSONArray.fromObject(roomUserList));
         
         // 떠난 유저 정보 >> 이거말고 users가 필요할것같다
         List<ChatroomMembers> leaveUser = chatService.findLeaveMember(roomId);
-        model.addAttribute("leaveUser", jsonArray.fromObject(leaveUser));
+        model.addAttribute("leaveUser", JSONArray.fromObject(leaveUser));
         
         // user list 검색할때 사용
         List<Users> userList = userService.searchUser(userId);
-		model.addAttribute("userList", jsonArray.fromObject(userList));
+		model.addAttribute("userList", JSONArray.fromObject(userList));
     }
     
     // room에서 최신화할때 사용함
@@ -106,12 +103,12 @@ public class RoomController {
         
         // 채팅방 소속된 유저리스트 채팅방으로 넘겨줄데이터
         List<Users> userList = chatService.findUserByRoomId(chatroomId.getChatroomId());
-        JSONArray jsonArray = new JSONArray();
-        model.addAttribute("roomUserList", jsonArray.fromObject(userList));
+        //JSONArray jsonArray = new JSONArray();
+        model.addAttribute("roomUserList", JSONArray.fromObject(userList));
 
         // 이전 채팅 이력
         List<MessageDto> preMsgList = messagesService.preMsg(chatroomId, userList);
-        model.addAttribute("preMsg", jsonArray.fromObject(preMsgList));
+        model.addAttribute("preMsg", JSONArray.fromObject(preMsgList));
         
         // 마지막 읽은 시간 갱신
         chatService.lastReadAtUpdate(roomId, (Integer) session.getAttribute("userId"));
@@ -130,8 +127,6 @@ public class RoomController {
     @GetMapping("/listUpdate")
     @ResponseBody
     public List<ChatroomDto> chatroomUpdate(HttpSession session){
-    	JSONArray jsonArray = new JSONArray();
-    	ChatroomMembers chatroomMember = new ChatroomMembers(); // message 받아와야될듯? roomId랑 userId 필요
     	List<ChatroomDto> chatroomList = chatService.findAllRoomsByUserId((Integer)session.getAttribute("userId"));
     	
     	return chatroomList;
@@ -140,7 +135,7 @@ public class RoomController {
     // 채팅방 제목 수정
     @PostMapping("/roomName")
     public String roomNameUpdate(@RequestBody ChatroomMembers chatroomMembers){
-    	boolean result = chatService.roomNameUpdate(chatroomMembers);
+//    	boolean result = chatService.roomNameUpdate(chatroomMembers);
     	return "redirect:/chat/rooms";
     }
     
@@ -148,7 +143,7 @@ public class RoomController {
     @PostMapping("/leave")
     public String chatroomLeave(@RequestBody ChatroomMembers chatroom){
         log.info("RoomController : deleteRoom(), roomId : " + chatroom);
-        boolean result = chatService.chatroomLeave(chatroom);
+//        boolean result = chatService.chatroomLeave(chatroom);
 
         return "redirect:/chat/rooms";
     }

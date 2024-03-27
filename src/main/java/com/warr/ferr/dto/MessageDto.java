@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.warr.ferr.model.Users;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -2,7 +2,6 @@ package com.warr.ferr.model;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
