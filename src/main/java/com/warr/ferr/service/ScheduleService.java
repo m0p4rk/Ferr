@@ -1,11 +1,16 @@
 package com.warr.ferr.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
+
 import com.warr.ferr.dto.ScheduleListDto;
 import com.warr.ferr.dto.ScheduleUpdateDto;
 import com.warr.ferr.mapper.ScheduleMapper;
 import com.warr.ferr.model.Schedule;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -37,5 +42,22 @@ public class ScheduleService {
     // 모든 스케줄 목록 조회
     public List<ScheduleListDto> findAllSchedules() {
         return scheduleMapper.findAllSchedules();
+    }
+
+ // 이벤트 ID에 해당하는 위도와 경도 정보를 조회하여 반환
+    public Map<String, Double> getLatitudeLongitude(int eventId) {
+        // 이벤트 ID를 사용하여 데이터베이스에서 위도와 경도 조회
+        Map<String, Double> locationInfo = scheduleMapper.getLatitudeAndLongitude(eventId);
+        
+        // 조회된 위치 정보가 null이 아닌 경우, 해당 정보를 반환
+        if (locationInfo != null) {
+            return locationInfo;
+        }
+        
+        // 조회된 위치 정보가 없는 경우, 기본값으로 설정하여 반환
+        Map<String, Double> defaultLocationInfo = new HashMap<>();
+        defaultLocationInfo.put("latitude", 0.0);
+        defaultLocationInfo.put("longitude", 0.0);
+        return defaultLocationInfo;
     }
 }

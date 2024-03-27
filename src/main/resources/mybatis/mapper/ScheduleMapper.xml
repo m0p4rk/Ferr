@@ -54,5 +54,11 @@
         INSERT INTO user_events (user_id, content_id, event_title, event_start_date, event_end_date, latitude, longitude, promise_date, start_location)
         VALUES (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate}, #{latitude}, #{longitude}, #{promiseDate}, #{startLocation})
     </insert>
+    
+    <select id="getLatitudeLongitude" resultType="map">
+		SELECT latitude, longitude 
+		FROM user_events
+		WHERE event_id=#{eventId}
+	</select>
 
 </mapper>

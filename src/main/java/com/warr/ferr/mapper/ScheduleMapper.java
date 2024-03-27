@@ -46,8 +46,8 @@ public interface ScheduleMapper {
 
     /**
      * 특정 조건에 따라 위도와 경도 정보를 조회합니다.
-     * @param condition 조회 조건
+     * @param eventId 조회 조건
      * @return 위도와 경도 정보가 담긴 맵
      */
-    Map<String, Double> getLatitudeAndLongitude(@Param("condition") String condition);
+    Map<String, Double> getLatitudeAndLongitude(@Param("condition") int eventId);
 }

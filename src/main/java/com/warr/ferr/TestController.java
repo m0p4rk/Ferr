@@ -32,4 +32,15 @@ public class TestController {
 		return "my_page";
 	}
 	
+//	@GetMapping("/schedule-detail-sample")
+//	public String testCreateSchedule() {
+//	    return "create_schedule";
+//	}
+//	
+//	@GetMapping("/dashboard-schedule")
+//	public String testDashboardSchedule() {
+//	    return "dashboard_schedule_sample";
+//	}
+
+	
 }

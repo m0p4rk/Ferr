@@ -1,6 +1,8 @@
 package com.warr.ferr.controller;
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,12 +10,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import com.warr.ferr.dto.ScheduleListDto;
 import com.warr.ferr.dto.ScheduleUpdateDto;
 import com.warr.ferr.model.Notification;
 import com.warr.ferr.model.Schedule;
 import com.warr.ferr.service.NotificationService;
 import com.warr.ferr.service.ScheduleService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,4 +85,16 @@ public class ScheduleController {
         scheduleService.updateSchedule(eventId, scheduleUpdateDto);
         return "redirect:/dashboard-schedule";
     }
+    
+    // 행사위치 지도표시
+    @GetMapping("/destination/{eventId}")
+    public String getDestination(@PathVariable int eventId, Model model) {
+    	Map<String, Double> locationInfo = scheduleService.getLatitudeLongitude(eventId); 
+    	model.addAttribute("latitude", locationInfo.get("latitude"));
+    	model.addAttribute("longitude", locationInfo.get("longitude"));
+    	return "schedule_detail";
+    	
+    }
+    
+    
 }
