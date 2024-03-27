@@ -1,72 +1,84 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ include file="/WEB-INF/views/navbar.jsp"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ferr - Search Results</title>
-<link
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-	rel="stylesheet">
-<style>
-.box-container {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: start;
-	gap: 20px; /* 박스 사이의 간격 */
-	margin: 20px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferr - research</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .box-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: start;
+            gap: 20px; /* 박스 사이의 간격 */
+            margin: 20px;
+        }
 
-.image-item {
-	display: inline-block;
-	width: 300px;
-	height: 200px;
-	background-color: #ddd;
-	line-height: 200px;
-	text-align: center;
-	margin-right: 15px;
-}
-</style>
+        .image-item {
+            display: inline-block;
+            width: 300px;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            color: #fff;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .image-text {
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            padding: 5px;
+        }
+    </style>
 </head>
 <body>
-	<%@ include file="/WEB-INF/views/filter_form.jsp"%>
+    <div class="container mt-5">
+        <div id="searchResults" class="box-container">
+            <!-- 동적으로 검색 결과가 여기에 추가됩니다 -->
+        </div>
+    </div>
 
-	<!-- 검색 결과 컨테이너 -->
-	<div class="box-container">
-		<%-- 검색 결과 항목 반복 구간 시작 --%>
-		<%-- 예를 들어, 서버에서 받아온 데이터 리스트를 반복 처리 --%>
-		<div class="image-item">결과 1</div>
-		<div class="image-item">결과 2</div>
-		<%-- 반복 처리 종료 --%>
-	</div>
+    <script>
+	    document.addEventListener('DOMContentLoaded', function() {
+	        document.getElementById('searchButton').addEventListener('click', function(event) {
+	        	
+	            event.preventDefault(); // Form의 기본 제출 동작 방지
+	            var region = document.getElementById('regionFilter').value;
+	            var startDate = document.getElementById('startDateFilter').value.replaceAll('-', '');
+	            var endDate = document.getElementById('endDateFilter').value.replaceAll('-', '');
+	            var serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
+	            var url = `http://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=${serviceKey}&eventStartDate=${startDate}&eventEndDate=${endDate}&areaCode=${region}&listYN=Y&MobileOS=ETC&MobileApp=TestApp&_type=json&numOfRows=12&pageNo=1`;
+	
+	            fetch(url)
+	            .then(response => response.json())
+	            .then(data => {
+	                const items = data.response.body.items.item;
+	                const container = document.getElementById('searchResults');
+	                container.innerHTML = ''; // 기존 내용 초기화
+	                items.forEach(item => {
+	                    const title = item.title;
+	                    const firstImage = item.firstimage || ''; 
+	                    const addr1 = item.addr1 || '';
+	                    const imageItem = document.createElement('div');
+	                    imageItem.className = 'image-item';
+	                    imageItem.style.backgroundImage = `url(${firstImage})`;
+	                    const imageText = document.createElement('div');
+	                    imageText.className = 'image-text';
+	                    imageText.textContent = `${title} - ${addr1}`;
+	                    imageItem.appendChild(imageText);
+	                    container.appendChild(imageItem);
+	                });
+	            })
+	            .catch(error => console.error('Error:', error));
+	        });
+	    });
+	    
+	    console.log("url = " + url);
 
-	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-	<script
-		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	<script>
-		// 검색 버튼 클릭 이벤트
-		document.getElementById('searchButton')
-				.addEventListener(
-						'click',
-						function() {
-							var region = document
-									.getElementById('regionFilter').value;
-							var startDate = document
-									.getElementById('startDateFilter').value;
-							var endDate = document
-									.getElementById('endDateFilter').value;
-							var searchKeyword = document
-									.getElementById('searchFilter').value;
-
-							// URL로 데이터 전송
-							window.location.href = 'searchResults.jsp?region='
-									+ region + '&startDate=' + startDate
-									+ '&endDate=' + endDate + '&search='
-									+ searchKeyword;
-						});
-	</script>
+    </script>
 </body>
 </html>

@@ -1,5 +1,8 @@
 package com.warr.ferr.controller;
 
-public class FestivalController {
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+public class FestivalController {
+	
 }

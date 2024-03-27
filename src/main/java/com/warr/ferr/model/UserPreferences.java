@@ -14,15 +14,5 @@ import lombok.ToString;
 public class UserPreferences {
    private int preferenceId;
    private int userId;
-   private String preferredLocation;
-   private AdmissionFeePreference admissionFeePreference;
-   private String categoryCodeLarge;
-   private String categoryCodeMedium;
-   private String categoryCodeSmall;
-   
-   public enum AdmissionFeePreference {
-      FREE,
-      PAID,
-      ALL
-   }
+   private int preferredLocation;
 }

@@ -1,0 +1,23 @@
+body {
+	font-family: 'Noto Sans KR', sans-serif;
+	font-weight: 600;
+}
+
+.image-container img {
+	max-width: 100%;
+	height: auto;
+}
+
+.table-container {
+	margin-top: 20px; /* 이미지와 테이블 사이의 간격 */
+}
+
+table {
+	table-layout: fixed; /* 테이블의 레이아웃을 고정 */
+	width: 100%; /* 테이블 너비를 부모 요소에 맞춤 */
+}
+
+th, td {
+	word-wrap: break-word; /* 내용이 셀 너비를 초과할 경우 줄바꿈 */
+	overflow-wrap: break-word;
+}

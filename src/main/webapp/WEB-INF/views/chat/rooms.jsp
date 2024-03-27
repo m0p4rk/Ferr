@@ -63,6 +63,10 @@
   .fa-times {
     margin-left: 5px; /* X 아이콘과 텍스트 사이 간격 조정 */
   }
+  /* 임시로 설치해둔위치 */
+  button{
+  margin-top: 80px;
+  }
 </style>
 
 <!-- Font Awesome 아이콘 CDN 링크 -->

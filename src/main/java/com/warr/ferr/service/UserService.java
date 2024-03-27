@@ -17,8 +17,8 @@ import jakarta.servlet.http.HttpSession;
 @Service
 public class UserService {
 
-    private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
+	private final UserMapper userMapper;
+	private final PasswordEncoder passwordEncoder;
 
     public UserService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userMapper = userMapper;
@@ -95,16 +95,17 @@ public class UserService {
 	public Users findUserById(int userId) {
 		return userMapper.findUserByUserId(userId);
 	}
-	
-    public int getUserIdByEmail(String email) {
-    	// 이메일로 사용자 정보 가져오기
-    	 int user = -1;
-    	 user = userMapper.getUserByEmail(email);
-    	 
-    	 return user;
-    }
-    
+
+	public int getUserIdByEmail(String email) {
+		// 이메일로 사용자 정보 가져오기
+		int user = -1;
+		user = userMapper.getUserByEmail(email);
+
+		return user;
+	}
+
 	public UserPreferences getUserPreferences(int userId) {
+		System.out.println("service sending" + userMapper.getUserPreferences(userId));
 		return userMapper.getUserPreferences(userId);
 	}
 
@@ -125,5 +126,28 @@ public class UserService {
 //		
 //        return ;
 //    }
+
+	public int getUserRegionPreference(int userId) {
+	    try {
+	        UserPreferences preferences = userMapper.getUserPreferences(userId);
+	        System.out.println("preferences list: " + preferences);
+
+	        // preferences 객체가 null이 아니면 선호 지역 반환, null이면 기본값 반환
+	        if (preferences != null) {
+	            return preferences.getPreferredLocation();
+	        } else {
+	            // 기본값으로 설정할 선호 지역 ID. 예를 들어, '0'이 기본값일 수 있습니다.
+	            return 0; 
+	        }
+	    } catch (Exception e) {
+	        // 예외 발생 시 스택 트레이스를 콘솔에 출력
+	        e.printStackTrace();
+	        // 예외 발생 시 기본값 반환 또는 적절한 예외 처리를 수행
+	        return 0;
+	    }
+	}
+	public List<Users> searchByNickname(String nickname) {
+        return userMapper.findByNickname(nickname);
+    }
 
 }

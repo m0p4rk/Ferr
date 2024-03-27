@@ -6,5 +6,6 @@
     <typeAliases>
         <typeAlias type="com.warr.ferr.model.Schedule" alias="Schedule"/>
         <typeAlias type="com.warr.ferr.dto.ScheduleListDto" alias="ScheduleListDto"/>
+        <typeAlias type="com.warr.ferr.model.Notification" alias="Notification"/>
     </typeAliases>
 </configuration>

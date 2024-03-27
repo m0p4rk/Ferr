@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.warr.ferr.mapper.ScheduleReviewMapper">
+
+    <resultMap id="reviewResultMap" type="com.warr.ferr.model.ScheduleReview">
+        <id property="reviewId" column="review_id"/>
+        <result property="eventId" column="event_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="rating" column="rating"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="getAllReviews" resultMap="reviewResultMap">
+        SELECT * FROM schedule_reviews
+    </select>
+
+    <select id="getReviewById" resultMap="reviewResultMap">
+        SELECT * FROM schedule_reviews WHERE review_id = #{id}
+    </select>
+
+    <insert id="addReview" parameterType="com.warr.ferr.model.ScheduleReview">
+        INSERT INTO schedule_reviews (event_id, user_id, title, content, rating)
+        VALUES (#{eventId}, #{userId}, #{title}, #{content}, #{rating})
+    </insert>
+	
+	<select id="findReviewById" resultMap="reviewResultMap" parameterType="int">
+        SELECT * FROM schedule_reviews WHERE review_id = #{id}
+    </select>
+    
+    <update id="updateReview" parameterType="com.warr.ferr.model.ScheduleReview">
+        UPDATE schedule_reviews
+        SET title = #{title}, content = #{content}, rating = #{rating}
+        WHERE review_id = #{reviewId}
+    </update>
+ 
+     <delete id="deleteReview" parameterType="int">
+        DELETE FROM schedule_reviews WHERE review_id = #{id}
+    </delete>
+    
+      <select id="findPostsByPage" parameterType="map" resultType="com.warr.ferr.model.ScheduleReview">
+        SELECT * FROM schedule_reviews ORDER BY review_id DESC LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="findSearchedPostsByPage" parameterType="map" resultType="com.warr.ferr.model.ScheduleReview">
+        SELECT * FROM schedule_reviews
+        WHERE title LIKE CONCAT('%', #{query}, '%') OR content LIKE CONCAT('%', #{query}, '%')
+        ORDER BY review_id DESC LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="searchPosts" parameterType="String" resultType="com.warr.ferr.model.ScheduleReview">
+        SELECT * FROM schedule_reviews
+        WHERE title LIKE CONCAT('%', #{query}, '%') OR content LIKE CONCAT('%', #{query}, '%')
+    </select>
+
+    <select id="searchPostsCount" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM schedule_reviews
+        WHERE title LIKE CONCAT('%', #{query}, '%') OR content LIKE CONCAT('%', #{query}, '%')
+    </select>
+
+    <select id="countPosts" resultType="int">
+        SELECT COUNT(*) FROM schedule_reviews
+    </select>
+
+</mapper>
