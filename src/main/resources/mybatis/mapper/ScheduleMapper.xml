@@ -1,80 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "//mybatis.org//DTD Mapper 3.0//EN"
-		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.warr.ferr.mapper.ScheduleMapper">
 
-	<resultMap id="scheduleResultMap"
-		type="com.warr.ferr.model.Schedule">
-		<id property="eventId" column="event_id" />
-		<result property="userId" column="user_id" />
-		<result property="contentId" column="content_id" />
-		<result property="eventTitle" column="event_title" />
-		<result property="eventStartDate" column="event_start_date" />
-		<result property="eventEndDate" column="event_end_date" />
-		<result property="latitude" column="latitude" />
-		<result property="longitude" column="longitude" />
-		<result property="createdAt" column="created_at" />
-		<result property="promiseDate" column="promise_date" />
-		<result property="startLocation" column="start_location" />
-	</resultMap>
+    <!-- 결과 매핑 설정 -->
+    <resultMap id="scheduleResultMap" type="com.warr.ferr.model.Schedule">
+        <id property="eventId" column="event_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="contentId" column="content_id"/>
+        <result property="eventTitle" column="event_title"/>
+        <result property="eventStartDate" column="event_start_date"/>
+        <result property="eventEndDate" column="event_end_date"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="promiseDate" column="promise_date"/>
+        <result property="startLocation" column="start_location"/>
+    </resultMap>
 
-	<resultMap id="scheduleListDtoResultMap"
-		type="com.warr.ferr.dto.ScheduleListDto">
-		<result property="eventId" column="event_id" />
-		<result property="eventTitle" column="event_title" />
-		<result property="eventStartDate" column="event_start_date" />
-		<result property="eventEndDate" column="event_end_date" />
-		<result property="promiseDate" column="promise_date" />
-		<result property="contentId" column="content_id" />
-	</resultMap>
+    <resultMap id="scheduleListDtoResultMap" type="com.warr.ferr.dto.ScheduleListDto">
+        <result property="eventId" column="event_id"/>
+        <result property="eventTitle" column="event_title"/>
+        <result property="eventStartDate" column="event_start_date"/>
+        <result property="eventEndDate" column="event_end_date"/>
+        <result property="promiseDate" column="promise_date"/>
+        <result property="contentId" column="content_id"/>
+    </resultMap>
 
-	<insert id="saveInDB" useGeneratedKeys="true"
-		keyProperty="eventId" parameterType="com.warr.ferr.model.Schedule">
-		insert into user_events (user_id,
-		content_id, event_title, event_start_date, event_end_date, latitude,
-		longitude, created_at, promise_date, start_location)
-		values (#{userId},
-		#{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate},
-		#{latitude}, #{longitude}, #{createdAt}, #{promiseDate},
-		#{startLocation})
-	</insert>
+    <!-- 스케줄 정보 조회 -->
+    <select id="findByEventId" resultMap="scheduleResultMap">
+        SELECT * FROM user_events WHERE event_id = #{eventId}
+    </select>
 
-	<select id="findByEventId" resultMap="scheduleResultMap">
-		select event_id, user_id,
-		content_id, event_start_date, event_end_date, latitude, longitude,
-		created_at, promise_date
-		from user_events
-		where event_id=#{eventId}
-	</select>
+    <!-- 스케줄 삭제 -->
+    <delete id="deleteByEventId" parameterType="java.lang.Integer">
+        DELETE FROM user_events WHERE event_id = #{eventId}
+    </delete>
 
-	<delete id="deleteByEventId" parameterType="java.lang.Integer">
-		delete from
-		user_events
-		where event_id=#{eventId}
-	</delete>
+    <!-- 스케줄 목록 조회 -->
+    <select id="findAllSchedules" resultMap="scheduleListDtoResultMap">
+        SELECT * FROM user_events
+    </select>
 
-	<select id="findAllSchedules"
-		resultMap="scheduleListDtoResultMap">
-		select event_id, event_title, event_start_date,
-		event_end_date, promise_date, content_id
-		from user_events
-	</select>
+    <!-- 스케줄 정보 업데이트 -->
+    <update id="updateByEventId" parameterType="map">
+        UPDATE user_events
+        SET content_id = #{scheduleUpdateDto.contentId},
+            promise_date = #{scheduleUpdateDto.promiseDate}
+        WHERE event_id = #{eventId}
+    </update>
 
-	<update id="updateByEventId" parameterType="map">
-		update user_events
-		set content_id=#{scheduleUpdateDto.contentId},
-		promise_date=#{scheduleUpdateDto.promiseDate}
-		where event_id=#{eventId}
-	</update>
-
-	<insert id="saveSchedule"
-		parameterType="com.warr.ferr.model.Schedule" useGeneratedKeys="true"
-		keyProperty="eventId">
-		INSERT INTO user_events (user_id, content_id, event_title, event_start_date,
-		event_end_date, latitude, longitude, promise_date, start_location)
-		VALUES (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate},
-		#{eventEndDate}, #{latitude}, #{longitude}, #{promiseDate},
-		#{startLocation})
-	</insert>
+    <!-- 새로운 스케줄 저장 -->
+    <insert id="saveSchedule" parameterType="com.warr.ferr.model.Schedule" useGeneratedKeys="true" keyProperty="eventId">
+        INSERT INTO user_events (user_id, content_id, event_title, event_start_date, event_end_date, latitude, longitude, promise_date, start_location)
+        VALUES (#{userId}, #{contentId}, #{eventTitle}, #{eventStartDate}, #{eventEndDate}, #{latitude}, #{longitude}, #{promiseDate}, #{startLocation})
+    </insert>
 
 </mapper>

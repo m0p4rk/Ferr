@@ -1,19 +1,19 @@
 package com.warr.ferr.controller;
 
 import java.util.List;
-import java.util.Optional;
-
-import com.warr.ferr.model.Notification;
-import com.warr.ferr.service.NotificationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import com.warr.ferr.dto.ScheduleUpdateDto;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import com.warr.ferr.dto.ScheduleListDto;
+import com.warr.ferr.dto.ScheduleUpdateDto;
+import com.warr.ferr.model.Notification;
 import com.warr.ferr.model.Schedule;
+import com.warr.ferr.service.NotificationService;
 import com.warr.ferr.service.ScheduleService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,76 +25,60 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final NotificationService notificationService;
 
-//    // Event Detail -> Logic(Create) -> Schedule Detail(Feat. Update, Delete, Note, Group Manage, PathFinder, Review)
-//    @PostMapping("/saveSchedule")
-//    public String saveSchedule(@ModelAttribute("Schedule") Schedule schedule,
-//                               HttpSession httpSession) {
-//        scheduleService.saveSchedule(schedule, httpSession);
-//        return "redirect:/schedule_detail";
-//    }
-
-
-    // Main -> Event Detail
+    /**
+     * 이벤트 상세 페이지로 이동
+     */
     @GetMapping("/event-detail")
-    public String moveEventDetail(@RequestParam("contentId") Integer contentId) {
-        log.info("contentId={}", contentId);
+    public String moveEventDetail(@RequestParam("contentId") Integer contentId, Model model) {
+        log.info("Moving to Event Detail Page, contentId={}", contentId);
+        model.addAttribute("contentId", contentId);
         return "event_detail";
     }
 
-    // Main -> Schedule List
-    // Redirect : Schedule List
+    /**
+     * 스케줄 목록 페이지 조회
+     */
     @GetMapping("/dashboard-schedule")
     public String scheduleList(Model model) {
-
-        List<ScheduleListDto> callSchedules = scheduleService.findSchedules();
-        model.addAttribute("schedules", callSchedules);
+        List<ScheduleListDto> schedules = scheduleService.findAllSchedules();
+        model.addAttribute("schedules", schedules);
         return "dashboard_schedule";
     }
 
-
-    // Schedule List -> Schedule Detail(Feat. Update, Delete, Note, Group Manage, PathFinder, Review)
+    /**
+     * 스케줄 상세 페이지 조회
+     */
     @GetMapping("/schedule-detail")
-    public String scheduleDetail(@RequestParam("id") Integer eventId,
-                                 Model model) {
+    public String scheduleDetail(@RequestParam("id") Integer eventId, Model model) {
+        Schedule schedule = scheduleService.findByEventId(eventId);
 
-        Optional<Schedule> optFindSchedule = scheduleService.findByEventId(eventId);
-
-        // Event가 존재할 경우
-        if (optFindSchedule.isPresent()) {
-            // Schedule Object 넘기기
-            Schedule findSchedule = optFindSchedule.get();
-            model.addAttribute("schedule", findSchedule);
-
-            // Notification List 넘기기
+        if (schedule != null) {
+            model.addAttribute("schedule", schedule);
             List<Notification> notifications = notificationService.findAllNotificationsByEventId(eventId);
             model.addAttribute("notifications", notifications);
         } else {
+            log.warn("Schedule not found, eventId={}", eventId);
             return "error_page";
         }
 
         return "schedule_detail";
     }
 
-    // Schedule-Detail -> Logic(Delete) -> Schedule List
+    /**
+     * 스케줄 삭제 후 스케줄 목록 페이지로 리다이렉트
+     */
     @GetMapping("/schedule-detail/delete/{eventId}")
     public String deleteSchedule(@PathVariable Integer eventId) {
-
         scheduleService.deleteSchedule(eventId);
-
         return "redirect:/dashboard-schedule";
     }
 
-    // Schedule-Detail -> Logic(Update : contentId, promiseDate) -> Schedule List
+    /**
+     * 스케줄 업데이트 후 스케줄 목록 페이지로 리다이렉트
+     */
     @PostMapping("/schedule-detail/update/{eventId}")
-    public String updateSchedule(@PathVariable Integer eventId,
-                                 @ModelAttribute ScheduleUpdateDto scheduleUpdateDto) {
-
+    public String updateSchedule(@PathVariable Integer eventId, @ModelAttribute ScheduleUpdateDto scheduleUpdateDto) {
         scheduleService.updateSchedule(eventId, scheduleUpdateDto);
-
         return "redirect:/dashboard-schedule";
     }
-
 }
-
-
-
