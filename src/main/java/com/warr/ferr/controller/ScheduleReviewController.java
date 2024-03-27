@@ -1,6 +1,8 @@
 package com.warr.ferr.controller;
 
+import com.warr.ferr.model.ReviewFile;
 import com.warr.ferr.model.ScheduleReview;
+import com.warr.ferr.service.ReviewFileService;
 import com.warr.ferr.service.ScheduleReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,10 +22,14 @@ import javax.servlet.http.HttpSession;
 public class ScheduleReviewController {
 
     private final ScheduleReviewService scheduleReviewService;
+    private final ReviewFileService fileService;
+    
+    private static final int POSTS_PER_PAGE = 6;
 
     @Autowired
-    public ScheduleReviewController(ScheduleReviewService scheduleReviewService) {
+    public ScheduleReviewController(ScheduleReviewService scheduleReviewService, ReviewFileService fileService ) {
         this.scheduleReviewService = scheduleReviewService;
+        this.fileService = fileService;
     }
 
     @GetMapping
@@ -36,9 +42,16 @@ public class ScheduleReviewController {
     @GetMapping("/{id}")
     public String getReviewById(@PathVariable int id, Model model) {
         ScheduleReview review = scheduleReviewService.getReviewById(id);
+        
+        ReviewFile fileInfo = fileService.getAttachmentFileByreviewId(id);
+        
+        model.addAttribute("fileInfo", fileInfo);
         model.addAttribute("review", review);
+        
         return "review_detail"; // 리뷰 상세 정보를 보여주는 JSP 파일의 경로
     }
+    
+    
     
     @GetMapping("/add")
     public String showAddReviewForm(@RequestParam("eventId") int eventId, Model model) {
@@ -48,15 +61,26 @@ public class ScheduleReviewController {
         return "create_review"; // 리뷰 추가 폼을 보여주는 JSP 파일의 경로
     }
     @PostMapping("/add/{id}")
-    public String addReview(@ModelAttribute ScheduleReview review) {
-    	scheduleReviewService.addReview(review);
-    	return "redirect:/reviews"; // 리뷰 목록으로 리다이렉트
-    }
+    public String addReview(MultipartFile file, @ModelAttribute("review") ScheduleReview review) throws Exception {
+        // 리뷰를 추가하고 리뷰 ID를 받아옴
+        int reviewId = scheduleReviewService.addReview(review);
+        
+        // 리뷰 이미지를 추가할 때 리뷰 ID를 함께 전달
+        if (file.getOriginalFilename() != null) {
+            fileService.insertAttachmentFile(file, reviewId);
+        }
 
+        return "redirect:/reviews"; // 리뷰 목록으로 리다이렉트
+    }
 	@PostMapping("/update/{id}")
 	public String updateReview(@PathVariable("id") int id, @ModelAttribute ScheduleReview review,
-			 RedirectAttributes redirectAttributes) {
-
+			@RequestParam("file") MultipartFile file,RedirectAttributes redirectAttributes) {
+		
+		
+		if (!file.isEmpty()) {
+			fileService.insertAttachmentFile(file, id);
+		}
+		
 		scheduleReviewService.updateReview(review);
 		redirectAttributes.addFlashAttribute("successMessage", "게시글이 수정되었습니다.");
 		return "redirect:/reviews";
@@ -66,5 +90,19 @@ public class ScheduleReviewController {
         scheduleReviewService.deleteReview(reviewId);
         return "redirect:/reviews"; // 삭제 후 리뷰 목록 페이지로 이동
     }
+    
+	@GetMapping("/search")
+	public String searchPosts(@RequestParam String query, @RequestParam(value = "page", defaultValue = "1") int page,
+			Model model) {
+		List<ScheduleReview> searchResults = scheduleReviewService.findSearchedPostsByPage(page, POSTS_PER_PAGE, query);
+		int totalPosts = scheduleReviewService.searchPostsCount(query);
+		int totalPages = (int) Math.ceil((double) totalPosts / POSTS_PER_PAGE);
+
+		model.addAttribute("posts", searchResults);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", totalPages);
+
+		return "reviewList";
+	}
 }
 

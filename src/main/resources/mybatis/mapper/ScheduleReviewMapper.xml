@@ -41,5 +41,29 @@
      <delete id="deleteReview" parameterType="int">
         DELETE FROM schedule_reviews WHERE review_id = #{id}
     </delete>
+    
+      <select id="findPostsByPage" parameterType="map" resultType="com.warr.ferr.model.ScheduleReview">
+        SELECT * FROM schedule_reviews ORDER BY review_id DESC LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="findSearchedPostsByPage" parameterType="map" resultType="com.warr.ferr.model.ScheduleReview">
+        SELECT * FROM schedule_reviews
+        WHERE title LIKE CONCAT('%', #{query}, '%') OR content LIKE CONCAT('%', #{query}, '%')
+        ORDER BY review_id DESC LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="searchPosts" parameterType="String" resultType="com.warr.ferr.model.ScheduleReview">
+        SELECT * FROM schedule_reviews
+        WHERE title LIKE CONCAT('%', #{query}, '%') OR content LIKE CONCAT('%', #{query}, '%')
+    </select>
+
+    <select id="searchPostsCount" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM schedule_reviews
+        WHERE title LIKE CONCAT('%', #{query}, '%') OR content LIKE CONCAT('%', #{query}, '%')
+    </select>
+
+    <select id="countPosts" resultType="int">
+        SELECT COUNT(*) FROM schedule_reviews
+    </select>
 
 </mapper>

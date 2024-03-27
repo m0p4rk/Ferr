@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ScheduleReviewMapper {
@@ -13,7 +14,7 @@ public interface ScheduleReviewMapper {
     
     ScheduleReview getReviewById(long id);
     
-    void addReview(ScheduleReview review);
+    int addReview(ScheduleReview review);
 
 	ScheduleReview findReviewById(int reviewId);
 
@@ -21,6 +22,16 @@ public interface ScheduleReviewMapper {
 	void deleteReview(int reviewId);
 
 	void updateReview(ScheduleReview review);
+
+	List<ScheduleReview> searchPosts(String query);
+
+	int searchPostsCount(String query);
+
+	int countPosts();
+
+	List<ScheduleReview> findSearchedPostsByPage(Map<String, Object> params);
+
+	List<ScheduleReview> findPostsByPage(Map<String, Object> params);
 
 
 
