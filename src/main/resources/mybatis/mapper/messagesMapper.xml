@@ -11,6 +11,7 @@
  		<result property="messageType" column="message_type"/>
  		<result property="notificationTime" column="notification_time"/>
  		<result property="sentAt" column="sent_at"/>
+ 		<result property="count" column="count"/>
  	</resultMap>
  	
  	<!-- 메세지 보내기 -->
@@ -21,32 +22,103 @@
  			 sender_id,
  			 content,
  			 message_type,
- 			 sent_at) 
+ 			 sent_at,
+ 			 count) 
  		VALUE 
  			(#{chatroomId},
  			 #{senderId},
  			 #{content},
- 			 'MESSAGE',
- 			 NOW()) 
+ 			 #{messageType},
+ 			 NOW(),
+ 			 ${count}-1) 
  	</insert>
  	
+ 	<!-- 메시지 보낼때 거쳐가는 db -->
  	<select id="findMessage"
  			resultMap="Message">
- 		SELECT message_id, sender_id, chatroom_id, content, message_type, sent_at
+ 		SELECT 
+ 			message_id, 
+ 			sender_id, 
+ 			chatroom_id, 
+ 			content, 
+ 			message_type, 
+ 			sent_at, count
  		FROM messages
  		ORDER BY message_id DESC
  		LIMIT 1
  	</select>
  	
+ 	<!-- 메시지 이력 조회 -->
  	<select id="preMsg"
  			parameterType="int"
  			resultMap="Message">
- 		SELECT message_id, sender_id, chatroom_id, content, message_type, sent_at
+ 		SELECT 
+ 			message_id, 
+ 			sender_id, 
+ 			chatroom_id, 
+ 			content, 
+ 			message_type, 
+ 			sent_at, count
  		FROM messages
  		WHERE chatroom_id = #{chatroomId}
  		ORDER BY message_id
  		
  	</select>
+ 	
+ 	<!-- 모든 메시지 조회 -->
+ 	<select id="findAllMessage"
+ 			resultMap="Message">
+ 		SELECT 
+			message_id, 
+ 			sender_id, 
+ 			chatroom_id, 
+ 			content, 
+ 			message_type, 
+ 			sent_at, count
+ 		FROM messages
+ 	</select>
+ 	
+ 	<!-- 메시지 count 최신화 -->
+ 	<update id="readMsgCount"
+ 			parameterType="com.warr.ferr.model.ChatroomMembers">
+ 		UPDATE messages
+ 		SET count = count - 1
+ 		WHERE sent_at > '${lastReadAt}' AND chatroom_id = ${chatroomId}
+ 	</update>
+ 	
+ 	<!-- 마지막메시지 -->
+ 	<select id="findLastMsg"
+ 			parameterType="com.warr.ferr.model.ChatroomMembers"
+ 			resultMap="Message">
+ 		SELECT 
+			message_id, 
+ 			sender_id, 
+ 			chatroom_id, 
+ 			content, 
+ 			message_type, 
+ 			sent_at, count
+ 		FROM messages
+ 		WHERE chatroom_id = ${chatroomId}
+ 		ORDER BY message_id DESC
+ 		LIMIT 1
+ 	</select>
+ 	
+ 	<!-- 안읽은메시지 몇개인지 -->
+ 	<select id="receiveMsgCount"
+ 			parameterType="com.warr.ferr.model.ChatroomMembers">
+ 		SELECT COUNT(*) AS row_count
+ 		FROM messages
+ 		WHERE sent_at > '${lastReadAt}' AND chatroom_id = ${chatroomId}
+ 	</select>
+ 	
+ 	<select id="msgAlarm"
+ 			parameterType="int">
+ 		SELECT COUNT(*) AS row_count
+ 		FROM messages
+ 		WHERE sent_at > '${lastReadAt}' AND sender_id = #{userId}
+ 	</select>
+ 	
+ 	<!-- roomId 로 채팅 이력 가져오기 -->
  	
 	<!-- SELECT * FROM messages
 ORDER BY message_id

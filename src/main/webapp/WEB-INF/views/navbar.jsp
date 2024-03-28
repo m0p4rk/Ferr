@@ -162,6 +162,35 @@ body {
 							});
 				});
 		
+		/*          function sendAlarmRequest() {
+        setInterval(function() {
+            // AJAX 요청 보내기
+            $.ajax({
+                type: "GET",
+                url: "/chat/alarm",
+                success: function(response) {
+                    // 요청이 성공한 경우 처리
+                    console.log("안 읽은 메시지 : " + response);
+                    // 받은 응답 처리
+                    // 예: 받은 데이터를 이용하여 특정 동작 수행
+                },
+                error: function(xhr, status, error) {
+                    // 요청이 실패한 경우 처리
+                    console.error("알람 요청이 실패했습니다:", error);
+                }
+            });
+        }, 2000); // 2초마다 요청 보내도록 설정
+    }
+var sessionId = "${sessionScope.userId}";
+$(document).ready(function() {
+// 세션 ID가 있는지 확인
+if (sessionId != null && sessionId != '') {
+    sendAlarmRequest();
+}else {
+	console.log(sessionId);
+}
+}); */
+		
 	</script>
 </body>
 </html>

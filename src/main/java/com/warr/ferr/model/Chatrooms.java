@@ -12,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Chatrooms implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private int chatroomId;
 	private String name;
 }

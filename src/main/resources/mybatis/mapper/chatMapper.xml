@@ -47,6 +47,14 @@
 								                WHERE f.user_id = #{userId});
 	</select>
 	
+	<!-- 채팅종료시 시간갱신 -->
+	<update id="lastReadAtUpdate"
+	 		parameterType="com.warr.ferr.model.ChatroomMembers">
+	 	UPDATE chatroom_members
+	 	SET last_read_at = CURRENT_TIMESTAMP
+		WHERE chatroom_id = #{chatroomId} AND user_id = #{userId}
+	 </update>
+	
 	<!-- chatroomId 생성 -->
 	<insert id="createRoomId"
 			parameterType="com.warr.ferr.model.ChatroomMembers"
@@ -89,6 +97,23 @@
 		SET status = 'LEAVE'
 		WHERE chatroom_id = #{chatroomId} AND user_id = #{userId} 	
 	</update>
+	
+	<!-- 채팅방에 소속된 멤버 리스트 탐색 -->
+	<select id="findUserByRoomId"
+			resultMap="ChatroomMembers">
+		SELECT chatroom_id, user_id, chatroom_name, status, last_read_at
+		FROM chatroom_members
+		WHERE chatroom_id = #{chatroomId}
+	</select>
+	
+	<!-- 채팅방에서 떠난 유저 찾기 -->
+	<select id="findLeaveMember"
+			resultMap="ChatroomMembers">
+		SELECT chatroom_id, user_id, chatroom_name, status, last_read_at
+		FROM chatroom_members
+		WHERE chatroom_id = #{chatroomId} AND status = 'LEAVE'
+	</select>
+	
 	
 	<!-- 채팅룸id 삭제 -->
 	<!-- <delete id="deleteRoom" parameterType="java.util.List">
