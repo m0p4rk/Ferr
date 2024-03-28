@@ -1,5 +1,6 @@
 package com.warr.ferr.service;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,6 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.warr.ferr.dto.ScheduleListDto;
-import com.warr.ferr.dto.ScheduleUpdateDto;
 import com.warr.ferr.mapper.ScheduleMapper;
 import com.warr.ferr.model.Schedule;
 
@@ -35,9 +35,13 @@ public class ScheduleService {
     }
 
     // 이벤트 ID와 업데이트 정보를 바탕으로 스케줄 업데이트
-    public void updateSchedule(Integer id, ScheduleUpdateDto scheduleUpdateDto) {
-        scheduleMapper.updateByEventId(id, scheduleUpdateDto);
+    public void updateScheduleDate(Integer eventId, Date promiseDate) {
+        // java.util.Date를 java.sql.Date로 변환
+        java.sql.Date sqlPromiseDate = new java.sql.Date(promiseDate.getTime());
+
+        scheduleMapper.updateScheduleDateByEventId(eventId, sqlPromiseDate);
     }
+
 
     // 모든 스케줄 목록 조회
     public List<ScheduleListDto> findAllSchedules() {

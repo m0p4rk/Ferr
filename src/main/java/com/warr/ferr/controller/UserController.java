@@ -140,23 +140,6 @@ public class UserController {
 		return "register";
 	}
 
-	 // my-page
-//	@GetMapping("/preferences")
-//	public String showPreferencesForm(Model model, HttpSession session) {
-//		
-//		// 세션에서 사용자 ID 가져오기
-//		Integer userId = (Integer) session.getAttribute("userId");
-//		
-//		// 사용자 ID로 선호 사항 불러오기
-//		UserPreferences preferences = userService.getUserPreferences(userId);
-//		int regionPreference = userService.getUserRegionPreference(userId);
-//
-//		model.addAttribute("preferences", preferences);
-//		model.addAttribute("regionPreference", regionPreference);
-//		return "my-page";
-//	}
-
-
 	@PostMapping("/savePreferences")
 	public String savePreferences(@RequestParam("regionPreference") int regionPreference, HttpSession session) {
 	    

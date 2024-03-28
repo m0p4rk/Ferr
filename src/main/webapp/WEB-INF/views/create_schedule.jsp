@@ -70,7 +70,6 @@
 			onclick="location.href='/schedule-detail/delete/${schedule.eventId}'">일정
 			삭제</button>
 	</div>
-	</div>
 	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">

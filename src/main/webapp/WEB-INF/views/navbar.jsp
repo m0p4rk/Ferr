@@ -127,7 +127,6 @@ body {
 		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
 	<script
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 	<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 
 	<script>

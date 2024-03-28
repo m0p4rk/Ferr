@@ -13,7 +13,6 @@ import java.util.Date;
 public class ScheduleUpdateDto {
 
     private int eventId;
-    private String contentId;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date promiseDate;
 }

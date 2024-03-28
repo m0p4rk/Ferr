@@ -41,7 +41,7 @@ public class TourAPI {
 	    // 세션에서 "regionPreference" 값을 가져옵니다.
 	    Object regionPreferenceObj = session.getAttribute("regionPreference");
 	    // Object 타입의 값을 String으로 안전하게 변환합니다.
-	    String regionPreference = (regionPreferenceObj != null) ? String.valueOf(regionPreferenceObj) : "기본값";
+	    String regionPreference = (regionPreferenceObj != null) ? String.valueOf(regionPreferenceObj) : "1";
 	    System.out.println("api region value" + regionPreference);
 	    return regionPreference; // 변환된 문자열 값을 반환합니다.
 	}
