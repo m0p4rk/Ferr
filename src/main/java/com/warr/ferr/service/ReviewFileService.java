@@ -38,7 +38,7 @@ public class ReviewFileService {
             return false;
         }
 
-        String filePath = "C:\\Users\\kimsoohan\\project";
+        String filePath = "C:\\Users\\kimsoohan\\Pictures\\Screenshots";
         String attachmentOriginalFileName = file.getOriginalFilename();
 
         ReviewFile attachmentFile = ReviewFile.builder()

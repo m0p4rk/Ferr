@@ -29,25 +29,33 @@ import com.warr.ferr.service.ReviewFileService;
 		@Autowired
 		private ReviewFileService fileService;
 
-		@GetMapping(value = "/download/file/{fileId}")
+		@GetMapping(value = "/download/file/{imageId}")
 		public ResponseEntity<Resource> downloadFile(@PathVariable int imageId) {
+		    ReviewFile attachmentFile = null;
+		    Resource resource = null;
+		    try {
+		        attachmentFile = fileService.getAttachmentFileByImageId(imageId);
+		        if (attachmentFile != null) {
+		            Path path = Paths.get(attachmentFile.getImageUrl() + "\\" + attachmentFile.getDescription());
+		            resource = new InputStreamResource(Files.newInputStream(path));
 
-			ReviewFile attachmentFile = null;
-			Resource resource = null;
-			try {
-				attachmentFile = fileService.getAttachmentFileByImageId(imageId);
-				Path path = Paths.get(attachmentFile.getImageUrl() + "\\" + attachmentFile.getDescription());
-				resource = new InputStreamResource(Files.newInputStream(path));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		            HttpHeaders headers = new HttpHeaders();
+		            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		            headers.setContentDisposition(
+		                    ContentDisposition.builder("attachment").filename(attachmentFile.getDescription()).build());
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-			headers.setContentDisposition(
-					ContentDisposition.builder("attachment").filename(attachmentFile.getDescription()).build());
-
-			return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+		            return ResponseEntity.ok()
+		                                 .headers(headers)
+		                                 .body(resource);
+		        } else {
+		            // 파일이 존재하지 않는 경우 404 에러 반환
+		            return ResponseEntity.notFound().build();
+		        }
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        // 예외가 발생한 경우 500 에러 반환
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		    }
 		}
 
 		@ResponseBody

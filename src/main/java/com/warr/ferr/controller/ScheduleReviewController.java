@@ -83,7 +83,7 @@ public class ScheduleReviewController {
 		
 		scheduleReviewService.updateReview(review);
 		redirectAttributes.addFlashAttribute("successMessage", "게시글이 수정되었습니다.");
-		return "redirect:/reviews";
+		return "redirect:/reviews/{id}";
 	}
     @GetMapping("/delete/{reviewId}")
     public String deleteReview(@PathVariable("reviewId") int reviewId) {

@@ -27,7 +27,7 @@
 				<strong>평점: ${review.rating}</strong>
 			</p>
 			<p>
-				<strong>첨부파일 : </strong><a href="/download/file/${fileInfo.id}">${fileInfo.filename}</a>
+				<strong>첨부파일 : </strong><a href="/download/file/${fileInfo.imageId}">${fileInfo.description}</a>
 			</p>
 			<small>작성자: ${review.userId}</small> <small>작성일:
 				${review.createdAt}</small>
