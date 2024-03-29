@@ -116,7 +116,13 @@
                 </div>
             </div>
         </div>
-    
+    	<section id="reviewsAndLogs">
+			<div class="mt-3">
+				<h6>후기 및 일지</h6>
+				<a href="/reviews/add?eventId=${schedule.eventId}"
+					class="btn btn-primary">작성하기</a>
+			</div>
+		</section>
 
         <!-- 일정 삭제 버튼 -->
         <div class="mt-4">
