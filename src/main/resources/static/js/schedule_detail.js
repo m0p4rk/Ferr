@@ -1,19 +1,22 @@
+var eventId = $(this).data('eventId');
+
 // 삭제 버튼 클릭 시 호출되는 함수
     function deleteNote(notificationId) {
     $.ajax({
         url: '/notification/delete/' + notificationId,
-        type: 'POST',
+        type: 'POST', // HTTP 메서드는 서버 구현에 따라 다를 수 있습니다.
         contentType: 'application/json',
         success: function(response) {
             alert('알림이 삭제되었습니다.');
-            // 성공 시 노트 목록 다시 로드
-            $('#loadNotesBtn').click();
+            // 성공 시 알림 목록을 다시 로드합니다.
+            loadNotifications(); // 목록을 직접 새로고침
         },
         error: function(xhr, status, error) {
             alert('노트 삭제 중 오류가 발생했습니다: ' + error);
         }
     });
 }
+
 
 // 위 전역 함수를 제외한 모든 기능은 여기부터 구현됨 참고하세요
 $(document).ready(function() {
@@ -103,12 +106,19 @@ $(document).ready(function() {
 });
 
 
-    // 약속 날짜 변경
     $('#promiseDate').change(function() {
-        var newDate = $(this).val();
+    var newDate = $(this).val();
+    
+    // 현재 페이지 URL에서 쿼리 매개변수 'id'의 값을 추출합니다.
+    var queryParams = new URLSearchParams(window.location.search);
+    var eventId = queryParams.get('id'); // 'id' 매개변수의 값을 얻습니다.
+
+    // eventId가 존재할 경우에만 AJAX 요청을 실행합니다.
+    if (eventId) {
         $.ajax({
             url: '/schedule-detail/update/date/' + eventId,
             type: 'POST',
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             data: { promiseDate: newDate },
             success: function(response) {
                 alert('약속 날짜가 성공적으로 업데이트되었습니다.');
@@ -117,19 +127,61 @@ $(document).ready(function() {
                 alert('약속 날짜 업데이트 중 오류가 발생했습니다: ' + error);
             }
         });
+    } else {
+        alert('이벤트 ID가 URL에서 찾을 수 없습니다.');
+    }
+});
+
+
+    var isNotesVisible = false; // 알림 목록의 표시 상태를 추적하는 변수
+
+// 알림 목록을 불러오고 화면에 표시하는 함수
+function loadNotifications() {
+    var eventId = $('#eventId').val();
+    $.ajax({
+        url: '/getNotifications',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({eventId: parseInt(eventId)}),
+        success: function (notifications) {
+            $('#notesList').empty();
+            notifications.forEach(function (notification) {
+                var notificationId = notification.notificationId;
+                var notificationDate = new Date(notification.notificationTime);
+                var notificationContent = notification.content;
+                var formattedDate = notificationDate.toLocaleString('ko-KR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit',
+                    hour12: false
+                });
+                $('#notesList').append(`
+                    <div class="note-item" data-note-id="${notificationId}">
+                        <p>${notificationContent} - ${formattedDate}</p>
+                        <button class="btn btn-secondary btn-sm edit-note-btn" data-toggle="modal" data-target="#editNoteModal">수정</button>
+                        <button class="btn btn-danger btn-sm delete-note-btn" onclick="deleteNote(${notificationId})">삭제</button>
+                    </div>
+                `);
+            });
+            isNotesVisible = true;
+            $('#loadNotesBtn').text("알림 목록 가리기").removeClass("btn-info").addClass("btn-secondary");
+            $('#notesList').show();
+        },
+        error: function (xhr, status, error) {
+            alert('알림 불러오기 중 오류가 발생했습니다: ' + error);
+        }
     });
+}
 
-    // 새로운 알림 추가
-    $('#addNoteBtn').click(function() {
+// 알림 추가
+$('#addNoteBtn').click(function() {
     var noteContent = $('#noteContent').val();
-    var noteDateTime = $('#noteDateTime').val(); // 'YYYY-MM-DDTHH:MM:SS' 형식으로 가정
-    var eventId = $('#eventId').val(); // 이벤트 ID 값을 HTML의 숨겨진 필드에서 읽어옴
+    var noteDateTime = $('#noteDateTime').val();
+    var eventId = $('#eventId').val();
 
-    // 서버 측에서 Timestamp로 파싱 가능한 형식으로 데이터 준비
     var data = {
-        eventId: parseInt(eventId), // 이벤트 ID를 숫자로 변환
+        eventId: parseInt(eventId),
         content: noteContent,
-        notificationTime: noteDateTime // 'YYYY-MM-DDTHH:MM:SS' 형식
+        notificationTime: noteDateTime
     };
 
     $.ajax({
@@ -139,7 +191,7 @@ $(document).ready(function() {
         data: JSON.stringify(data),
         success: function(response) {
             alert('알림이 추가되었습니다.');
-            // 성공 시 추가 작업 수행, 예를 들어 알림 목록을 새로고침
+            loadNotifications(); // 알림 목록을 새로고침
         },
         error: function(xhr, status, error) {
             alert('알림 추가 중 오류가 발생했습니다: ' + error);
@@ -147,102 +199,56 @@ $(document).ready(function() {
     });
 });
 
+// 알림 수정
+$('#saveNoteChanges').click(function() {
+    var noteId = $('#editNoteId').val();
+    var updatedContent = $('#editNoteContent').val();
+    var updatedDateTime = $('#editNoteDateTime').val();
 
-    // 알림 수정
-    $('#saveNoteChanges').click(function() {
-        var noteId = $('#editNoteId').val();
-        var updatedContent = $('#editNoteContent').val();
-        var updatedDateTime = $('#editNoteDateTime').val();
-        var data = {
-            notificationId: noteId,
-            eventId: parseInt($('#eventId').val()), // eventId 값을 정수로 변환
-            content: updatedContent,
-            notificationTime: updatedDateTime
-        };
+    var data = {
+        notificationId: noteId,
+        eventId: parseInt($('#eventId').val()),
+        content: updatedContent,
+        notificationTime: updatedDateTime
+    };
 
-        $.ajax({
-            url: '/notification/update',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function(response) {
-                alert('알림이 업데이트되었습니다.');
-                $('#loadNotesBtn').click();
-            },
-            error: function(xhr, status, error) {
-                alert('알림 업데이트 중 오류가 발생했습니다: ' + error);
-            }
-        });
-    });
-
-    var isNotesVisible = false; // 알림 목록 온오프 변수
-    var isNotesLoaded = false;
-
-    $('#loadNotesBtn').click(function() {
-        // 버튼의 현재 상태에 따라 텍스트와 색상을 토글
-        if (!isNotesVisible) {
-            // 목록이 숨겨진 상태면 불러오기
-            $(this).text("알림 목록 가리기");
-            $(this).removeClass("btn-info").addClass("btn-secondary");
-
-            if (!isNotesLoaded) {
-                // 알림 목록을 처음 불러오는 경우에만 요청 수행
-                var eventId = $('#eventId').val(); // 이벤트 ID를 HTML 요소로부터 가져옵니다.
-                $.ajax({
-                    url: '/getNotifications',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({eventId: parseInt(eventId)}), // 이벤트 ID를 정수로 변환하여 JSON 객체로 포장합니다.
-                    success: function (notifications) {
-                        $('#notesList').empty(); // 기존에 표시된 노트 목록을 비웁니다.
-                        notifications.forEach(function (notification) {
-                            // 서버로부터 반환된 날짜를 Date 객체로 변환합니다.
-                            var notificationId = notification.notificationId;
-                            var notificationDate = new Date(notification.notificationTime);
-                            var notificationContent = notification.content;
-                            console.log(notificationId);
-                            // 사용자가 읽기 쉬운 형태로 날짜를 포맷팅합니다.
-                            var formattedDate = notificationDate.toLocaleString('ko-KR', {
-                                year: 'numeric', month: '2-digit', day: '2-digit',
-                                hour: '2-digit', minute: '2-digit', second: '2-digit',
-                                hour12: false
-                            });
-                            // 포맷팅된 날짜와 노트 내용을 포함하는 HTML 요소를 생성하여 노트 목록에 추가합니다.
-                            $('#notesList').append(`
-                                <div class="note-item" data-note-id="${notificationId}">
-                                    <p>${notificationContent} - ${formattedDate}</p>
-                                    <button class="btn btn-secondary btn-sm edit-note-btn" data-toggle="modal" data-target="#editNoteModal">수정</button>
-                                    <button class="btn btn-danger btn-sm delete-note-btn" onclick="deleteNote(${notificationId})">삭제</button>
-                                    <input type="hidden" id="editNoteId" value="${notificationId}">
-                                </div>
-                            `);
-                        });
-                        isNotesLoaded = true;
-                        $('#notesList').show();
-                        isNotesVisible = true;
-                    },
-                    error: function (xhr, status, error) {
-                        alert('알림 불러오기 중 오류가 발생했습니다: ' + error);
-                    }
-                });
-            } else {
-                // 이미 불러온 목록이 있을때
-                $('#notesList').show();
-                isNotesVisible = true;
-            }
-        } else {
-            $(this).text("알림 불러오기");
-            $(this).removeClass("btn-secondary").addClass("btn-info");
-            $('#notesList').hide(); // 노트 목록을 숨깁니다.
-            isNotesVisible = false;
+    $.ajax({
+        url: '/notification/update',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(response) {
+            alert('알림이 업데이트되었습니다.');
+            loadNotifications(); // 알림 목록을 새로고침
+        },
+        error: function(xhr, status, error) {
+            alert('알림 업데이트 중 오류가 발생했습니다: ' + error);
         }
     });
+});
 
-    // 페이지가 로드될 때 실행되는 부분
+// 알림 목록 표시/숨김 토글
+$('#loadNotesBtn').click(function() {
+    if (!isNotesVisible) {
+        loadNotifications();
+    } else {
+        // 목록을 숨깁니다.
+        $('#notesList').hide();
+        isNotesVisible = false;
+        $(this).text("알림 불러오기").removeClass("btn-secondary").addClass("btn-info");
+    }
+});
+
+
+
+
+    $(document).ready(function() {
+    // 현재 URL에서 eventId 추출
+    var urlParams = new URLSearchParams(window.location.search);
+    var eventId = urlParams.get('id');
+
     $('#deleteButton').click(function() {
-        // 일정 삭제 버튼이 클릭되었을 때 실행되는 부분
         if (confirm("정말 이 일정을 삭제하시겠습니까?")) {
-            // 사용자가 확인을 누르면 실행되는 부분
             $.ajax({
                 url: '/schedule-detail/delete/' + eventId,
                 type: 'GET',
@@ -256,4 +262,8 @@ $(document).ready(function() {
             });
         }
     });
+
+    // 나머지 코드는 여기에 계속 작성하세요
+});
+
 

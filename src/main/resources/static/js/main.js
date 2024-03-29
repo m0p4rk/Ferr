@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
     fetchRecommendedEvents();
     setupSliders();
     setupSearchButton();
+    fetchKeywordOnlyData('축제');
 });
 
 let currentPageNo = 1; // 현재 페이지 번호
@@ -42,19 +43,42 @@ function fetchEventData(latitude, longitude, append = false) {
     commonFetchEvent(url, 'mylocationcontainer', append);
 }
 
+function fetchKeywordOnlyData(keyword, append = false) {
+    const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
+    const url = `http://apis.data.go.kr/B551011/KorService1/searchKeyword1?numOfRows=12&pageNo=1&MobileOS=ETC&MobileApp=AppTest&ServiceKey=${serviceKey}&listYN=Y&arrange=A&areaCode=&sigunguCode=&cat1=&cat2=&cat3=&keyword=${keyword}`;
+    commonFetchEvent(url, 'rankcontainer', append);
+}
+
 function fetchRecommendData(regionPreference, append = false) {
     const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
     const url = `http://apis.data.go.kr/B551011/KorService1/searchFestival1?eventStartDate=20240322&eventEndDate=20240422&areaCode=${regionPreference}&sigunguCode=&ServiceKey=${serviceKey}&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
     commonFetchEvent(url, 'recommendcontainer', append);
 }
 
+function fetchSubData(append = false) {
+    const serviceKey = 'UCUykSFJjiSkmGJRU%2FJy1nz3J2G6OQkxA4d4Ph1np1muPWh%2FrzAyG0rwexLH1zImm6x2dNLkiHmYjFKNmj0qig%3D%3D';
+    const url = `http://apis.data.go.kr/B551011/KorService1/searchFestival1?eventStartDate=20240322&eventEndDate=20240422&areaCode=31&sigunguCode=&ServiceKey=${serviceKey}&listYN=Y&MobileOS=ETC&MobileApp=AppTest&arrange=A&numOfRows=12&pageNo=${currentPageNo}`;
+    commonFetchEvent(url, 'searchcontainer', append);
+}
+
 function fetchSearchData(region, startDate, endDate, pageNo) {
     const url = `/api/searchFestival1?region=${region}&startDate=${startDate}&endDate=${endDate}&pageNo=${pageNo}`;
     fetch(url)
         .then(response => response.json())
-        .then(data => displaySearchResults(data, 'searchcontainer', pageNo !== 1))
-        .catch(error => console.error('Error fetching search results:', error));
+        .then(data => {
+            if(data && data.response && data.response.body && data.response.body.items && data.response.body.items.item) {
+                displaySearchResults(data, 'searchcontainer', pageNo !== 1);
+            } else {
+                throw new Error("No data found");
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching search results, fetching substitute data:', error);
+            // 에러 발생 시 대체 데이터 로드 함수 호출
+            fetchSubData();
+        });
 }
+
 
 
 function commonFetchEvent(url, containerParam, append = false) {
@@ -64,6 +88,7 @@ function commonFetchEvent(url, containerParam, append = false) {
         .then(data => {
             const items = data.getElementsByTagName("item");
             const container = document.getElementById(containerParam);
+
             if (!append) {
                 container.innerHTML = ''; // 추가 로드가 아닐 경우 기존 내용을 지웁니다.
             }
@@ -73,26 +98,32 @@ function commonFetchEvent(url, containerParam, append = false) {
                 const title = item.getElementsByTagName("title")[0].textContent;
                 const firstImageURL = item.getElementsByTagName("firstimage")[0] ? item.getElementsByTagName("firstimage")[0].textContent : '/css/img/loading_ferr.png';
                 const contentId = item.getElementsByTagName("contentid")[0].textContent;
-                
+
                 const imageItem = document.createElement("div");
                 imageItem.className = "image-item";
+                imageItem.setAttribute('data-event-id', contentId); // 이벤트 ID 설정
                 imageItem.style.backgroundImage = `url('${firstImageURL}')`; // 초기 배경 이미지 설정
 
                 // 이미지 엘리먼트 생성
                 const imageElement = document.createElement("img");
                 imageElement.src = firstImageURL;
-                // 이미지 로드 성공 시 배경 이미지 비활성화
                 imageElement.onload = function() {
                     imageItem.style.backgroundImage = 'none';
                 };
-                // 로딩 실패 시 대체 이미지 사용
                 imageElement.onerror = function() {
-                    this.onerror = null; // 무한 루프 방지
-                    this.src = '/css/img/noimage_ferr.png'; // 대체 이미지 경로로 변경
-                    imageItem.style.backgroundImage = 'none'; // 배경 이미지 비활성화
+                    this.onerror = null;
+                    this.src = '/css/img/noimage_ferr.png';
+                    imageItem.style.backgroundImage = 'none';
                 };
-
                 imageItem.appendChild(imageElement);
+
+                // 랭크 숫자 표시
+                if (containerParam === 'rankcontainer') {
+                    const rankNumber = document.createElement("div");
+                    rankNumber.className = "rank-number";
+                    rankNumber.textContent = i + 1; // 순서대로 번호 부여
+                    imageItem.appendChild(rankNumber);
+                }
 
                 const imageText = document.createElement("div");
                 imageText.className = "image-text";
@@ -103,13 +134,16 @@ function commonFetchEvent(url, containerParam, append = false) {
 
                 // 클릭 이벤트 핸들러 추가
                 imageItem.addEventListener('click', function() {
-                    window.location.href = `/event-detail?contentId=${contentId}`;
+                    redirectToEventDetail(this.getAttribute('data-event-id'));
                 });
             }
         })
         .catch(error => console.error('Error:', error));
 }
 
+function redirectToEventDetail(contentId) {
+    window.location.href = `/event-detail?contentId=${contentId}`;
+}
 
 
 function loadMoreDataIfRequired() {

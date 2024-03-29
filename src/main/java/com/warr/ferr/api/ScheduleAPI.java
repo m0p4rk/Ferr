@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,6 +65,28 @@ public class ScheduleAPI {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 저장 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 특정 eventId에 해당하는 Schedule 객체를 조회하는 엔드포인트.
+     * @param eventId 조회하려는 Schedule의 eventId.
+     * @return 조회된 Schedule 객체 또는 오류 메시지.
+     */
+    @GetMapping("/schedule/{eventId}")
+    public ResponseEntity<?> getScheduleByEventId(@PathVariable Integer eventId) {
+        try {
+            Schedule schedule = scheduleService.findByEventId(eventId);
+            if (schedule == null) {
+                // 해당 eventId를 가진 Schedule이 존재하지 않는 경우
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 eventId를 가진 일정을 찾을 수 없습니다: " + eventId);
+            }
+            // 성공적으로 Schedule 객체를 찾은 경우
+            return ResponseEntity.ok(schedule);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 서버 내부 오류 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 조회 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
     

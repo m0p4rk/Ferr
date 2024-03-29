@@ -106,11 +106,10 @@ body {
 						<li class="nav-item"><a href="/my-page" class="navbar-brand">
 								<img src="${sessionScope.profileImageUrl}" alt="프로필">
 						</a></li>
-						<li class="nav-item"><a href="/dashboard-schedule"
-							class="btn btn-primary">일정 관리</a></li>
+						<li class="nav-item"><a href="/dashboard-schedule" class="btn btn-primary">일정 관리</a></li>
+						<li class="nav-item"><a href="/reviews" class="btn btn-primary">리뷰</a></li>
+						<li class="nav-item"><a href="/chat/rooms" class="btn btn-warning">채팅</a></li>
 						<li class="nav-item"><a href="/logout" class="btn btn-danger">로그아웃</a></li>
-						<li class="nav-item"><a href="/chat/rooms"
-							class="btn btn-warning">채팅</a></li>
 					</c:if>
 					<c:if test="${sessionScope.userId == null}">
 						<li class="nav-item"><button type="button"
@@ -159,11 +158,14 @@ body {
 	</div>
 	
 	<!-- 알림 확인 버튼 -->
-<div id="notification-toggle" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
-    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#notificationModal">
-        <span id="notification-count" class="badge badge-light">0</span>
-    </button>
-</div>
+<c:if test="${not empty sessionScope.userId}">
+    <div id="notification-toggle" style="position: fixed; bottom: 40px; right: 40px; z-index: 1050;">
+        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#notificationModal">
+            <span id="notification-count" class="badge badge-light">0</span>
+        </button>
+    </div>
+</c:if>
+
 
 
 <!-- 알림 모달 -->

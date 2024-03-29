@@ -10,6 +10,11 @@ public class TestController {
 		return "main";
 	}
 	
+	@GetMapping("/total-search")
+	public String testSearchKeyword() {
+		return "event_search_detail";
+	}
+	
 	@GetMapping("/signup")
 	public String testRegister() {
 		return "register";

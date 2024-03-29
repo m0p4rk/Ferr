@@ -50,7 +50,7 @@ $(document).ready(function() {
                         <div style="position: absolute; bottom: 5px; right: 10px;">${formattedDateTime}</div>
                         <strong>${notification.eventTitle}</strong>
                         <p>${notification.content}</p>
-                        <button class="delete-notification btn btn-danger btn-sm" data-notification-id="${notification.notificationId}">삭제</button>
+                        <button class="delete-notification btn btn-danger btn-sm" data-notification-id="${notification.notificationId}">확인!</button>
                     </li>`;
                 });
 

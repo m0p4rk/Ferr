@@ -29,7 +29,7 @@
         <div class="col-md-3">
             <input type="date" class="form-control" id="endDateFilter" name="endDate" placeholder="종료일">
         </div>
-        <div class="col-md-1">
+        <div class="col-md-3">
             <button type="submit" class="btn btn-primary" id="searchButton">검색</button>
         </div>
     </div>

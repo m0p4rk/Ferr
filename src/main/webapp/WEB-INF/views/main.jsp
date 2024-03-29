@@ -23,7 +23,7 @@
 		<div class="row">
 			<div class="col-12">
 				<div class="title-container">
-					<h2>순위</h2>
+					<h1>순위</h1>
 				</div>
 			</div>
 			<div class="col-12 position-relative">
