@@ -128,43 +128,67 @@ $(document).ready(function() {
         });
     });
 
+    var isNotesVisible = false; // 알림 목록 온오프 변수
+    var isNotesLoaded = false;
 
     $('#loadNotesBtn').click(function() {
-        var eventId = $('#eventId').val(); // 이벤트 ID를 HTML 요소로부터 가져옵니다.
-        $.ajax({
-            url: '/getNotifications',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ eventId: parseInt(eventId) }), // 이벤트 ID를 정수로 변환하여 JSON 객체로 포장합니다.
-            success: function(notifications) {
-                $('#notesList').empty(); // 기존에 표시된 노트 목록을 비웁니다.
-                notifications.forEach(function(notification) {
-                    // 서버로부터 반환된 날짜를 Date 객체로 변환합니다.
-                    var notificationId = notification.notificationId;
-                    var notificationDate = new Date(notification.notificationTime);
-                    var notificationContent = notification.content;
-                    console.log(notificationId);
-                    // 사용자가 읽기 쉬운 형태로 날짜를 포맷팅합니다.
-                    var formattedDate = notificationDate.toLocaleString('ko-KR', {
-                        year: 'numeric', month: '2-digit', day: '2-digit',
-                        hour: '2-digit', minute: '2-digit', second: '2-digit',
-                        hour12: false
-                    });
-                    // 포맷팅된 날짜와 노트 내용을 포함하는 HTML 요소를 생성하여 노트 목록에 추가합니다.
-                    $('#notesList').append(`
-                        <div class="note-item" data-note-id="${notificationId}">
-                            <p>${notificationContent} - ${formattedDate}</p>
-                            <button class="btn btn-secondary btn-sm edit-note-btn" data-toggle="modal" data-target="#editNoteModal">수정</button>
-                            <button class="btn btn-danger btn-sm delete-note-btn" onclick="deleteNote(${notificationId})">삭제</button>
-                            <input type="hidden" id="editNoteId" value="${notificationId}">
-                        </div>
-                    `);
+        // 버튼의 현재 상태에 따라 텍스트와 색상을 토글
+        if (!isNotesVisible) {
+            // 목록이 숨겨진 상태면 불러오기
+            $(this).text("알림 목록 가리기");
+            $(this).removeClass("btn-info").addClass("btn-secondary");
+
+            if (!isNotesLoaded) {
+                // 알림 목록을 처음 불러오는 경우에만 요청 수행
+                var eventId = $('#eventId').val(); // 이벤트 ID를 HTML 요소로부터 가져옵니다.
+                $.ajax({
+                    url: '/getNotifications',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({eventId: parseInt(eventId)}), // 이벤트 ID를 정수로 변환하여 JSON 객체로 포장합니다.
+                    success: function (notifications) {
+                        $('#notesList').empty(); // 기존에 표시된 노트 목록을 비웁니다.
+                        notifications.forEach(function (notification) {
+                            // 서버로부터 반환된 날짜를 Date 객체로 변환합니다.
+                            var notificationId = notification.notificationId;
+                            var notificationDate = new Date(notification.notificationTime);
+                            var notificationContent = notification.content;
+                            console.log(notificationId);
+                            // 사용자가 읽기 쉬운 형태로 날짜를 포맷팅합니다.
+                            var formattedDate = notificationDate.toLocaleString('ko-KR', {
+                                year: 'numeric', month: '2-digit', day: '2-digit',
+                                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                                hour12: false
+                            });
+                            // 포맷팅된 날짜와 노트 내용을 포함하는 HTML 요소를 생성하여 노트 목록에 추가합니다.
+                            $('#notesList').append(`
+                                <div class="note-item" data-note-id="${notificationId}">
+                                    <p>${notificationContent} - ${formattedDate}</p>
+                                    <button class="btn btn-secondary btn-sm edit-note-btn" data-toggle="modal" data-target="#editNoteModal">수정</button>
+                                    <button class="btn btn-danger btn-sm delete-note-btn" onclick="deleteNote(${notificationId})">삭제</button>
+                                    <input type="hidden" id="editNoteId" value="${notificationId}">
+                                </div>
+                            `);
+                        });
+                        isNotesLoaded = true;
+                        $('#notesList').show();
+                        isNotesVisible = true;
+                    },
+                    error: function (xhr, status, error) {
+                        alert('알림 불러오기 중 오류가 발생했습니다: ' + error);
+                    }
                 });
-            },
-            error: function(xhr, status, error) {
-                alert('알림 불러오기 중 오류가 발생했습니다: ' + error);
+            } else {
+                // 이미 불러온 목록이 있을때
+                $('#notesList').show();
+                isNotesVisible = true;
             }
-        });
+        } else {
+            $(this).text("알림 불러오기");
+            $(this).removeClass("btn-secondary").addClass("btn-info");
+            $('#notesList').hide(); // 노트 목록을 숨깁니다.
+            isNotesVisible = false;
+        }
     });
 
     // 페이지가 로드될 때 실행되는 부분
