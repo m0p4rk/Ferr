@@ -19,6 +19,7 @@
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: relative;
     }
     h1, h2 {
         color: #343a40;
@@ -28,6 +29,17 @@
     }
     .btn {
         margin-right: 10px;
+    }
+    .note-item:not(:last-child) {
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+    .delete-button-container {
+        position: relative;
+        bottom: 5px;
+        right: 15px;
+        text-align: right;
     }
     </style>
 </head>
@@ -125,7 +137,7 @@
 		</section>
 
         <!-- 일정 삭제 버튼 -->
-        <div class="mt-4">
+        <div class="delete-button-container" style="margin-top: 20px;">
             <button type="button" id="deleteButton" class="btn btn-danger" onclick="confirmDelete()">일정 삭제</button>
         </div>
     </div>
