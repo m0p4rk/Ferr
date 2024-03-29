@@ -35,11 +35,12 @@
         padding-bottom: 15px;
         margin-bottom: 15px;
     }
-    .delete-button-container {
-        position: relative;
-        bottom: 5px;
-        right: 15px;
-        text-align: right;
+    .btn-sec {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 15px;
     }
     </style>
 </head>
@@ -90,7 +91,6 @@
                     <button type="button" id="addNoteBtn" class="btn btn-primary mb-2">알림 추가</button>
                      <button id="loadNotesBtn" class="btn btn-info mb-2">알림 불러오기</button>
                 </div>
-               
             </div>
         </section>
         
@@ -128,18 +128,13 @@
                 </div>
             </div>
         </div>
-    	<section id="reviewsAndLogs">
-			<div class="mt-3">
-				<h6>후기 및 일지</h6>
-				<a href="/reviews/add?eventId=${schedule.eventId}"
-					class="btn btn-primary">작성하기</a>
-			</div>
-		</section>
 
-        <!-- 일정 삭제 버튼 -->
-        <div class="delete-button-container" style="margin-top: 20px;">
-            <button type="button" id="deleteButton" class="btn btn-danger" onclick="confirmDelete()">일정 삭제</button>
-        </div>
+        <section class="btn-sec">
+            <!-- 후기 및 일지 작성하기 버튼 -->
+            <a href="/reviews/add?eventId=${schedule.eventId}" class="btn btn-primary" style="margin-right: 12px;">후기 및 일지 작성하기</a>
+            <!-- 일정 삭제 버튼 -->
+            <button type="button" id="deleteButton" class="btn btn-danger">일정 삭제</button>
+        </section>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

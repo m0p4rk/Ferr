@@ -121,15 +121,15 @@ $(document).ready(function() {
 
     // 새로운 알림 추가
     $('#addNoteBtn').click(function() {
-    var noteContent = $('#noteContent').val();
-    var noteDateTime = $('#noteDateTime').val(); // 'YYYY-MM-DDTHH:MM:SS' 형식으로 가정
-    var eventId = $('#eventId').val(); // 이벤트 ID 값을 HTML의 숨겨진 필드에서 읽어옴
+        var noteContent = $('#noteContent').val();
+        var noteDateTime = $('#noteDateTime').val(); // 'YYYY-MM-DDTHH:MM:SS' 형식으로 가정
+        var eventId = $('#eventId').val(); // 이벤트 ID 값을 HTML의 숨겨진 필드에서 읽어옴
 
-    // 서버 측에서 Timestamp로 파싱 가능한 형식으로 데이터 준비
-    var data = {
-        eventId: parseInt(eventId), // 이벤트 ID를 숫자로 변환
-        content: noteContent,
-        notificationTime: noteDateTime // 'YYYY-MM-DDTHH:MM:SS' 형식
+        // 서버 측에서 Timestamp로 파싱 가능한 형식으로 데이터 준비
+        var data = {
+            eventId: parseInt(eventId), // 이벤트 ID를 숫자로 변환
+            content: noteContent,
+            notificationTime: noteDateTime // 'YYYY-MM-DDTHH:MM:SS' 형식
     };
 
     $.ajax({
@@ -141,8 +141,18 @@ $(document).ready(function() {
             alert('알림이 추가되었습니다.');
             // 성공 시 추가 작업 수행, 예를 들어 알림 목록을 새로고침
         },
-        error: function(xhr, status, error) {
-            alert('알림 추가 중 오류가 발생했습니다: ' + error);
+        error: function(xhr) {
+            switch (xhr.status) {
+                case 400:
+                    alert('지난 날짜를 지정할 수 없습니다.');
+                    break;
+                case 500:
+                    alert('서버 내부 오류입니다. 나중에 다시 시도해주세요.');
+                    break;
+                default:
+                    alert('알림 추가 중 알 수 없는 오류가 발생했습니다.');
+                    break;
+            }
         }
     });
 });
@@ -204,7 +214,7 @@ $(document).ready(function() {
                             // 사용자가 읽기 쉬운 형태로 날짜를 포맷팅합니다.
                             var formattedDate = notificationDate.toLocaleString('ko-KR', {
                                 year: 'numeric', month: '2-digit', day: '2-digit',
-                                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                                hour: '2-digit', minute: '2-digit',
                                 hour12: false
                             });
                             // 포맷팅된 날짜와 노트 내용을 포함하는 HTML 요소를 생성하여 노트 목록에 추가합니다.
