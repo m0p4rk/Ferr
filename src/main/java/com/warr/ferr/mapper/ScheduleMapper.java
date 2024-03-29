@@ -1,5 +1,6 @@
 package com.warr.ferr.mapper;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +49,8 @@ public interface ScheduleMapper {
 
     /**
      * 특정 조건에 따라 위도와 경도 정보를 조회합니다.
-     * @param eventId 조회 조건
+     * @param eventId 조회 조건 @Param("condition")
      * @return 위도와 경도 정보가 담긴 맵
      */
-    Map<String, Double> getLatitudeAndLongitude(@Param("condition") int eventId);
+    Map<String, BigDecimal> getLatitudeLongitude(int eventId);
 }

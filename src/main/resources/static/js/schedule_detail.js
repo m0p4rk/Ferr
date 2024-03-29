@@ -20,45 +20,88 @@ $(document).ready(function() {
     var eventId = $('#eventId').val(); // 이벤트 ID를 저장
     
     navigator.geolocation.getCurrentPosition(function(position) {
-            var currentlatitude = position.coords.latitude;
-            var currentlongitude = position.coords.longitude;
-            // 현재 위치 날씨 정보 가져오기
-            $.ajax({
-                url: 'https://api.openweathermap.org/data/2.5/weather?lat=' + currentlatitude + '&lon=' + currentlongitude + '&appid=a62c831d0ac8f869133bcde70421b3b5',
-                method: 'GET',
-                success: function(response) {
-                    var weatherInfo = '날씨: ' + response.weather[0].main + ', 온도: ' + (response.main.temp - 273.15).toFixed(1) + '°C';
-                    $('#weatherInfo').html(weatherInfo);
-                },
-                error: function(xhr, status, error) {
-                    console.error('날씨 정보를 불러오는 중 오류 발생:', error);
-                }
-            });
-        });
-        
-    navigator.geolocation.getCurrentPosition(function(position) {
-            var currentlatitude = position.coords.latitude;
-            var currentlongitude = position.coords.longitude;
+    var currentlatitude = position.coords.latitude;
+    var currentlongitude = position.coords.longitude;
+
+    $.ajax({
+        url: '/destination/' + eventId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            var latitude = response.latitude;
+            var longitude = response.longitude;
+
             var mapContainer = document.getElementById('map');
             var centerPosition = new kakao.maps.LatLng(currentlatitude, currentlongitude);
             var mapOption = {
                 center: centerPosition,
                 level: 8
             };
+
             var map = new kakao.maps.Map(mapContainer, mapOption);
+
+            // 목적지의 위도와 경도를 LatLng 객체로 생성
+            var destinationPosition = new kakao.maps.LatLng(latitude, longitude);
+            // 목적지 마커 생성
+            var destinationMarker = new kakao.maps.Marker({ position: destinationPosition });
+            // 목적지 마커를 지도에 추가
+            destinationMarker.setMap(map);
+
             var marker = new kakao.maps.Marker({ position: centerPosition });
             marker.setMap(map);
+        },
+        error: function(xhr, status, error) {
+            console.error('목적지 좌표를 가져오는 중 오류 발생:', error);
+        }
+    });
+});
+
+       
+      //서버에서 축제장소 위도 경도 받아오는 로직 
+    $.ajax({
+        url: '/destination/' + eventId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            var latitude = response.latitude;
+			var longitude = response.longitude;
+		
+		// 목적지 위도와 경도를 사용하여 날씨 정보 가져오기
+        $.ajax({
+            url: 'https://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude + '&appid=a62c831d0ac8f869133bcde70421b3b5',
+            method: 'GET',
+            success: function(weatherResponse) {
+                var weatherInfo = '날씨: ' + weatherResponse.weather[0].main + ', 온도: ' + (weatherResponse.main.temp - 273.15).toFixed(1) + '°C';
+                // 날씨 정보를 UI에 표시
+                $('#weatherInfo').html(weatherInfo);
+            },
+            error: function(xhr, status, error) {
+                console.error('목적지 날씨 정보를 불러오는 중 오류 발생:', error);
+            }
         });
         
-    $('#viewRouteBtn').on('click', function() {
+
+            // UI 업데이트를 AJAX 요청 성공 콜백 함수 내부에 위치시킵니다.
+            updateUI(latitude, longitude);
+        },
+        error: function(xhr, status, error) {
+            console.error('목적지 좌표를 가져오는 중 오류 발생:', error);
+        }
+    });
+        // UI를 업데이트하는 함수를 정의합니다.
+    function updateUI(latitude, longitude) {
+        // UI를 업데이트합니다.
+        console.log("위도: " + latitude + ", 경도: " + longitude);
+        $('#viewRouteBtn').on('click', function() {
             // 카카오 지도 길찾기 URL 생성 : 목적지만 지정 가능
-            var destinationName = "Gyeongbokgung Palace"; // 목적지 이름 예시
-            var destinationLatitude = 37.577445; // 목적지 위도 예시
-            var destinationLongitude = 126.976953; // 목적지 경도 예시
-            var kakaoMapUrl = 'https://map.kakao.com/link/to/' + destinationName + ',' + destinationLatitude + ',' + destinationLongitude;
+            var destinationName = "축제장소"; // 목적지 이름 예시
+            var kakaoMapUrl = 'https://map.kakao.com/link/to/' + destinationName + ',' + latitude + ',' + longitude;
             // 팝업으로 카카오 지도창 띄우기
             window.open(kakaoMapUrl, '_blank');
         });
+    }
+});
+
 
     // 약속 날짜 변경
     $('#promiseDate').change(function() {
@@ -185,4 +228,4 @@ $(document).ready(function() {
             });
         }
     });
-});
+
