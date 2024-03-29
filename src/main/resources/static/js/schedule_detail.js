@@ -15,6 +15,39 @@
     });
 }
 
+// 습도에 따른 적정 온도
+function checkIsAwesomeTemp(humidity, temperature) {
+    let lowerBound, upperBound;
+
+    if (humidity >= 10 && humidity < 20) {
+        lowerBound = 20;
+        upperBound = 22;
+    } else if (humidity >= 20 && humidity < 40) {
+        lowerBound = 19;
+        upperBound = 21;
+    } else if (humidity >= 40 && humidity < 60) {
+        lowerBound = 18;
+        upperBound = 20;
+    } else if (humidity >= 60 && humidity < 80) {
+        lowerBound = 17;
+        upperBound = 19;
+    } else if (humidity >= 80 && humidity <= 100) {
+        lowerBound = 16;
+        upperBound = 18;
+    } else {
+        console.log("습도가 적절한 범위를 벗어났습니다.");
+        return;
+    }
+
+    if (temperature < lowerBound) {
+        return '현재 기온에 비해 습도가 높은 편입니다. 다소 불쾌한 날씨일 수 있습니다.<br>'
+    } else if (temperature >= lowerBound && temperature <= upperBound) {
+        return '현재 기온에 맞는 적절한 습도입니다. 상쾌한 하루 보내세요.<br>'
+    } else {
+        return '현재 기온에 비해 습도가 낮은 편입니다. 보습제를 바르는 것도 좋은 방법입니다. <br>';
+    }
+}
+
 // 위 전역 함수를 제외한 모든 기능은 여기부터 구현됨 참고하세요
 $(document).ready(function() {
     var eventId = $('#eventId').val(); // 이벤트 ID를 저장
@@ -71,15 +104,100 @@ $(document).ready(function() {
             url: 'https://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude + '&appid=a62c831d0ac8f869133bcde70421b3b5',
             method: 'GET',
             success: function(weatherResponse) {
-                var weatherInfo = '날씨: ' + weatherResponse.weather[0].main + ', 온도: ' + (weatherResponse.main.temp - 273.15).toFixed(1) + '°C';
+                // 날씨 온도계 사진 선택 + 온도 멘트
+                var weatherVar = weatherResponse.weather[0].main;
+                var weatherInfo = '날씨: ' + weatherVar;
+                var temperature = (weatherResponse.main.temp - 273.15).toFixed(1);
+                var weatherTemp = '온도: ' + temperature + '°C';
+                var infoMessage = '현재 기온은 ' + temperature + '°C입니다. ';
+                var tempIconUrl;
+                if (temperature <= -10) {
+                    tempIconUrl = '/temp-img/tempCold.png'; // ~ -10
+                    infoMessage += '두꺼운 옷차림으로 한파에 대비하세요. <br>';
+                } else if (temperature > -10 && temperature <= 0) {
+                    tempIconUrl = '/temp-img/temp1.JPG'; // -10 ~ 0
+                    infoMessage += '추운 날씨에 대비하여 따뜻한 옷차림을 추천합니다. <br>';
+                } else if (temperature > 0 && temperature <= 8) {
+                    tempIconUrl = '/temp-img/temp2.JPG'; // 0 ~ 8
+                    infoMessage += '쌀쌀한 날씨로 인해 가벼운 겉옷을 준비하시면 좋습니다. <br>';
+                } else if (temperature > 8 && temperature <= 16) {
+                    tempIconUrl = '/temp-img/temp3.JPG'; // 8 ~ 16
+                    infoMessage += '선선한 날씨로, 외출하기 좋은 날씨입니다. <br>';
+                } else if (temperature > 16 && temperature <= 23) {
+                    tempIconUrl = '/temp-img/temp4.JPG'; // 16 ~ 23
+                    infoMessage += '따뜻한 봄날씨로, 가벼운 옷차림을 추천합니다. <br>';
+                } else if (temperature > 23 && temperature <= 28) {
+                    tempIconUrl = '/temp-img/temp5.JPG'; // 23 ~ 28
+                    infoMessage += '조금은 더운 여름 날씨로, 반팔을 준비하세요. <br>';
+                } else if (temperature > 28 && temperature <= 33) {
+                    tempIconUrl = '/temp-img/temp6.JPG'; // 28 ~ 33
+                    infoMessage += '무더운 여름 날씨로, 더위 조심하시길 바랍니다. <br>';
+                } else if (temperature > 33) {
+                    tempIconUrl = '/temp-img/tempHot.png'; // 33 ~
+                    infoMessage += '폭염에 대비하시길 바라며, 수분 섭취는 수시로 하시는 것을 권장합니다. <br>';
+                } else {
+                    tempIconUrl = '/temp-img/tempError.png'; // Exception(Error)
+                    infoMessage += 'None;<br>';
+                }
+                var weatherIcon = weatherResponse.weather[0]['icon']; // 날씨 아이콘 쿼리 파라미터
+                var iconurl = "http://openweathermap.org/img/w/" + weatherIcon + ".png"; // Openweather API에서 이미지 가져오기
+
+                // 날씨 멘트
+                infoMessage += '현재 행사 위치 부근 기준으로 ';
+                switch (weatherVar) {
+                    case "Cloud":
+                        infoMessage += '대체적으로 흐린 편입니다. 혹시 모를 우천에 대비하세요. <br>';
+                        break;
+                    case "Rain":
+                        infoMessage += '비가 내리는 중입니다. 우산을 꼭 챙기시길 바랍니다. <br>';
+                        break;
+                    case "Snow":
+                        infoMessage += '눈이 내리는 중입니다. 미끄러운 빙판길에 유의하세요. <br>';
+                        break;
+                    case "Clear":
+                        infoMessage += '하늘이 아주 맑습니다. 기분 좋게 외출하기 좋을 것 같습니다. <br>';
+                        break;
+                    default:
+                        infoMessage += 'None;<br>';
+                }
+
+                // 풍속 멘트
+                var windSpeed = weatherResponse.wind['speed'].toFixed(0);
+                infoMessage += '풍속은 현재 ' + windSpeed + 'm/s로 ';
+                if (windSpeed >= 0 && windSpeed <= 2) {
+                    infoMessage += '바람이 거의 느껴지지 않는 조용한 날입니다. <br>';
+                } else if (windSpeed >= 3 && windSpeed <= 5) {
+                    infoMessage += '가벼운 바람이 불어 산책하기 좋은 날씨입니다. <br>';
+                } else if (windSpeed >= 6 && windSpeed <= 9) {
+                    infoMessage += '바람이 조금씩 불고 있습니다. <br>';
+                } else if (windSpeed >= 10 && windSpeed <= 14) {
+                    infoMessage += '다소 강한 바람입니다. <br>';
+                } else if (windSpeed >= 15 && windSpeed <= 19) {
+                    infoMessage += '강한 바람이 불어 우산 사용 시 날아가지 않게 유의하세요. <br>';
+                } else if (windSpeed >= 20 && windSpeed <= 24) {
+                    infoMessage += '매우 강한 바람이 불고 있습니다. 실내에 머무르시는 것이 좋겠습니다. <br>';
+                } else if (windSpeed >= 25) {
+                    infoMessage += '안전한 곳에 대피하신 후 폭풍에 대비하세요. <br>';
+                } else {
+                    infoMessage += 'None;<br>';
+                }
+
+                // 온도에 따른 습도 멘트
+                var humidity = weatherResponse.main['humidity'];
+                infoMessage += '습도는 ' + humidity + '%로, ';
+                infoMessage += checkIsAwesomeTemp(humidity, temperature);
+
                 // 날씨 정보를 UI에 표시
                 $('#weatherInfo').html(weatherInfo);
+                $('#weatherTemp').html(weatherTemp);
+                $('#wIcon').attr('src', iconurl);
+                $('#tIcon').attr('src', tempIconUrl);
+                $('#weatherInfoMessage').html(infoMessage);
             },
             error: function(xhr, status, error) {
                 console.error('목적지 날씨 정보를 불러오는 중 오류 발생:', error);
             }
         });
-        
 
             // UI 업데이트를 AJAX 요청 성공 콜백 함수 내부에 위치시킵니다.
             updateUI(latitude, longitude);
