@@ -116,7 +116,7 @@
 	
 	<update id="reJoinMember"
 			parameterType="int">
-		UPDATE free.chatroom_members
+		UPDATE chatroom_members
 		SET status = 'JOIN'
 		WHERE chatroom_id = #{chatroomId} AND user_id = #{userId}
 	</update>

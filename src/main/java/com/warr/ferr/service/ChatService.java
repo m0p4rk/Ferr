@@ -250,20 +250,18 @@ public class ChatService {
 		return leaveMember;
 	}
 
-	public void inviteChat(List<Users> userList, int chatroomId) {
-		//List<ChatroomMembers> inviteList = new ArrayList<>();
-		System.out.println("연결확인중");
-		for (int i = 0; i < userList.size(); i++) {
-			List<ChatroomMembers> leaveMembers =  chatMapper.findLeaveMember(chatroomId);
-			if(leaveMembers.size() > 0) {
+//	public void inviteChat(List<Users> userList, int chatroomId) {
+//		for (int i = 0; i < userList.size(); i++) {
+//			List<ChatroomMembers> leaveMembers =  chatMapper.findLeaveMember(chatroomId);
+//			if(leaveMembers.size() > 0) {
 //				for (int j = 0; j < leaveMembers.size(); j++) {
 //					chatMapper.reInviteUser(leaveMembers.get(i));
 //				}
 //			} else {
 //				chatMapper.inviteChat(userList.get(i));
-			}
-		}
-	}
+//			}
+//		}
+//	}
 
 	// 모든 채팅방id 와 랜덤한 유저 id 한명꺼 받아와서 모든채팅방으로 전체메시지 보내는 기능
 	// 날 바뀔때 날짜를 출력해줄예정
@@ -272,82 +270,45 @@ public class ChatService {
 	}
 
 	// 채팅 멤버 추가
-	public void addChatMember(List<Integer> idList, int roomId) {
+	public void addChatMember(List<Integer> userList, int roomId) {
 	    List<ChatroomMembers> leaveMember = chatMapper.findLeaveMember(roomId);
 	    List<Integer> num = new ArrayList<>();
- 
-	    System.out.println("?????? : ");
-	    for (int i = 0; i < idList.size(); i++) {
-			System.out.println("idList : " + idList.get(i));
-		}
 	    
-	    
-	    for(int i = 0; i < idList.size(); i++) {
-	    	System.out.println(idList.get(0).getClass());
+	    // 방을 떠난 유저가 있는지 검증 >> 있으면 status값만 변경
+	    for(int i = 0; i < userList.size(); i++) {
 	    	for (int j = 0; j < leaveMember.size(); j++) {
-	    		System.out.println("leaveUser : " + idList.get(i).getClass());
-				if(idList.get(i) == leaveMember.get(j).getUserId()) {
-					
-					ChatroomMembers roomMembers = new ChatroomMembers().builder()
-																			.chatroomId(roomId)
-																			.userId(idList.get(i))
-																			.build();
+				if(userList.get(i) == leaveMember.get(j).getUserId()) {
+					ChatroomMembers roomMembers = ChatroomMembers.builder()
+																	.chatroomId(roomId)
+																	.userId(userList.get(i))
+																	.build();
 					chatMapper.reJoinMember(roomMembers);
-					System.out.println(roomMembers);
-						num.add(idList.get(i));
+				} else {
+					num.add(userList.get(i));
 				}
 			}
 	    }
-	    ChatroomMembers roomMember = new ChatroomMembers();
-//	    if(num.size() == 0) {
-//	    	for (int i = 0; i < idList.size(); i++) {
-//	    		roomMember = new ChatroomMembers().builder()
-//														.chatroomId(roomId)
-//														.userId(idList.get(i))
-//														.build();
-//	    		chatMapper.addChatMember(roomMember);
-//				System.out.println("if : ");
-//			}
-//	    } else {
-//	    	for (int i = 0; i < num.size(); i++) {
-//				for (int j = 0; j < idList.size(); j++) {
-//					if(idList.get(j) != num.get(i)) {
-//						roomMember = new ChatroomMembers().builder()
-//														.chatroomId(roomId)
-//														.userId(idList.get(i))
-//														.build();
-//						chatMapper.addChatMember(roomMember);
-//						System.out.println("else : ");
-//					}
-//				}
-//			}
-//	    }
+	    if(num.size() != 0) {
+	    	// 기존 방을 떠난 유저가 있을때 제외하는 로직
+	    	ChatroomMembers roomMember = new ChatroomMembers();
+	    	for (int i = 0; i < num.size(); i++) {
+	    		roomMember = ChatroomMembers.builder()
+	    				.chatroomId(roomId)
+	    				.userId(num.get(i))
+	    				.build();
+	    		chatMapper.addChatMember(roomMember);
+	    	} 
+	    } else {
+	    	// 방 떠난 유저 없을 땐 리스트 전부 추가
+	    	for(int i = 0; i < userList.size(); i++) {
+	    		ChatroomMembers roomMembers = ChatroomMembers.builder()
+						.chatroomId(roomId)
+						.userId(userList.get(i))
+						.build();
+	    		chatMapper.addChatMember(roomMembers);
+	    	}
+	    }
 	}
-	
-//	    // 먼저 채팅방에 이미 있는 멤버를 idList에서 제거
-//	    Iterator<Integer> iterator = idList.iterator();
-//	    while (iterator.hasNext()) {
-//	    	System.out.println(iterator);
-//	        Integer userId = iterator.next();
-//	        for (ChatroomMembers member : leaveMember) {
-//	        	System.out.println(member);
-//	            if (userId.equals(member.getUserId())) {
-//	                iterator.remove();
-//	                break; // 같은 사용자를 두 번 이상 확인할 필요가 없으므로 루프를 종료
-//	            }
-//	        }
-//	    }
-//	    
-
-	    // 채팅방에 추가할 사용자들을 추가
-//	    for (Integer userId : idList) {
-//	        chatMapper.addChatMember(userId, roomId);
-//	    }
-//	public List<Users> findActiveUser(int chatroomId){
-//		List<Users> userList = userMapper.findActiveUser(chatroomId);
-//		
-//		return null;
-//	}
 
 
     // 채팅방 삭제 - 모든유저가 leave 상태인 채팅룸 id 기준으로 삭제

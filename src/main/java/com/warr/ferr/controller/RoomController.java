@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -83,63 +84,27 @@ public class RoomController {
     @PostMapping("/addMember")
     @ResponseBody
     public void addChatMember(@RequestBody Map<String, Object> requestData, HttpSession session) {
-//    	ArrayList idList  = null;
-//    	
-//    	System.out.println(requestData);
-//    	  for (Entry<String, Object> entrySet : requestData.entrySet()) {        
-//    		  	System.out.println(entrySet.getKey() + " : " + entrySet.getValue() + " type : " +  entrySet.getValue().getClass());     
-//    		  	if(entrySet.getKey()  == "idList") {
-//    		  		idList = (ArrayList) entrySet.getValue();
-//    		  	}
-//    	  }
-    	  ArrayList idList  = new ArrayList<>();;
-    	  
-    	  System.out.println(requestData);
-    	  for (Entry<String, Object> entrySet : requestData.entrySet()) {        
-    		  System.out.println(entrySet.getKey() + " : " + entrySet.getValue() + " type : " +  entrySet.getValue().getClass());     
-    		  if(entrySet.getKey()  == "idList") {
-    			  idList = (ArrayList) entrySet.getValue();
-    		  }
-    	  }
+    	ArrayList<?> idList  = null;
+    	List<Integer> userList = new ArrayList<>();
+    	int chatroomId = 0;
     	
-        int roomId = (Integer) requestData.get("roomId");
-        for(int i = 0; i < idList.size(); i++) {
-        	System.out.println(idList.get(i));
-        }
-        chatService.addChatMember(idList, roomId);
+    	  for (Entry<String, Object> entrySet : requestData.entrySet()) {        
+    		  	System.out.println(entrySet.getKey() + " : " + entrySet.getValue() + " type : " +  entrySet.getValue().getClass());     
+    		  	if(entrySet.getKey() == "chatroomId") {
+    		  		chatroomId = Integer.parseInt(entrySet.getValue().toString()); // chatroomId
+    		  	} else if(entrySet.getKey()  == "userId") {
+    		  		idList = (ArrayList<?>) entrySet.getValue();
+    		  	}
+    	  }
+    	  // List<Integer> 변환해서 값 넘겨줌
+    	  for (int i = 0; i < idList.size(); i++) {
+			System.out.println("userId : "+ Integer.parseInt((String) idList.get(i)));
+			userList.add(Integer.parseInt((String) idList.get(i)));
+		}
+    	  
+        chatService.addChatMember(userList, chatroomId);
         
-        
-//        for (int i = 0; i < idList.size(); i++) {
-//        	userList.add(userService.findUserById(idList.get(i)));
-//		}
-//        Users user = userService.findUserById((Integer) session.getAttribute("userId"));
-//        chatService.addChatMember(userList, user);
     }
-//    @PostMapping("/addMember")
-//    @ResponseBody
-//    public void addChatMember(@RequestBody Map<String, Object> requestData, HttpSession session) {
-//    	ArrayList idList  = null;
-//    	
-//    	for (Entry<String, Object> entrySet : requestData.entrySet()) {        
-//    		System.out.println(entrySet.getKey() + " : " + entrySet.getValue() + " type : " +  entrySet.getValue().getClass());     
-//    		if(entrySet.getKey()  == "idList") {
-//    			idList = (ArrayList) entrySet.getValue();
-//    		}
-//    	}
-//    	
-//    	int roomId = (Integer) requestData.get("roomId");
-//    	for(int i = 0; i < idList.size(); i++) {
-//    		//System.out.println(idList.get(i));
-//    	}
-//    	chatService.addChatMember(idList, roomId);
-//    	
-//    	
-////        for (int i = 0; i < idList.size(); i++) {
-////        	userList.add(userService.findUserById(idList.get(i)));
-////		}
-////        Users user = userService.findUserById((Integer) session.getAttribute("userId"));
-////        chatService.addChatMember(userList, user);
-//    }
 
     // 채팅방 조회-상세보기
     @GetMapping("/room")
@@ -180,7 +145,7 @@ public class RoomController {
         // 이전 채팅 이력
         List<MessageDto> preMsgList = messagesService.preMsg(chatroomId, userList);
         model.addAttribute("preMsg", JSONArray.fromObject(preMsgList));
-        
+        System.out.println(preMsgList.get(0));
         // 마지막 읽은 시간 갱신
         chatService.lastReadAtUpdate(roomId, (Integer) session.getAttribute("userId"));
         
@@ -226,13 +191,6 @@ public class RoomController {
     	int alarm = messagesService.msgAlarm((Integer)session.getAttribute("userId"));
     	System.out.println("alarm :  " + alarm);
     	return alarm;
-    }
-    
-    // 채팅방에서 유저 초대하기
-    @PostMapping("/invite")
-    @ResponseBody
-    public void inviteChat(@RequestBody List<Users> userList, int chatroomId) {
-        chatService.inviteChat(userList, chatroomId);
     }
     
     // room 에서 유저 검색

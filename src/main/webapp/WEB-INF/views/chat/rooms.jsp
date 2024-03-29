@@ -254,7 +254,8 @@ function displayChatrooms(chatrooms) {
 
     // 받아온 채팅방 리스트를 순회하면서 화면에 표시
     chatrooms.forEach(function(chatroom) {
-    	console.log(chatroom);
+    	console.log(chatroom.messageType);
+    	
     	if(chatroom.messageType != "SYSTEM"){
 	        var str = '';
 	        // 각 채팅방을 표시할 HTML 코드 생성
@@ -282,9 +283,7 @@ function displayChatrooms(chatrooms) {
 	        str += "<li class='list-group-item'>";
 	        str += "<a href='#' onclick='openChatRoom(" + chatroom.chatroomId + ")' value=" + chatroom.chatroomId + ">" + chatroom.chatroomName + "</a>" + " 참여인원 : " + chatroom.members;
 	        str += "<div id='lastMsg_" + chatroom.chatroomId + "'>";
-	        if(chatroom.content != null){
-		        str += chatroom.nickname + " : " +  chatroom.content + "<br>";
-	        }
+		    str += chatroom.content + "<br>";
 	        str += dateConversion(chatroom); // 변환된 날짜와 시간을 추가
 	        
 	     	// receiveCount가 0보다 크고 null이 아닌 경우에만 출력
@@ -481,14 +480,19 @@ function selectArray(userId) { // 선택한 값의 userId
 };
 
 // 결과 출력
-function cnffur(){
+	function cnffur(){
 		selectedItems.innerHTML = '';
 		for(var i = 0; i < selectedListId.length; i++) {
+			for(var j = 0; j < userList.length; j++) {
+				if(selectedListId[i] == userList[j].userId){
 					var str = '';
 					str += "<span class='selectedList'><img src='/img/1581304118739.jpg' alt='" + selectedListId[i] + "' style='width: 25px; height: 25px;'>";
-					str += "<label for='checkbox'>" + selectedListId[i]+ "</label>";
+					str += "<label for='checkbox'>" + userList[j].nickname + "</label>";
 					str += "<input type='checkbox' class='selectedUser' checked userId='" + selectedListId[i] + "'></span>";
 					selectedItems.innerHTML += str;
+					break;
+				}
+			}
 		}
 	// 선택된 아이템 id 값 가져오기
 	var selectedUsers = selectedItemsDiv.querySelectorAll('.selectedUser');

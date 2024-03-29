@@ -83,7 +83,8 @@ nav {
 <body class="bg-gray-100 h-screen antialiasd leading-none">
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">${room.chatroomName}</a>
+       <!--  <a class="navbar-brand" href="#"></a> -->
+        <span id="title"><h3>${room.chatroomName}</h3></span>
         <!-- 참여중인 유저 인원수 출력 + 카톡기본이미지같은거 하나 넣어두고 -->
         <!-- 클릭하면 유저 검색해서 추가할수있게 기능추가할것 -->
         <!-- 클릭 가능한 요소 -->
@@ -178,6 +179,11 @@ window.onload = function() {
 		   title.innerHTML = "그룹 채팅";
     }
 };
+
+if(roomUserList.length > 2) {
+document.getElementById("title").innerHTML = '';
+document.getElementById("title").innerHTML = '<b>그룹 채팅</b>';
+}
 //========================================================================
 //날짜 형태 변환
 function dateConversion(chatroom) {
@@ -536,11 +542,16 @@ const display = document.getElementsByClassName("container");
 	function cnffur(){
 		selectedItems.innerHTML = '';
 		for(var i = 0; i < selectedListId.length; i++) {
+			for(var j = 0; j < userList.length; j++) {
+				if(selectedListId[i] == userList[j].userId){	
 					var str = '';
 					str += "<span class='selectedList'><img src='/img/1581304118739.jpg' alt='" + selectedListId[i] + "' style='width: 25px; height: 25px;'>";
-					str += "<label for='checkbox'>" + selectedListId[i]+ "</label>";
+					str += "<label for='checkbox'>" + userList[j].nickname+ "</label>";
 					str += "<input type='checkbox' class='selectedUser' checked userId='" + selectedListId[i] + "'></span>";
 					selectedItems.innerHTML += str;
+					break;
+				}
+			}
 		}
 		// 선택된 아이템 id 값 가져오기
 		var selectedUsers = selectedItemsDiv.querySelectorAll('.selectedUser');
@@ -587,7 +598,7 @@ const display = document.getElementsByClassName("container");
 	    success: function(response) {
 	      // 성공 시 처리
 	      console.log("선택된 항목을 서버로 전송했습니다.");
-	      modal.style.display = "none"; // 모달 닫기
+	      modal5.style.display = "none"; // 모달 닫기
 	      resetModalContent();
 	      location.reload();
 	    },
@@ -596,6 +607,7 @@ const display = document.getElementsByClassName("container");
 	      console.error("서버로의 전송에 실패했습니다:", error);
 	    }
 	  }); //$
+	  
 	});
 
 	
