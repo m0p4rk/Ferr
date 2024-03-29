@@ -28,6 +28,10 @@
     <select id="findAllNotificationsByEventId" resultMap="notificationResultMap">
         SELECT * FROM schedule_notifications WHERE event_id = #{eventId}
     </select>
+    
+    <select id="findAllNotificationsByUserId" resultMap="notificationResultMap">
+        SELECT * FROM schedule_notifications WHERE user_id = #{eventId}
+    </select>
 
     <!-- 알림 업데이트 -->
     <update id="updateNotificationById">

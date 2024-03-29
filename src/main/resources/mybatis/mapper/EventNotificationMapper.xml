@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warr.ferr.mapper.EventNotificationMapper">
+
+    <!-- 결과 매핑 정의 -->
+    <resultMap id="eventNotificationResultMap" type="com.warr.ferr.model.EventNotification">
+        <id property="eventId" column="event_id" />
+        <result property="userId" column="user_id" />
+        <result property="contentId" column="content_id" />
+        <result property="eventTitle" column="event_title" />
+        <result property="eventStartDate" column="event_start_date" />
+        <result property="eventEndDate" column="event_end_date" />
+        <result property="latitude" column="latitude" />
+        <result property="longitude" column="longitude" />
+        <result property="createdAt" column="created_at" />
+        <result property="promiseDate" column="promise_date" />
+        <result property="startLocation" column="start_location" />
+        <result property="notificationId" column="notification_id" />
+        <result property="content" column="content" />
+        <result property="notificationTime" column="notification_time" />
+        <result property="notificationCreatedAt" column="notification_created_at" />
+    </resultMap>
+
+    <!-- 특정 사용자 ID로 모든 이벤트 및 해당 알림 조회 -->
+    <select id="findAllEventsAndNotificationsByUserId" resultMap="eventNotificationResultMap">
+        SELECT 
+            e.event_id,
+            e.user_id,
+            e.content_id,
+            e.event_title,
+            e.event_start_date,
+            e.event_end_date,
+            e.latitude,
+            e.longitude,
+            e.created_at,
+            e.promise_date,
+            e.start_location,
+            n.notification_id,
+            n.content as content,
+            n.notification_time,
+            n.created_at as notification_created_at
+        FROM 
+            ferr.user_events e
+        LEFT JOIN 
+            ferr.schedule_notifications n ON e.event_id = n.event_id
+        WHERE 
+            e.user_id = #{userId}
+    </select>
+
+    <!-- 현재 시간 이후의 알림 조회 -->
+    <select id="findDueNotifications" parameterType="java.util.Date" resultMap="eventNotificationResultMap">
+        SELECT 
+            e.event_id,
+            e.user_id,
+            e.content_id,
+            e.event_title,
+            e.event_start_date,
+            e.event_end_date,
+            e.latitude,
+            e.longitude,
+            e.created_at,
+            e.promise_date,
+            e.start_location,
+            n.notification_id,
+            n.content as notification_content,
+            n.notification_time,
+            n.created_at as notification_created_at
+        FROM 
+            ferr.user_events e
+        JOIN 
+            ferr.schedule_notifications n ON e.event_id = n.event_id
+        WHERE 
+            n.notification_time > #{currentDateTime}
+    </select>
+</mapper>

@@ -17,6 +17,8 @@ public interface NotificationMapper {
 
     List<Notification> findAllNotificationsByEventId(Integer id);
     
+    List<Notification> findAllNotificationsByUserId(Integer id);
+    
     void updateNotificationById(Notification notification);
 
 }

@@ -36,6 +36,10 @@ public class NotificationService {
     public List<Notification> findAllNotificationsByEventId(int eventId) {
         return notificationMapper.findAllNotificationsByEventId(eventId);
     }
+    
+    public List<Notification> findAllNotificationsByUserId(int userId) {
+        return notificationMapper.findAllNotificationsByUserId(userId);
+    }
 
  // 알림 업데이트 서비스 메서드
     public void updateNotification(Notification notification) {

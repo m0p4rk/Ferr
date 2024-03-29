@@ -49,6 +49,42 @@ body {
 	font-family: 'Noto Sans KR', sans-serif;
 	font-weight: 600;
 }
+
+.animated {
+    animation: fadeIn 0.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.pulse {
+    animation: pulse 1s infinite;
+}
+
+.notification-item {
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa; /* 배경 색상을 조금 더 밝게 변경 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+}
+
+
 </style>
 </head>
 <body>
@@ -121,14 +157,44 @@ body {
 			</div>
 		</div>
 	</div>
+	
+	<!-- 알림 확인 버튼 -->
+<div id="notification-toggle" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#notificationModal">
+        <span id="notification-count" class="badge badge-light">0</span>
+    </button>
+</div>
+
+
+<!-- 알림 모달 -->
+<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel">알림</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group" id="notificationList">
+                    <!-- 알림 내용이 동적으로 여기에 추가됩니다 -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+	
 
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
-	<script
-		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-
+	<script src="/js/alarm.js"></script>
 	<script>
 		document
 				.getElementById('kakao-login-btn')
