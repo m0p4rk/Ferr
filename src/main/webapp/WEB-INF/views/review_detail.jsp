@@ -6,10 +6,15 @@
 <head>
 <meta charset="utf-8">
 <title>Review Detail</title>
+<link rel="stylesheet" href="/css/main.css">
 <link rel="stylesheet" href="/css/common.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600&display=swap" rel="stylesheet">
 <style>
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
+}
 .post-detail-container, .comments-section {
 	background-color: #f8f8f8;
 	padding: 15px;

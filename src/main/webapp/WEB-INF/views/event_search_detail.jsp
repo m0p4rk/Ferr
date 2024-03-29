@@ -55,7 +55,6 @@
 </head>
 <body>
 	<div class="title-container">
-		<h1>통합검색</h1>
 	</div>
     <div class="container mt-4">
         <div class="row mb-4">

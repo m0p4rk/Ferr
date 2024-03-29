@@ -13,18 +13,19 @@
 	rel="stylesheet">
 <style>
 .navbar {
-	height: 56px;
-	position: fixed;
-	top: 0;
-	width: 100%;
-	z-index: 1020;
+    height: 56px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1020;
+    background-color: #f8f9fa; /* 옅은 회색 배경 */
 }
 
 .navbar-brand img {
-	height: 40px;
-	width: 40px;
-	border-radius: 50%;
-	margin-top: -2px;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    margin-top: -2px;
 }
 
 .navbar-nav {
@@ -34,64 +35,35 @@
 }
 
 .nav-item {
-    margin-left: 10px;
+    margin: 0 5px; /* 좌우 여백 설정 */
 }
 
-
-@media ( max-width : 991.98px) {
-	.navbar-collapse {
-		background-color: #fff;
-		z-index: 1;
-	}
+@media (max-width: 991.98px) {
+    .navbar-toggler {
+        border-color: rgba(0,0,0,.1); /* 토글 버튼 테두리 색상 설정 */
+        color: rgba(0,0,0,.5); /* 토글 버튼 아이콘 색상 설정 */
+    }
+    .navbar-collapse {
+        background-color: #f8f9fa; /* 드롭다운 메뉴 배경색을 옅은 회색으로 설정 */
+    }
+    .navbar-nav {
+        flex-direction: row; /* 항목들을 가로로 정렬 */
+        justify-content: space-around; /* 항목들 사이에 공간을 동등하게 배분 */
+    }
 }
 
 body {
-	font-family: 'Noto Sans KR', sans-serif;
-	font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
 }
-
-.animated {
-    animation: fadeIn 0.5s;
-    animation-fill-mode: both;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-.pulse {
-    animation: pulse 1s infinite;
-}
-
-.notification-item {
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.notification-item:hover {
-    background-color: #f8f9fa; /* 배경 색상을 조금 더 밝게 변경 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
-}
-
 
 </style>
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-custom">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="/"> <img src="/css/img/ferr.png"
-				alt="FERR" style="height: 30px; width: auto;"> <!-- 로고 이미지 크기 조절 -->
+				alt="FERR" style="height: 45px; width: auto;"> <!-- 로고 이미지 크기 조절 -->
 			</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
 				data-target="#navbarSupportedContent"
@@ -104,11 +76,23 @@ body {
 				<ul class="navbar-nav ml-auto">
 					<c:if test="${sessionScope.userId != null}">
 						<li class="nav-item"><a href="/my-page" class="navbar-brand">
-								<img src="${sessionScope.profileImageUrl}" alt="프로필">
+								<c:choose>
+									<c:when test="${not empty sessionScope.profileImageUrl}">
+										<img src="${sessionScope.profileImageUrl}" alt="Profile Image">
+										<small>${sessionScope.nickname}</small>
+									</c:when>
+									<c:otherwise>
+										<img src="/css/img/noprofile.png" alt="no profile">
+									</c:otherwise>
+								</c:choose>
+
 						</a></li>
-						<li class="nav-item"><a href="/dashboard-schedule" class="btn btn-primary">일정 관리</a></li>
-						<li class="nav-item"><a href="/reviews" class="btn btn-primary">리뷰</a></li>
-						<li class="nav-item"><a href="/chat/rooms" class="btn btn-warning">채팅</a></li>
+						<li class="nav-item"><a href="/dashboard-schedule"
+							class="btn btn-secondary">일정 관리</a></li>
+						<li class="nav-item"><a href="/reviews"
+							class="btn btn-secondary">리뷰</a></li>
+						<li class="nav-item"><a href="/chat/rooms"
+							class="btn btn-warning">채팅</a></li>
 						<li class="nav-item"><a href="/logout" class="btn btn-danger">로그아웃</a></li>
 					</c:if>
 					<c:if test="${sessionScope.userId == null}">
@@ -156,45 +140,53 @@ body {
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- 알림 확인 버튼 -->
-<c:if test="${not empty sessionScope.userId}">
-    <div id="notification-toggle" style="position: fixed; bottom: 40px; right: 40px; z-index: 1050;">
-        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#notificationModal">
-            <span id="notification-count" class="badge badge-light">0</span>
-        </button>
-    </div>
-</c:if>
+	<c:if test="${not empty sessionScope.userId}">
+		<div id="notification-toggle"
+			style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+			<button type="button" class="btn btn-warning" data-toggle="modal"
+				data-target="#notificationModal">
+				<span id="notification-count" class="badge badge-light">0</span>
+			</button>
+		</div>
+	</c:if>
 
 
 
-<!-- 알림 모달 -->
-<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notificationModalLabel">알림</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-group" id="notificationList">
-                    <!-- 알림 내용이 동적으로 여기에 추가됩니다 -->
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-            </div>
-        </div>
-    </div>
-</div>
+	<!-- 알림 모달 -->
+	<div class="modal fade" id="notificationModal" tabindex="-1"
+		role="dialog" aria-labelledby="notificationModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="notificationModalLabel">알림</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<ul class="list-group" id="notificationList">
+						<!-- 알림 내용이 동적으로 여기에 추가됩니다 -->
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-	
+
 
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 	<script src="/js/alarm.js"></script>
 	<script>
@@ -229,36 +221,35 @@ body {
 								}
 							});
 				});
-		
+
 		/*          function sendAlarmRequest() {
-        setInterval(function() {
-            // AJAX 요청 보내기
-            $.ajax({
-                type: "GET",
-                url: "/chat/alarm",
-                success: function(response) {
-                    // 요청이 성공한 경우 처리
-                    console.log("안 읽은 메시지 : " + response);
-                    // 받은 응답 처리
-                    // 예: 받은 데이터를 이용하여 특정 동작 수행
-                },
-                error: function(xhr, status, error) {
-                    // 요청이 실패한 경우 처리
-                    console.error("알람 요청이 실패했습니다:", error);
-                }
-            });
-        }, 2000); // 2초마다 요청 보내도록 설정
-    }
-var sessionId = "${sessionScope.userId}";
-$(document).ready(function() {
-// 세션 ID가 있는지 확인
-if (sessionId != null && sessionId != '') {
-    sendAlarmRequest();
-}else {
-	console.log(sessionId);
-}
-}); */
-		
+		setInterval(function() {
+		    // AJAX 요청 보내기
+		    $.ajax({
+		        type: "GET",
+		        url: "/chat/alarm",
+		        success: function(response) {
+		            // 요청이 성공한 경우 처리
+		            console.log("안 읽은 메시지 : " + response);
+		            // 받은 응답 처리
+		            // 예: 받은 데이터를 이용하여 특정 동작 수행
+		        },
+		        error: function(xhr, status, error) {
+		            // 요청이 실패한 경우 처리
+		            console.error("알람 요청이 실패했습니다:", error);
+		        }
+		    });
+		}, 2000); // 2초마다 요청 보내도록 설정
+		}
+		var sessionId = "${sessionScope.userId}";
+		$(document).ready(function() {
+		// 세션 ID가 있는지 확인
+		if (sessionId != null && sessionId != '') {
+		sendAlarmRequest();
+		}else {
+		console.log(sessionId);
+		}
+		}); */
 	</script>
 </body>
 </html>

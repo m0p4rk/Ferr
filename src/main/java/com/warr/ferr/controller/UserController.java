@@ -56,6 +56,7 @@ public class UserController {
 			HttpSession session = request.getSession(true);
 			session.setAttribute("userEmail", user.getEmail()); // 이메일
 			session.setAttribute("userId", user.getUserId()); // 사용자 ID 세션에 저장
+			session.setAttribute("nickname", user.getNickname()); // 사용자 ID 세션에 저장
 			int regionPreference = userService.getUserRegionPreference((Integer)session.getAttribute("userId"));
 			session.setAttribute("regionPreference", regionPreference);
 			

@@ -273,14 +273,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 검색 결과를 화면에 표시하는 함수
 function displaySearchResults(users) {
-	const searchResults = document.getElementById('searchResults');
-	searchResults.innerHTML = ''; // 이전 검색 결과를 초기화
-	users.forEach(user => {
-		const userElement = document.createElement('div');
-		userElement.textContent = user.nickname; // 사용자 닉네임 표시
-		userElement.dataset.userId = user.userId; // dataset에 userId 저장
-		searchResults.appendChild(userElement);
-	});
+    const searchResults = document.getElementById('searchResults');
+    searchResults.innerHTML = ''; // 이전 검색 결과를 초기화
+
+    users.forEach((user, index) => {
+        const userElement = document.createElement('div');
+        userElement.textContent = user.nickname; // 사용자 닉네임 표시
+        userElement.dataset.userId = user.userId; // dataset에 userId 저장
+        searchResults.appendChild(userElement);
+
+        // 마지막 사용자 정보 다음에는 hr을 추가하지 않음
+        if (index < users.length - 1) {
+            const hr = document.createElement('hr');
+            searchResults.appendChild(hr);
+        }
+    });
 }
 
 // 추가할 그룹원 목록 UI를 업데이트하는 함수
