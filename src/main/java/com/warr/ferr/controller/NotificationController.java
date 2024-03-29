@@ -22,7 +22,8 @@ public class NotificationController {
                                              @SessionAttribute("userId") Integer userId) {
         try {
             notification.setUserId(userId); // Optional: 세션에서 가져온 userId 설정
-            Notification createdNotification = notificationService.createNotification(notification, userId); // 수정된 부분
+            Notification createdNotification = notificationService.createNotification(notification, userId);
+            System.out.println("Received notification: " + notification);// 수정된 부분
             return ResponseEntity.ok(createdNotification);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error creating notification: " + e.getMessage());

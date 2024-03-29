@@ -121,28 +121,32 @@ $(document).ready(function() {
 
     // 새로운 알림 추가
     $('#addNoteBtn').click(function() {
-        var noteContent = $('#noteContent').val();
-        var noteDateTime = $('#noteDateTime').val();
-        var data = {
-            eventId: eventId,
-            content: noteContent,
-            notificationTime: noteDateTime
-        };
+    var noteContent = $('#noteContent').val();
+    var noteDateTime = $('#noteDateTime').val(); // 'YYYY-MM-DDTHH:MM:SS' 형식으로 가정
+    var eventId = $('#eventId').val(); // 이벤트 ID 값을 HTML의 숨겨진 필드에서 읽어옴
 
-        $.ajax({
-            url: '/newNotification',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function(response) {
-                alert('알림이 추가되었습니다.');
-                // 성공 시 노트 목록 갱신 등의 추가 작업 수행
-            },
-            error: function(xhr, status, error) {
-                alert('알림 추가 중 오류가 발생했습니다: ' + error);
-            }
-        });
+    // 서버 측에서 Timestamp로 파싱 가능한 형식으로 데이터 준비
+    var data = {
+        eventId: parseInt(eventId), // 이벤트 ID를 숫자로 변환
+        content: noteContent,
+        notificationTime: noteDateTime // 'YYYY-MM-DDTHH:MM:SS' 형식
+    };
+
+    $.ajax({
+        url: '/newNotification',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(response) {
+            alert('알림이 추가되었습니다.');
+            // 성공 시 추가 작업 수행, 예를 들어 알림 목록을 새로고침
+        },
+        error: function(xhr, status, error) {
+            alert('알림 추가 중 오류가 발생했습니다: ' + error);
+        }
     });
+});
+
 
     // 알림 수정
     $('#saveNoteChanges').click(function() {
