@@ -114,6 +114,28 @@
 		WHERE chatroom_id = #{chatroomId} AND status = 'LEAVE'
 	</select>
 	
+	<update id="reJoinMember"
+			parameterType="int">
+		UPDATE free.chatroom_members
+		SET status = 'JOIN'
+		WHERE chatroom_id = #{chatroomId} AND user_id = #{userId}
+	</update>
+	
+	<insert id="addChatMember"
+			parameterType="int">
+		INSERT INTO chatroom_members
+			(chatroom_id, 
+	    	chatroom_name, 
+	    	user_id, 
+	    	status,
+	    	last_read_at)
+	    VALUES
+	    	(#{chatroomId}, 
+	        '그룹채팅', 
+	        #{userId}, 
+	        'JOIN',
+	        CURRENT_TIMESTAMP)
+	</insert>
 	
 	<!-- 채팅룸id 삭제 -->
 	<!-- <delete id="deleteRoom" parameterType="java.util.List">

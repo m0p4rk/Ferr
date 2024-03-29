@@ -63,12 +63,21 @@ nav {
     overflow: auto; /* 스크롤 가능하도록 설정 */
     background-color: rgba(0,0,0,0.4); /* 반투명한 배경 */
   }
-span {
+  span {
         white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
         margin-right: 5px;
         margin-left: 5px;
     }
-
+#selectedItems {
+    min-height: 15px; /* 기본 높이 설정 */
+    max-height: 100px; /* 최대 높이를 200px로 제한 */
+    overflow: auto; /* 내용이 영역을 넘어갈 경우 스크롤이 표시 */
+}
+#searchResults {
+    min-height: 150px; /* 기본 높이 설정 */
+    max-height: 150px; /* 최대 높이를 200px로 제한 */
+    overflow: auto; /* 내용이 영역을 넘어갈 경우 스크롤이 표시 */
+}
     </style>
 </head>
 <body class="bg-gray-100 h-screen antialiasd leading-none">
@@ -132,22 +141,19 @@ span {
       </div>
   </div>
 </div>
-<!-- <div id="myModal4" class="modal">
-  <div class="modal-content">
-	<ul class="countUser">
-		<ul id="userList"></ul>
-		<button id="modalBtn" class="btn user-insert-btn" type="button">+ 대화상대 초대</button>
-    </ul>
-  </div>
-</div> -->
 <!-- 대화상대 추가 모달 -->
-<div id="myModal5" class="modal5">
-  <div class="modal-content">
+<div id="myModal5" class="modal">
+	<div class="modal-content">
+	    <span class="close">x</span> <!-- 닫기 버튼 -->
+	    <div>대화상대 선택</div>
+	    <div id="ingMembers"></div> <!-- 선택된 항목을 표시할 영역 -->
 	    <div id="selectedItems"></div> <!-- 선택된 항목을 표시할 영역 -->
 	    <input type="text" id="searchInput" placeholder="검색"> <!-- 검색 입력 상자 -->
-	    <ul id="searchResults"></ul> <!-- 검색 결과를 표시할 리스트 -->
-		    <button id="addBtn">추가</button> <!-- 저장 버튼 -->
+	    <div id="searchResults"></div> <!-- 검색 결과를 표시할 리스트 -->
+	    <div>
+		    <button id="addBtn">확인</button> <!-- 저장 버튼 -->
 		    <button id="closeBtn">취소</button> <!-- 저장 버튼 -->
+	    </div>
 	</div>
 </div>
 
@@ -163,7 +169,7 @@ var leaveUser =  JSON.parse('${leaveUser}'); // 방을 떠난 유저
 var users = ${roomUserList}.length - leaveUser.length;
 
 document.getElementById("countUser").innerHTML = "현재 참여인원" + users;
-
+console.log(roomId);
 // 여러명일때 제목 그룹채팅으로 변경
 window.onload = function() {
 	var title = document.getElementById("chatTitle");
@@ -180,12 +186,11 @@ function dateConversion(chatroom) {
 
     // 현재 날짜
     var currentDate = new Date();
-
     // 날짜 차이 계산 (단위: 밀리초)
     var timeDiff = currentDate - sentAtDate;
     var dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-
     // 년, 월, 일을 가져오기
+    var year = sentAtDate.getFullYear();
     var month = sentAtDate.getMonth() + 1; // 월 (0부터 시작하기 때문에 1을 더해줍니다.)
     var day = sentAtDate.getDate(); // 일
 
@@ -209,7 +214,7 @@ function dateConversion(chatroom) {
         formattedDate = '어제';
     } else {
         // 그 외에는 월 일 표시
-        formattedDate = month + '월 ' + day + '일';
+        formattedDate = year + '-' + month + '-' + day;
     }
 
     // 반환
@@ -224,31 +229,43 @@ function loadDataInterval() {
         	roomId: roomId 
         	}, // 요청 시 필요한 데이터 (예: 채팅방 ID)
         success: function(response) {
-        	var item = response;
-        	var count = item.count;
         	
         	 // Ajax 요청이 성공한 경우 이전 채팅 이력을 표시
             var messages = '';
             var leaveUser = response.length;
-            console.log(response);
             response.forEach(function(item) {
                 var str = '';
+                
                 if (item.senderId == userId) {
-                    str += "<div class='col-6'>";
-                    str += "<div class='alert alert-warning'>";
-                    str += "<b>" + item.content + "</b><br>" + item.sentAt + "<br>";
-                    if (item.count > 0) {
-                        str += "읽음 표시 : " + item.count;
-                        }
-                    str += "</div></div>";
+                	if(item.messageType === 'SYSTEM'){
+                		str += "<div class='col-6'>";
+                        str += "<div class='alert alert-success'>";
+                        str += "<b>" + item.content + "</b><br>" + item.sentAt + "<br>";
+                        str += "</div></div>";
+                	} else {
+	                    str += "<div class='col-6'>";
+	                    str += "<div class='alert alert-warning'>";
+	                    str += "<b>" + item.content + "</b><br>" + item.sentAt + "<br>";
+	                    if (item.count > 0) {
+	                        str += "읽음 표시 : " + item.count;
+	                        }
+	                    str += "</div></div>";
+                	}
                 } else if (item.senderId != userId) {
-                    str += "<div class='col-6'>";
-                    str += "<div class='alert alert-info'>";
-                    str += "<b>" + item.nickname + ": " + item.content + "</b><br>" + item.sentAt + "<br>";
-                    if (item.count > 0) {
-	                    str += "읽음 표시 : " + item.count;
-	                    }
-                    str += "</div></div>";
+                	if(item.messageType === 'SYSTEM'){
+                		str += "<div class='col-6'>";
+                        str += "<div class='alert alert-success'>";
+                        str += "<b>" + item.content + "</b><br>" + item.sentAt + "<br>";
+                        str += "</div></div>";
+                	} else{
+	                	str += "<div class='col-6'>";
+	                    str += "<div class='alert alert-info'>";
+	                    str += "<b>" + item.nickname + ": " + item.content + "</b><br>" + item.sentAt + "<br>";
+	                    if (item.count > 0) {
+		                    str += "읽음 표시 : " + item.count;
+		                    }
+	                    str += "</div></div>";
+                	}
                 }
                 messages += str;
             });
@@ -284,9 +301,6 @@ const display = document.getElementsByClassName("container");
     function closeWindow() {
         window.close();
     }
-	console.log(${Session })
-	console.log(roomName + ", " + roomId + ", " + userId);
-	
 	let msgArea = document.getElementById("msgArea");
 	
 	// SockJS : WebSocket을 지원하지 않는 브라우저에서 실행시 런타임에서 필요 코드 생성하는 라이브러리
@@ -360,7 +374,6 @@ const display = document.getElementsByClassName("container");
 		closeModal();
 		modal5.style.display = "block";
 		clickCount = 0;
-		searchUser();
 	}
 	// 대화상대 추가 모달 닫기 
 	function closeModal5() {
@@ -389,7 +402,7 @@ const display = document.getElementsByClassName("container");
 	  // 선택된 항목 초기화
 	  var selectedItemsContainer = document.getElementById("selectedItems");
 	  selectedItemsContainer.innerHTML = '';
-	  selectedItems = [];	
+	  selectedListId = [];	
 	  // 체크된 상태 초기화
 	  var checkboxes = document.querySelectorAll('#searchResults input[type="checkbox"]');
 	  checkboxes.forEach(function(checkbox) {
@@ -398,154 +411,193 @@ const display = document.getElementsByClassName("container");
 	}
 	
 
+	/////////////////////////////////////////////////////////////////////////
+
+	var dump = []; // 고정된 멤버 id 담을 배열
+		roomUserList.forEach(function(user) {
+	        // 중복되지 않은 사용자인지를 나타내는 플래그 변수
+	        var isUserLeft = true;
+
+	        // leaveUser 배열에 있는 사용자와 userList 배열에 있는 사용자를 비교
+	        leaveUser.forEach(function(leaveUser) {
+	            if (leaveUser.userId === user.userId) {
+	                // 만약 leaveUser에 해당 사용자가 있다면 중복되는 사용자이므로 플래그 변수를 false로 설정
+	                isUserLeft = false;
+	            }
+	        });
+		
+		if(isUserLeft && user.userId != userId) {
+				var str = '';
+			  	str += "<span class='checkList'><img src='" + "/img/1581304118739.jpg'" + " class='user-img' alt='"  // item.profileImageUrl 로 바꿔야함
+			  				+ user.userId + "' style='width: 25px; height: 25px;'>";
+			  	str += "<label='checkbox'>" + user.nickname + "</label>";
+			  	str += "<input type='checkbox' checked disabled id='list-user '"; 
+		  		str += "checked "; 
+		  		str += "userId='" + user.userId + "'></span>";
+		  		
+		  		document.getElementById("ingMembers").innerHTML += str;
+		  		dump.push(user.userId);
+		  		
+		}
+	});
 	
-	
-	// 유저 추가 리스트 생성
-	function searchUser() {
+	//검색 입력 상자 요소 가져오기
+	var searchInput = document.getElementById("searchInput");
+
+	//검색 입력 상자에 입력 이벤트 추가
+	searchInput.addEventListener("input", function() {
+		var searchValue = this.value.toLowerCase(); // 검색어를 소문자로 변환
 		var searchResults = document.getElementById("searchResults");
-		var selectedItems = document.getElementById("selectedItems");
-		searchResults.innerHTML = '';
-	    $.ajax({
-	        url: '/chat/search', // 서버의 데이터를 가져올 URL
-	        type: 'POST',
-	        success: function(response) {
-	            response.forEach(function(item) {
-	                    var isUserLeft = true;
-	                    roomUserList.forEach(function(roomUserList) {
-	                        if (roomUserList.userId === item.userId) {
-	                            isUserLeft = false;
-	                        }
-	                    });
-					var str = '';
-					if(isUserLeft){
-						str += "<div><img src='/img/1581304118739.jpg' id='user-img' alt='" + item.userId + "' style='width: 25px; height: 25px;'>"; // item.profileImageUrl 로 바꿔야함
-						str += "<label='checkbox'>" + item.nickname + "</label>";
-						str += "<input type='checkbox' id='list-user' userId='" + item.userId + "'></div>";
-						searchResults.innerHTML += str;
-					} else{
-						// false
-						str += "<span><img src='/img/1581304118739.jpg' id='user-img' alt='" + item.userId + "' style='width: 25px; height: 25px;'>"; // item.profileImageUrl 로 바꿔야함
-						str += "<label='checkbox'>" + item.nickname + "</label>";
-						str += "<input type='checkbox' id='list-user' checked='true' disabled userId='" + item.userId + "'></span>";
-						selectedItems.innerHTML += str;
-						
-						str = '';
-						str += "<div><img src='/img/1581304118739.jpg' id='user-img' alt='" + item.userId + "' style='width: 25px; height: 25px;'>"; // item.profileImageUrl 로 바꿔야함
-						str += "<label='checkbox'>" + item.nickname + "</label>";
-						str += "<input type='checkbox' id='list-user' checked='true' disabled userId='" + item.userId + "'></div>";
-						searchResults.innerHTML += str;
-					}
-	            });
-	            var disabledItemsList = [];
+		
+		searchResults.innerHTML = ''; // 결과 초기화
+		console.log("searchValue: " + searchValue);
+		
+		// 검색 결과 생성
+		for (var i = 0; i < userList.length; i++) {
+			  
+		  var item = userList[i].nickname.toLowerCase(); // 객체의 속성에 접근하여 소문자로 변환 >> 닉네임으로 검색중
+		  if(item.includes(searchValue)) {
+		  	console.log("item: " + item);
+		  	var str = '';
+		  	str += "<div class='checkList'><img src='" + "/img/1581304118739.jpg'" + " class='user-img' alt='"  // item.profileImageUrl 로 바꿔야함
+		  				+ userList[i].userId + "' style='width: 25px; height: 25px;'>";
+		  	str += "<label='checkbox'>" + userList[i].nickname + "</label>";
+		  	str += "<input type='checkbox' style='display: none' id='list-user '"; 
+	  		str += "userId='" + userList[i].userId + "'></div>";
+	  		searchResults.innerHTML += str;
+			  } //if
+		  } //for
+		inputData();
 
-	            var listItems = document.querySelectorAll("#selectedItems span");
+		  
+	}); // addEvent
 
-	            listItems.forEach(function(item) {
-	                var checkbox = item.querySelector("input[type='checkbox']");
-	                
-	                if (checkbox && checkbox.disabled) {
-	                    var altValue = item.querySelector("img").alt;
-	                    disabledItemsList.push(altValue);
-	                }
-	            });
+	var selectedListId = []; // 선택된 아이템 담아줄 배열
+	var selectedItems = document.getElementById("selectedItems"); // 선택된 아이템 출력되는 영역
+	var selectedList = document.querySelectorAll(".selectedList"); // 선택된 각각의 아이템 전체 리스트
 
-	            console.log(disabledItemsList);
-	            
-	            
-	            
-	         // 검색 입력 이벤트 추가
-	         	var searchInput = document.getElementById("searchInput");
-	        	searchInput.addEventListener("input", function() {
-	        		
-	        		var searchValue = this.value.toLowerCase(); // 검색어를 소문자로 변환
-	        		var searchResults = document.getElementById("searchResults"); // 검색결과창
-	        		var selectedItems = document.getElementById("selectedItems"); // 체크결과창
-	        		var userImg = document.getElementById("user-img");
-	        		  	searchResults.innerHTML = '';
-        		  	
-	        		// 선택된 요소를 가진 div를 선택합니다.
-	       		  	var selectedItems = document.getElementById("selectedItems");
-	       		  	// 선택된 요소들을 담을 배열을 만듭니다.
-	       		  	var selectedUserItems = [];
-	        		  	
-	        		  //검색 결과 생성
-	        		  for (var i = 0; i < userList.length; i++) {
-						    var item = userList[i].nickname.toLowerCase();
-						    if (item.includes(searchValue)) {
-						        var isDisabled = false; // 각 사용자의 활성/비활성 상태를 저장할 변수
-						        for (var j = 0; j < disabledItemsList.length; j++) {
-						            if (disabledItemsList[j] == userList[i].userId) {
-						                isDisabled = true; // 해당 사용자가 비활성 상태인 경우에만 true로 설정
-						                break; // 비활성 상태를 찾았으면 추가 검색은 불필요하므로 반복문 종료
-						            }
-						        }
-						        var str = ''; // HTML 문자열을 저장할 변수
-						        str += "<div><img src='/img/1581304118739.jpg' id='user-img' alt='" + userList[i].userId + "' style='width: 25px; height: 25px;'>";
-						        str += "<label='checkbox'>" + userList[i].nickname + "</label>";
-						        if (isDisabled) {
-						            str += "<input type='checkbox' id='list-user' checked='true' disabled userId='" + userList[i].userId + "'>"; // 비활성 상태인 경우 checked와 disabled 속성 추가
-						        } else {
-						            str += "<input type='checkbox' id='list-user' userId='" + userList[i].userId + "'>"; // 활성 상태인 경우 checked와 disabled 속성 없음
-						        }
-						        str += "</div>";
-						        searchResults.innerHTML += str;
-						    }
-						}
-	        		  
-	        		// checkbox 요소를 가져와서 클릭 이벤트를 추가합니다.
-	        		  var checkboxes = document.querySelectorAll('#searchResults input[type="checkbox"]');
-	        		  checkboxes.forEach(function(checkbox) {
-	        		      checkbox.addEventListener('click', function() {
-	        		          // 체크박스가 체크되었을 때
-	        		          if (this.checked) {
-	        		        	  console.log('선택된 요소 복제 중');
-	        		        	  var selectedUserItem = this.parentNode.cloneNode(true);
-	        		        	  console.log('선택된 요소 복제 완료');
-
-	        		        	  // 이미지도 복사해야 합니다.
-	        		        	  var image = selectedUserItem.querySelector('img');
-	        		        	  if (image) {
-	        		        	      var clonedImage = image.cloneNode(true);
-	        		        	      selectedUserItem.prepend(clonedImage); // 이미지를 복사한 후 선택된 요소의 첫 번째 자식으로 추가합니다.
-	        		        	  }
-
-	        		        	  selectedItems.appendChild(selectedUserItem);
-	        		        	  selectedUserItems.push(selectedUserItem);
-	        		        	// 체크박스가 해제되었을 때
-	        		          } else { 
-	        		        	  console.log('체크박스 해제됨');
-	        		        	    // 선택된 요소의 userId 값을 가져옵니다.
-	        		        	    const userId = this.getAttribute('userId');
-	        		        	    console.log('체크 해제된 사용자의 userId:', userId);
-	        		        	    
-	        		        	    // 배열에서 userId를 기준으로 해당 요소를 찾아 제거합니다.
-	        		        	    var indexToRemove = selectedUserItems.findIndex(item => item.querySelector('input').getAttribute('userId') === userId);
-	        		        	    console.log('제거할 요소 인덱스:', indexToRemove);
-	        		        	    if (indexToRemove !== -1) {
-	        		        	        console.log('선택된 요소 제거 중');
-	        		        	        selectedItems.removeChild(selectedUserItems[indexToRemove]);
-	        		        	        console.log('선택된 요소 제거 완료');
-	        		        	        selectedUserItems.splice(indexToRemove, 1);
-	        		        	    }
-	        		        	}
-	        		      }); // checkbox.addevent
-	        		  }); // foreach
-	        			
-	        	});
-	        }, // success
-	        error: function(xhr, status, error) {
-	            // Ajax 요청이 실패한 경우 에러 처리
-	            console.error('Failed to load previous chat history:', error);
-	        }
-	    });
-	};
-	function renderSelectedItems() {
-
-	    // 선택된 항목을 표시
-	    for (var i = 0; i < selectedItems.length; i++) {
-
-	    }
+	// 체크박스 클릭시 이벤트 : userId 받아옴
+	function inputData () {
+		// checkList 클래스명을 가진 모든 요소
+		var checkLists = document.querySelectorAll(".checkList");
+		var clickNum = 0;  
+		// 각 요소에 대해 이벤트 리스너를 추가
+		checkLists.forEach(function(checkList) {
+		    checkList.addEventListener("click", function() {
+	    		var userId = checkList.querySelector("input[type='checkbox']").getAttribute("userid");
+		    	console.log("userId ??" + userId);	
+	    		selectArray(userId); // 선택된 값 담아주는 함수
+		    		
+		    });
+		});
 	}
+
+
+	// 결과 선택하면 배열에 저장
+	function selectArray(userId) { // 선택한 값의 userId
+		if(selectedListId.length == 0) {
+			
+			for(var i = 0; i < dump.length; i++) {
+				var res1 = true;
+				if(dump[i] == userId){
+					res1 = false;
+					break;
+				}
+			}
+			if(res1){
+				selectedListId.push(userId);
+				console.log("userId : " + userId);
+			}
+		} else {
+			for(var i = 0; i < selectedListId.length; i++) {
+				var res = true;
+				if(selectedListId[i] == userId) {
+					res = false;
+					break;
+				}
+			}
+			for(var i = 0; i < dump.length; i++) {
+				var res2 = true;
+				if(dump[i] == userId) {
+					res2 = false;
+					break;
+				}
+			}
+			if(res && res2){
+				
+				selectedListId.push(userId);
+				console.log("slectdeListID + " + selectedListId);
+			}
+		}
+		cnffur(); // 선택한 결과 배열 출력
+	};
+
+	// 결과 출력
+	function cnffur(){
+		selectedItems.innerHTML = '';
+		for(var i = 0; i < selectedListId.length; i++) {
+					var str = '';
+					str += "<span class='selectedList'><img src='/img/1581304118739.jpg' alt='" + selectedListId[i] + "' style='width: 25px; height: 25px;'>";
+					str += "<label for='checkbox'>" + selectedListId[i]+ "</label>";
+					str += "<input type='checkbox' class='selectedUser' checked userId='" + selectedListId[i] + "'></span>";
+					selectedItems.innerHTML += str;
+		}
+		// 선택된 아이템 id 값 가져오기
+		var selectedUsers = selectedItemsDiv.querySelectorAll('.selectedUser');
+		selectedUsers.forEach(function(selectedUser) {
+	        selectedUser.addEventListener('click', function() {
+	            var userId = this.getAttribute('userId');
+	            console.log('Clicked user ID:', userId);
+	            deleteItem(userId);
+	        });
+	    });
+	}
+
+	// 선택된 아이템 제거
+	function deleteItem(userId) {
+		for (var i = 0; i < selectedListId.length; i++) {
+		    if (selectedListId[i] === userId) {
+		        selectedListId.splice(i, 1); // 중복된 userId를 배열에서 제거
+		        break; // 값이 하나씩 들어올테니 증복되면 바로 종료
+		    }
+		} 
+		cnffur();
+	}
+
+	//선택된 사용자 목록을 담고 있는 div 요소
+	var selectedItemsDiv = document.getElementById('selectedItems');
+
+	//"확인" 버튼 클릭 시
+	document.getElementById("addBtn").addEventListener("click", function() {
+
+	  if (selectedListId.length === 0) {
+	    alert("선택된 항목이 없습니다.");
+	    return;
+	  }
+	// 선택된 항목들을 배열로 묶어서 JSON 형식으로 변환
+	  var jsonData = JSON.stringify(selectedListId);
+	
+
+	  // JSON 데이터를 서버로 전송
+	  $.ajax({
+	    type: "POST",
+	    url: "/chat/addMember",
+	    contentType: "application/json", // JSON 데이터 형식으로 전송
+	    data: JSON.stringify({ userId: selectedListId, chatroomId: roomId }),
+	    success: function(response) {
+	      // 성공 시 처리
+	      console.log("선택된 항목을 서버로 전송했습니다.");
+	      modal.style.display = "none"; // 모달 닫기
+	      resetModalContent();
+	      location.reload();
+	    },
+	    error: function(xhr, status, error) {
+	      // 에러 발생 시 처리
+	      console.error("서버로의 전송에 실패했습니다:", error);
+	    }
+	  }); //$
+	});
+
 	
 	
 	//==========================================================================

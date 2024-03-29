@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.Builder.Default;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,7 +25,7 @@ public class MessageDto {
 	private int chatroomId; 
 	private int senderId;
 	private String content; // nn
-	private MessageType messageType = MessageType.MESSAGE;
+	@Default private MessageType messageType = MessageType.MESSAGE;
 	private String nickname;
 	private int count;
 	@JsonFormat(pattern = "MM월dd일 HH:mm", timezone = "Asia/Seoul")
@@ -32,7 +33,8 @@ public class MessageDto {
 	
 	public enum MessageType{ // nn
 		MESSAGE,
-		NOTIFICATION
+		NOTIFICATION,
+		SYSTEM
 	}
 
 	@Builder

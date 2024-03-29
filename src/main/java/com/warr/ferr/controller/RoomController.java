@@ -1,6 +1,10 @@
 package com.warr.ferr.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,13 +66,80 @@ public class RoomController {
     
     // 채팅방 개설
     @PostMapping("/room")
-    public String createChatRoom(@RequestBody List<Users> userList, Model model, HttpSession session) {
+    public String createChatRoom(@RequestBody List<Integer> idList, Model model, HttpSession session) {
         log.info("RoomController : createChatRoom()");
+        
+        List<Users> userList = new ArrayList<>();
+        for (int i = 0; i < idList.size(); i++) {
+        	userList.add(userService.findUserById(idList.get(i)));
+		}
         Users user = userService.findUserById((Integer) session.getAttribute("userId"));
         model.addAttribute("roomName", chatService.createChatRoom(userList, user));
        
         return "redirect:/chat/rooms";
     }
+    
+    // 채팅방 멤버 추가
+    @PostMapping("/addMember")
+    @ResponseBody
+    public void addChatMember(@RequestBody Map<String, Object> requestData, HttpSession session) {
+//    	ArrayList idList  = null;
+//    	
+//    	System.out.println(requestData);
+//    	  for (Entry<String, Object> entrySet : requestData.entrySet()) {        
+//    		  	System.out.println(entrySet.getKey() + " : " + entrySet.getValue() + " type : " +  entrySet.getValue().getClass());     
+//    		  	if(entrySet.getKey()  == "idList") {
+//    		  		idList = (ArrayList) entrySet.getValue();
+//    		  	}
+//    	  }
+    	  ArrayList idList  = new ArrayList<>();;
+    	  
+    	  System.out.println(requestData);
+    	  for (Entry<String, Object> entrySet : requestData.entrySet()) {        
+    		  System.out.println(entrySet.getKey() + " : " + entrySet.getValue() + " type : " +  entrySet.getValue().getClass());     
+    		  if(entrySet.getKey()  == "idList") {
+    			  idList = (ArrayList) entrySet.getValue();
+    		  }
+    	  }
+    	
+        int roomId = (Integer) requestData.get("roomId");
+        for(int i = 0; i < idList.size(); i++) {
+        	System.out.println(idList.get(i));
+        }
+        chatService.addChatMember(idList, roomId);
+        
+        
+//        for (int i = 0; i < idList.size(); i++) {
+//        	userList.add(userService.findUserById(idList.get(i)));
+//		}
+//        Users user = userService.findUserById((Integer) session.getAttribute("userId"));
+//        chatService.addChatMember(userList, user);
+    }
+//    @PostMapping("/addMember")
+//    @ResponseBody
+//    public void addChatMember(@RequestBody Map<String, Object> requestData, HttpSession session) {
+//    	ArrayList idList  = null;
+//    	
+//    	for (Entry<String, Object> entrySet : requestData.entrySet()) {        
+//    		System.out.println(entrySet.getKey() + " : " + entrySet.getValue() + " type : " +  entrySet.getValue().getClass());     
+//    		if(entrySet.getKey()  == "idList") {
+//    			idList = (ArrayList) entrySet.getValue();
+//    		}
+//    	}
+//    	
+//    	int roomId = (Integer) requestData.get("roomId");
+//    	for(int i = 0; i < idList.size(); i++) {
+//    		//System.out.println(idList.get(i));
+//    	}
+//    	chatService.addChatMember(idList, roomId);
+//    	
+//    	
+////        for (int i = 0; i < idList.size(); i++) {
+////        	userList.add(userService.findUserById(idList.get(i)));
+////		}
+////        Users user = userService.findUserById((Integer) session.getAttribute("userId"));
+////        chatService.addChatMember(userList, user);
+//    }
 
     // 채팅방 조회-상세보기
     @GetMapping("/room")
@@ -135,7 +206,7 @@ public class RoomController {
     // 채팅방 제목 수정
     @PostMapping("/roomName")
     public String roomNameUpdate(@RequestBody ChatroomMembers chatroomMembers){
-//    	boolean result = chatService.roomNameUpdate(chatroomMembers);
+    	chatService.roomNameUpdate(chatroomMembers);
     	return "redirect:/chat/rooms";
     }
     
@@ -143,7 +214,7 @@ public class RoomController {
     @PostMapping("/leave")
     public String chatroomLeave(@RequestBody ChatroomMembers chatroom){
         log.info("RoomController : deleteRoom(), roomId : " + chatroom);
-//        boolean result = chatService.chatroomLeave(chatroom);
+        chatService.chatroomLeave(chatroom);
 
         return "redirect:/chat/rooms";
     }

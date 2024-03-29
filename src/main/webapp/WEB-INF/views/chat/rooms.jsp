@@ -31,7 +31,7 @@
     margin: 15% auto; /* 중앙 정렬 */
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* 모달 너비 */
+    width: 70%; /* 모달 너비 */
   }
 
   /* 닫기 버튼 스타일링 */
@@ -66,7 +66,23 @@
   /* 임시로 설치해둔위치 */
   button{
   margin-top: 80px;
+  margin-left: 5%;
   }
+  span {
+        white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+        margin-right: 5px;
+        margin-left: 5px;
+    }
+#selectedItems {
+    min-height: 15px; /* 기본 높이 설정 */
+    max-height: 100px; /* 최대 높이를 200px로 제한 */
+    overflow: auto; /* 내용이 영역을 넘어갈 경우 스크롤이 표시 */
+}
+#searchResults {
+    min-height: 200px; /* 기본 높이 설정 */
+    max-height: 200px; /* 최대 높이를 200px로 제한 */
+    overflow: auto; /* 내용이 영역을 넘어갈 경우 스크롤이 표시 */
+}
 </style>
 
 <!-- Font Awesome 아이콘 CDN 링크 -->
@@ -99,11 +115,14 @@
 <!-- 유저목록조회 + 방 생성 -->
 <div id="myModal" class="modal">
 	<div class="modal-content">
-	    <span class="close">x</span> <!-- 닫기 버튼 -->
-	    <input type="text" id="searchInput" placeholder="검색"> <!-- 검색 입력 상자 -->
-	    <ul id="searchResults"></ul> <!-- 검색 결과를 표시할 리스트 -->
+	    <div>대화상대 선택</div>
 	    <div id="selectedItems"></div> <!-- 선택된 항목을 표시할 영역 -->
-	    <button id="createBtn">생성</button> <!-- 저장 버튼 -->
+	    <input type="text" id="searchInput" placeholder="검색"> <!-- 검색 입력 상자 -->
+	    <div id="searchResults"></div> <!-- 검색 결과를 표시할 리스트 -->
+	    <div>
+	    <button id="createBtn">확인</button> <!-- 저장 버튼 -->
+	    <button class="close">취소</button> <!-- 닫기 버튼 -->
+	    </div>
 	</div>
 </div>
 <!-- 방 나가기 -->
@@ -112,18 +131,21 @@
 	<span>정말 방에서 나가시겠습니까?</span>
 	<div>
 		<button id="yesBtn">예</button>
-    	<button id="noBtn">아니오</button>
+    	<button class="close">아니오</button>
 	</div>
 	</div>
 </div>
 <!-- 제목 수정 -->
 <div id="myModal3" class="modal">
 	<div class="modal-content">
-	    <span class="close">x</span>
-	    <input type="text" id="roomName" placeholder="수정할 제목 입력"> <!-- 검색 입력 상자 -->
-	    <!-- X 아이콘 모양의 텍스트 초기화 버튼 -->
-	    <button id="clearInputBtn" class="clear-input-btn" onclick="clearInput()">초기화</button>
+	    <div>
+		    <input type="text" id="roomName" placeholder="수정할 제목 입력"> <!-- 검색 입력 상자 -->
+		    <button id="clearInputBtn" class="clear-input-btn" onclick="clearInput()">초기화</button>
+	    </div>
+	    <div>
 	    <button id="saveBtn">확인</button>
+	    <button class="close">취소</button>
+	    </div>
 	</div>
 </div>
 
@@ -188,13 +210,17 @@ function dateConversion(chatroom) {
     var currentDate = new Date();
 
  	// 날짜가 다르면 무조건 하루로 간주
-    var dayDiff = sentAtDate.getDate() !== currentDate.getDate() ? 1 : 0;
+    var timeDiff = Math.abs(currentDate - sentAtDate); // 두 날짜 사이의 차이를 절댓값으로 계산하여 음수값 방지
+	var dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 
     // 년, 월, 일을 가져오기
     var month = sentAtDate.getMonth() + 1; // 월 (0부터 시작하기 때문에 1을 더해줍니다.)
     var day = sentAtDate.getDate(); // 일
-
+	var currentDaty = currentDate.getDate()
+	var diffDay = Math.abs(day - currentDaty); // 날짜가 다르면 무조건 하루로 간주하기위한 값
+	
     // 시간을 가져오기
+    var year = sentAtDate.getFullYear();
     var hours = sentAtDate.getHours(); // 시간 (0부터 23까지)
     var minutes = sentAtDate.getMinutes(); // 분 (0부터 59까지)
 
@@ -207,16 +233,17 @@ function dateConversion(chatroom) {
     // 현재 날짜와의 차이에 따라 날짜를 표시하는 방식 선택
     var formattedDate = '';
     if (dayDiff === 0) {
-        // 오늘일 경우 시간만 표시
-        formattedDate = ampm + ' ' + hours + ':' + minutes;
-    } else if (dayDiff === 1) {
-        // 어제일 경우 '어제' 표시
-        formattedDate = '어제';
-    } else {
+    	if(diffDay ===0){
+    		// 오늘일 경우 시간만 표시
+            formattedDate = ampm + ' ' + hours + ':' + minutes;
+    	} else {
+    		// 어제일 경우 '어제' 표시
+            formattedDate = '어제';
+    	}
+    }  else {
         // 그 외에는 월 일 표시
-        formattedDate = month + '월 ' + day + '일';
+        formattedDate = year + '-' + month + '-' + day;
     }
-
     // 반환
     return formattedDate;
 }
@@ -228,25 +255,45 @@ function displayChatrooms(chatrooms) {
     // 받아온 채팅방 리스트를 순회하면서 화면에 표시
     chatrooms.forEach(function(chatroom) {
     	console.log(chatroom);
-        var str = '';
-        // 각 채팅방을 표시할 HTML 코드 생성
-        str += "<ul class='list-group'>";
-        str += "<li class='list-group-item'>";
-        str += "<a href='#' onclick='openChatRoom(" + chatroom.chatroomId + ")' value=" + chatroom.chatroomId + ">" + chatroom.chatroomName + "</a>" + " 참여인원 : " + chatroom.members;
-        str += "<div id='lastMsg_" + chatroom.chatroomId + "'>";
-        if(chatroom.content != null){
-	        str += chatroom.nickname + " : " +  chatroom.content + "<br>";
-        }
-        str += dateConversion(chatroom); // 변환된 날짜와 시간을 추가
-        
-     	// receiveCount가 0보다 크고 null이 아닌 경우에만 출력
-        if (chatroom.receiveCount > 0 && chatroom.receiveCount != null) {
-            str += "<span id='receiveCount'>  안 읽은 메시지 : " + chatroom.receiveCount + "</span>";
-        }
-        
-        // 안읽은 메시지 등 추가 정보도 여기에 표시
-        str += "</div>" + "</li>" + "</ul>";
-        chatroomList.innerHTML += str; // 생성한 HTML 코드를 컨테이너에 추가
+    	if(chatroom.messageType != "SYSTEM"){
+	        var str = '';
+	        // 각 채팅방을 표시할 HTML 코드 생성
+	        str += "<ul class='list-group'>";
+	        str += "<li class='list-group-item'>";
+	        str += "<a href='#' onclick='openChatRoom(" + chatroom.chatroomId + ")' value=" + chatroom.chatroomId + ">" + chatroom.chatroomName + "</a>" + " 참여인원 : " + chatroom.members;
+	        str += "<div id='lastMsg_" + chatroom.chatroomId + "'>";
+	        if(chatroom.content != null){
+		        str += chatroom.nickname + " : " +  chatroom.content + "<br>";
+	        }
+	        str += dateConversion(chatroom); // 변환된 날짜와 시간을 추가
+	        
+	     	// receiveCount가 0보다 크고 null이 아닌 경우에만 출력
+	        if (chatroom.receiveCount > 0 && chatroom.receiveCount != null) {
+	            str += "<span id='receiveCount'>  안 읽은 메시지 : " + chatroom.receiveCount + "</span>";
+	        }
+	        
+	        // 안읽은 메시지 등 추가 정보도 여기에 표시
+	        str += "</div>" + "</li>" + "</ul>";
+	        chatroomList.innerHTML += str; // 생성한 HTML 코드를 컨테이너에 추가
+    	} else{
+    		var str = '';
+	        // 각 채팅방을 표시할 HTML 코드 생성
+	        str += "<ul class='list-group'>";
+	        str += "<li class='list-group-item'>";
+	        str += "<a href='#' onclick='openChatRoom(" + chatroom.chatroomId + ")' value=" + chatroom.chatroomId + ">" + chatroom.chatroomName + "</a>" + " 참여인원 : " + chatroom.members;
+	        str += "<div id='lastMsg_" + chatroom.chatroomId + "'>";
+	        if(chatroom.content != null){
+		        str += chatroom.nickname + " : " +  chatroom.content + "<br>";
+	        }
+	        str += dateConversion(chatroom); // 변환된 날짜와 시간을 추가
+	        
+	     	// receiveCount가 0보다 크고 null이 아닌 경우에만 출력
+	        /* if (chatroom.receiveCount > 0 && chatroom.receiveCount != null) {
+	            str += "<span id='receiveCount'>  안 읽은 메시지 : " + chatroom.receiveCount + "</span>";
+	        } */
+	        str += "</div>" + "</li>" + "</ul>";
+	        chatroomList.innerHTML += str;
+    	}
     });
 }
 // ----------------------------------------------------------------------------------------------------
@@ -276,8 +323,9 @@ var modal3 = document.getElementById("myModal3");
 // 닫기 버튼 요소 가져오기
 var closeBtn = modal.querySelector(".close");
 var yesBtn = modal2.querySelector("#yesBtn"); // 모달2
-var noBtn = modal2.querySelector("#noBtn"); // 모달2
+var noBtn = modal2.querySelector(".close"); // 모달2
 var closeBtn3 = modal3.querySelector(".close");
+//var cantBtn = modal.querySelector("cantBtn");
 
 // 모달 버튼 클릭 시 모달 열기
 modalBtn.onclick = function() {
@@ -350,136 +398,134 @@ function resetModalContent() {
 }
 
 
+//////////////////////////////////////////////////////////////////////////////
 
-//선택된 항목을 추가하는 함수
-function addToSelectedItems(item) {
-  selectedItems.push(item);
-  renderSelectedItems();
-  
-  // 선택된 userId와 nickname 설정
-  var selectedItem = userList.find(user => user.nickname === item);
-  document.getElementById("selectedUserId").value = selectedItem.userId;
-  document.getElementById("selectedNickname").value = selectedItem.nickname;
-}
+//선택된 항목을 저장할 배열
+var selectedItemsContainer = document.getElementById("selectedItems");
+var selectedItems = [];
 
 //검색 입력 상자 요소 가져오기
 var searchInput = document.getElementById("searchInput");
 
 //검색 입력 상자에 입력 이벤트 추가
 searchInput.addEventListener("input", function() {
-  var searchValue = this.value.toLowerCase(); // 검색어를 소문자로 변환
-  var searchResults = document.getElementById("searchResults");
-  searchResults.innerHTML = ''; // 결과 초기화
-
-  
-//검색 결과 생성
-  for (var i = 0; i < userList.length; i++) {
-    var item = userList[i].nickname.toLowerCase(); // 객체의 속성에 접근하여 소문자로 변환
-    
-      if (item.includes(searchValue)) {
-      var listItem = document.createElement("li");
-      
-      // 체크박스 생성
-      var checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.setAttribute("data-index", i); // 해당 항목의 인덱스를 저장하기 위한 속성 추가 
-      checkbox.setAttribute("value", userList[i].userId); // 
-      checkbox.setAttribute("nickname", userList[i].nickname); // 해당 항목의 텍스트를 저장하기 위한 속성 추가
-      listItem.appendChild(checkbox);
-      
-      // 검색된 항목의 텍스트 표시
-      var textNode = document.createTextNode(userList[i].nickname + " (" + userList[i].email + ")");
-      listItem.appendChild(textNode);
-      
-      // 
-      // 클릭 이벤트 핸들러 함수 내부에서 checkbox의 value와 nickname 값을 읽어와서 활용
-	  listItem.addEventListener("click", function(event) {
-	      var checkbox = this.querySelector("input[type='checkbox']");
-	      var userId = checkbox.value;
-	      var nickname = checkbox.getAttribute("nickname");
+	var searchValue = this.value.toLowerCase(); // 검색어를 소문자로 변환
+	var searchResults = document.getElementById("searchResults");
 	
-	      if (!checkbox.checked) {
-	          // 선택 취소
-	          var itemIndex = selectedItems.findIndex(item => item.userId === userId);
-	          if (itemIndex !== -1) {
-	              selectedItems.splice(itemIndex, 1);
-	              renderSelectedItems();
-	          }
-	      } else {
-	          // 선택 추가
-	          selectedItems.push({ userId: userId, nickname: nickname });
-	          renderSelectedItems();
-	      }
-	  });
+	searchResults.innerHTML = ''; // 결과 초기화
+	console.log("searchValue: " + searchValue);
+	
+	// 검색 결과 생성
+	for (var i = 0; i < userList.length; i++) {
+		  
+	  var item = userList[i].nickname.toLowerCase(); // 객체의 속성에 접근하여 소문자로 변환 >> 닉네임으로 검색중
+	  if(item.includes(searchValue)) {
+	  	console.log("item: " + item);
+	  	var str = '';
+	  	str += "<div class='checkList'><img src='" + "/img/1581304118739.jpg'" + " class='user-img' alt='"  // .profileImageUrl 로 바꿔야함
+	  				+ userList[i].userId + "' style='width: 25px; height: 25px;'>";
+	  	str += "<label='checkbox'>" + userList[i].nickname + "</label>";
+	  	str += "<input type='checkbox' style='display: none' id='list-user '"; 
+	    for(var j = 0; j < selectedItems.length; j++){
+		  if(selectedItems[j].userId === userList[i].userId){
+	  		str += "checked "; 
+		  	} // if 
+		  } // for
+	  		str += "userId='" + userList[i].userId + "'></div>";
+	  		searchResults.innerHTML += str;
+		  } //if
+	  } //for
+	inputData();
 
-        searchResults.appendChild(listItem);
-      }
-    }
-  });
-      
+	  
+}); // addEvent
 
-//선택된 항목을 저장할 배열
-var selectedItemsContainer = document.getElementById("selectedItems");
-var selectedItems = [];
+var selectedListId = []; // 선택된 아이템 담아줄 배열
+var selectedItems = document.getElementById("selectedItems"); // 선택된 아이템 출력되는 영역
+var selectedList = document.querySelectorAll(".selectedList"); // 선택된 각각의 아이템 전체 리스트
 
-// 선택된 항목을 제거하는 함수
-function removeSelectedItem(item) {
-  var itemIndex = selectedItems.indexOf(item);
-  if (itemIndex !== -1) {
-    selectedItems.splice(itemIndex, 1);
-    renderSelectedItems(); // 선택된 항목을 다시 렌더링하여 변경 사항 적용
-  }
+// 체크박스 클릭시 이벤트 : userId 받아옴
+function inputData () {
+	// checkList 클래스명을 가진 모든 요소
+	var checkLists = document.querySelectorAll(".checkList");
+	var clickNum = 0;  
+	// 각 요소에 대해 이벤트 리스너를 추가
+	checkLists.forEach(function(checkList) {
+	    checkList.addEventListener("click", function() {
+    		var userId = checkList.querySelector("input[type='checkbox']").getAttribute("userid");
+	    		selectArray(userId); // 선택된 값 담아주는 함수
+	    });
+	});
 }
 
-//선택된 항목을 표시하는 함수
-function renderSelectedItems() {
-    var selectedItemsContainer = document.getElementById("selectedItems");
-    selectedItemsContainer.innerHTML = ''; // 영역 초기화
 
-    // 선택된 항목을 표시
-    for (var i = 0; i < selectedItems.length; i++) {
-        var selectedItemElement = document.createElement("div");
-        selectedItemElement.textContent = selectedItems[i].nickname;
-        selectedItemElement.className = "selected-item";
+// 결과 선택하면 배열에 저장
+function selectArray(userId) { // 선택한 값의 userId
+	if(selectedListId.length == 0) {
+		selectedListId.push(userId);
+		console.log(userId);
+	} else {
+		for(var i = 0; i < selectedListId.length; i++) {
+			var res = true;
+			if(selectedListId[i] == userId) {
+				res = false;
+				break;
+			}
+		}
+		if(res) {
+			selectedListId.push(userId);
+			console.log(selectedListId.length);
+		}
+	}
+	cnffur(); // 선택한 결과 배열 출력
+};
 
-        // 삭제 버튼 아이콘 추가
-        var deleteIcon = document.createElement("i");
-        deleteIcon.className = "fas fa-times"; // Font Awesome의 X 아이콘 사용
-        deleteIcon.style.cursor = "pointer";
-        deleteIcon.onclick = function() {
-            var userId = this.parentElement.dataset.userId;
-            var itemIndex = selectedItems.findIndex(item => item.userId === userId);
-            if (itemIndex !== -1) {
-                selectedItems.splice(itemIndex, 1);
-                renderSelectedItems(); // 선택된 항목을 다시 렌더링하여 삭제 적용
-            }
-        };
-        selectedItemElement.appendChild(deleteIcon);
-        selectedItemElement.dataset.userId = selectedItems[i].userId; // userId를 dataset에 추가
-
-        selectedItemsContainer.appendChild(selectedItemElement);
-    }
+// 결과 출력
+function cnffur(){
+		selectedItems.innerHTML = '';
+		for(var i = 0; i < selectedListId.length; i++) {
+					var str = '';
+					str += "<span class='selectedList'><img src='/img/1581304118739.jpg' alt='" + selectedListId[i] + "' style='width: 25px; height: 25px;'>";
+					str += "<label for='checkbox'>" + selectedListId[i]+ "</label>";
+					str += "<input type='checkbox' class='selectedUser' checked userId='" + selectedListId[i] + "'></span>";
+					selectedItems.innerHTML += str;
+		}
+	// 선택된 아이템 id 값 가져오기
+	var selectedUsers = selectedItemsDiv.querySelectorAll('.selectedUser');
+	selectedUsers.forEach(function(selectedUser) {
+        selectedUser.addEventListener('click', function() {
+            var userId = this.getAttribute('userId');
+            console.log('Clicked user ID:', userId);
+            deleteItem(userId);
+        });
+    });
 }
+
+// 선택된 아이템 제거
+function deleteItem(userId) {
+	for (var i = 0; i < selectedListId.length; i++) {
+		console.log('Clicked user ID:', userId);
+	    if (selectedListId[i] === userId) {
+	        selectedListId.splice(i, 1); // 중복된 userId를 배열에서 제거
+	        break; // 값이 하나씩 들어올테니 증복되면 바로 종료
+	    }
+	} 
+	cnffur();
+}
+
+//선택된 사용자 목록을 담고 있는 div 요소
+var selectedItemsDiv = document.getElementById('selectedItems');
 
 //"생성" 버튼 클릭 시
 document.getElementById("createBtn").addEventListener("click", function() {
-  var selectedItems = document.querySelectorAll("#selectedItems .selected-item");
-  var selectedValues = [];
 
-  selectedItems.forEach(function(item) {
-	    selectedValues.push({
-	      userId: item.getAttribute("data-user-id"),
-	      nickname: item.textContent.trim()
-	    });
-	  });
-
-  if (selectedValues.length === 0) {
+  if (selectedListId.length === 0) {
     alert("선택된 항목이 없습니다.");
     return;
   }
   
   // 선택된 항목들을 배열로 묶어서 JSON 형식으로 변환
-  var jsonData = JSON.stringify(selectedValues);
+  var jsonData = JSON.stringify(selectedListId);
 
   // JSON 데이터를 서버로 전송
   $.ajax({
