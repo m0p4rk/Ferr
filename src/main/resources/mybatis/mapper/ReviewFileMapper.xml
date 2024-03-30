@@ -8,17 +8,22 @@
         SELECT review_Id, image_id, description, image_url
         FROM review_images
         WHERE image_id = #{imageId}
+        ORDER BY image_id DESC
+        LIMIT 1;	
     </select>
 
     <select id="getAttachmentFileByreviewId" parameterType="_int" resultType="com.warr.ferr.model.ReviewFile">
         SELECT review_Id, image_id, description, image_url
         FROM review_images
         WHERE review_Id = #{reviewId}
+        ORDER BY image_id DESC
+        LIMIT 1;	
     </select>
 
     <insert id="insertAttachmentFile" parameterType="com.warr.ferr.model.ReviewFile">
-        INSERT INTO review_images (review_Id, image_id, description, image_url)
-        VALUES (#{imageId}, #{reviewId}, #{description}, #{imageUrl})
+        INSERT INTO review_images (review_id, image_id, description, image_url)
+        VALUES (#{reviewId}, #{imageId}, #{description}, #{imageUrl})
+
     </insert>
 
     <delete id="deleteAttachmentFileByimageId" parameterType="_int">

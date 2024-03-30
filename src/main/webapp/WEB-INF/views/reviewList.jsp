@@ -8,7 +8,17 @@
 <title>PostMe</title>
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600&display=swap"
+	rel="stylesheet">
 <style>
+body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background-color: #f8f9fa;
+    }
 .post-preview {
 	border: 1px solid #ddd;
 	padding: 15px;

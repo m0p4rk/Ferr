@@ -1,12 +1,15 @@
 package com.warr.ferr.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import com.warr.ferr.model.Schedule;
-import com.warr.ferr.dto.ScheduleListDto;
-import com.warr.ferr.dto.ScheduleUpdateDto;
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.warr.ferr.dto.ScheduleListDto;
+import com.warr.ferr.model.Schedule;
 
 @Mapper
 public interface ScheduleMapper {
@@ -41,13 +44,13 @@ public interface ScheduleMapper {
      * @param id 이벤트 ID
      * @param scheduleUpdateDto 업데이트할 스케줄 정보가 담긴 DTO
      */
-    void updateByEventId(@Param("eventId") Integer id,
-                         @Param("scheduleUpdateDto") ScheduleUpdateDto scheduleUpdateDto);
+    void updateScheduleDateByEventId(@Param("eventId") Integer eventId,
+            @Param("promiseDate") Date promiseDate);
 
     /**
      * 특정 조건에 따라 위도와 경도 정보를 조회합니다.
-     * @param eventId 조회 조건
+     * @param eventId 조회 조건 @Param("condition")
      * @return 위도와 경도 정보가 담긴 맵
      */
-    Map<String, Double> getLatitudeAndLongitude(@Param("condition") int eventId);
+    Map<String, BigDecimal> getLatitudeLongitude(int eventId);
 }

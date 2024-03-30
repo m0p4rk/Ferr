@@ -30,7 +30,7 @@
 	width: 300px;
 	height: 200px;
 	background-color: #ddd;
-	margin-right: 30px;
+	margin-right: 40px;
 	text-align: center;
 	vertical-align: top;
 	overflow: hidden;
@@ -38,10 +38,14 @@
 	background-size: cover; /* 이미지가 컨테이너를 가득 채우도록 */
 	background-position: center; /* 이미지가 항상 중앙에 위치하도록 */
 	background-image: url('img/loading_ferr.png'); /* 초기 배경 이미지 설정 */
+	border-radius: 5px;
+	box-shadow: 0 2px 4px rgba(0,0,0,.1);
+	transition: transform 0.3s ease;
 }
 
 .image-item:hover {
-	transform: scale(1.05);
+	transform: translateY(-3px); /* 호버 시 약간 위로 이동 */
+    box-shadow: 0 5px 15px rgba(0,0,0,.2);
 }
 
 .image-item img {

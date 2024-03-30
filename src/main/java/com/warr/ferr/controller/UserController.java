@@ -56,6 +56,7 @@ public class UserController {
 			HttpSession session = request.getSession(true);
 			session.setAttribute("userEmail", user.getEmail()); // 이메일
 			session.setAttribute("userId", user.getUserId()); // 사용자 ID 세션에 저장
+			session.setAttribute("nickname", user.getNickname()); // 사용자 ID 세션에 저장
 			int regionPreference = userService.getUserRegionPreference((Integer)session.getAttribute("userId"));
 			session.setAttribute("regionPreference", regionPreference);
 			
@@ -139,23 +140,6 @@ public class UserController {
 	public String registerPage() {
 		return "register";
 	}
-
-	 // my-page
-//	@GetMapping("/preferences")
-//	public String showPreferencesForm(Model model, HttpSession session) {
-//		
-//		// 세션에서 사용자 ID 가져오기
-//		Integer userId = (Integer) session.getAttribute("userId");
-//		
-//		// 사용자 ID로 선호 사항 불러오기
-//		UserPreferences preferences = userService.getUserPreferences(userId);
-//		int regionPreference = userService.getUserRegionPreference(userId);
-//
-//		model.addAttribute("preferences", preferences);
-//		model.addAttribute("regionPreference", regionPreference);
-//		return "my-page";
-//	}
-
 
 	@PostMapping("/savePreferences")
 	public String savePreferences(@RequestParam("regionPreference") int regionPreference, HttpSession session) {

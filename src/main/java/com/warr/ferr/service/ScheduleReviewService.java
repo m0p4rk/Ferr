@@ -2,7 +2,6 @@ package com.warr.ferr.service;
 
 import com.warr.ferr.mapper.ScheduleReviewMapper;
 import com.warr.ferr.model.ScheduleReview;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ public class ScheduleReviewService{
 
     private final ScheduleReviewMapper scheduleReviewMapper;
 
-    @Autowired
     public ScheduleReviewService(ScheduleReviewMapper scheduleReviewMapper) {
         this.scheduleReviewMapper = scheduleReviewMapper;
     }

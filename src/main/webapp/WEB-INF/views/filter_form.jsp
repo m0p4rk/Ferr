@@ -29,12 +29,14 @@
         <div class="col-md-3">
             <input type="date" class="form-control" id="endDateFilter" name="endDate" placeholder="종료일">
         </div>
-        <div class="col-md-1">
-            <button type="submit" class="btn btn-primary" id="searchButton">검색</button>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-secondary" id="searchButton">검색</button>
+            <a href="/total-search" class="btn btn-secondary">통합검색</a>        
         </div>
     </div>
 </form>
 <script>
+
     window.onload = function() {
         // 날짜 설정
         const today = new Date();

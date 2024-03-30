@@ -15,8 +15,8 @@
 
     <!-- 알림 생성 -->
     <insert id="createNotification" useGeneratedKeys="true" keyProperty="notificationId">
-        INSERT INTO schedule_notifications (event_id, user_id, content, notification_time, created_at)
-        VALUES (#{eventId}, #{userId}, #{content}, #{notificationTime}, #{createdAt})
+        INSERT INTO schedule_notifications (event_id, user_id, content, notification_time)
+        VALUES (#{eventId}, #{userId}, #{content}, #{notificationTime})
     </insert>
 
     <!-- 알림 삭제 -->
@@ -28,5 +28,17 @@
     <select id="findAllNotificationsByEventId" resultMap="notificationResultMap">
         SELECT * FROM schedule_notifications WHERE event_id = #{eventId}
     </select>
+    
+    <select id="findAllNotificationsByUserId" resultMap="notificationResultMap">
+        SELECT * FROM schedule_notifications WHERE user_id = #{eventId}
+    </select>
+
+    <!-- 알림 업데이트 -->
+    <update id="updateNotificationById">
+        UPDATE schedule_notifications
+        SET content = #{content},
+            notification_time = #{notificationTime}
+        WHERE notification_id = #{notificationId}
+    </update>
 
 </mapper>

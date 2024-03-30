@@ -2,29 +2,42 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.warr.ferr.mapper.EventParticipantMapper">
 
+    <!-- resultMap 정의 -->
+    <resultMap id="eventParticipantMap" type="com.warr.ferr.model.EventParticipant">
+        <id property="eventId" column="event_id" />
+        <result property="userId" column="user_id" />
+        <result property="status" column="status" />
+        <result property="joinedAt" column="joined_at" />
+    </resultMap>
+
+    <!-- 참가자 추가 -->
     <insert id="insert" parameterType="com.warr.ferr.model.EventParticipant">
         INSERT INTO ferr.event_participants (event_id, user_id, status, joined_at)
         VALUES (#{eventId}, #{userId}, #{status}, #{joinedAt})
     </insert>
 
-    <select id="selectByEventIdAndUserId" resultType="com.warr.ferr.model.EventParticipant">
+    <!-- 특정 이벤트와 사용자 ID에 해당하는 참가자 조회 -->
+    <select id="selectByEventIdAndUserId" resultMap="eventParticipantMap">
         SELECT event_id, user_id, status, joined_at
         FROM ferr.event_participants
         WHERE event_id = #{eventId} AND user_id = #{userId}
     </select>
 
-    <select id="selectByEventId" resultType="com.warr.ferr.model.EventParticipant">
+    <!-- 특정 이벤트 ID에 해당하는 모든 참가자 조회 -->
+    <select id="selectByEventId" resultMap="eventParticipantMap">
         SELECT event_id, user_id, status, joined_at
         FROM ferr.event_participants
         WHERE event_id = #{eventId}
     </select>
 
+    <!-- 특정 이벤트와 사용자 ID에 해당하는 참가자의 상태 업데이트 -->
     <update id="updateStatusByEventIdAndUserId">
         UPDATE ferr.event_participants
         SET status = #{status}
         WHERE event_id = #{eventId} AND user_id = #{userId}
     </update>
 
+    <!-- 특정 이벤트와 사용자 ID에 해당하는 참가자 삭제 -->
     <delete id="deleteByEventIdAndUserId">
         DELETE FROM ferr.event_participants
         WHERE event_id = #{eventId} AND user_id = #{userId}

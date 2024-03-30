@@ -6,9 +6,15 @@
 <head>
 <meta charset="utf-8">
 <title>Review Detail</title>
-<link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600&display=swap" rel="stylesheet">
 <style>
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
+}
 .post-detail-container, .comments-section {
 	background-color: #f8f8f8;
 	padding: 15px;
@@ -27,7 +33,7 @@
 				<strong>평점: ${review.rating}</strong>
 			</p>
 			<p>
-				<strong>첨부파일 : </strong><a href="/download/file/${fileInfo.id}">${fileInfo.filename}</a>
+				<strong>첨부파일 : </strong><a href="/download/file/${fileInfo.imageId}">${fileInfo.description}</a>
 			</p>
 			<small>작성자: ${review.userId}</small> <small>작성일:
 				${review.createdAt}</small>

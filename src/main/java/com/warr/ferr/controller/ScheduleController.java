@@ -1,18 +1,21 @@
 package com.warr.ferr.controller;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.warr.ferr.dto.ScheduleListDto;
-import com.warr.ferr.dto.ScheduleUpdateDto;
 import com.warr.ferr.model.Notification;
 import com.warr.ferr.model.Schedule;
 import com.warr.ferr.service.NotificationService;
@@ -80,21 +83,32 @@ public class ScheduleController {
     /**
      * 스케줄 업데이트 후 스케줄 목록 페이지로 리다이렉트
      */
-    @PostMapping("/schedule-detail/update/{eventId}")
-    public String updateSchedule(@PathVariable Integer eventId, @ModelAttribute ScheduleUpdateDto scheduleUpdateDto) {
-        scheduleService.updateSchedule(eventId, scheduleUpdateDto);
-        return "redirect:/dashboard-schedule";
+    @PostMapping("/schedule-detail/update/date/{eventId}")
+    public String updateScheduleDate(@PathVariable Integer eventId, 
+                                     @RequestParam("promiseDate") String promiseDateString) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date parsedDate = format.parse(promiseDateString);
+            Date sqlDate = new Date(parsedDate.getTime());
+
+            scheduleService.updateScheduleDate(eventId, sqlDate);
+            return "redirect:/dashboard-schedule";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/error"; // 적절한 에러 처리 페이지로 리다이렉트
+        }
     }
     
-    // 행사위치 지도표시
+    // 축제위치 DB -> JS
     @GetMapping("/destination/{eventId}")
-    public String getDestination(@PathVariable int eventId, Model model) {
-    	Map<String, Double> locationInfo = scheduleService.getLatitudeLongitude(eventId); 
-    	model.addAttribute("latitude", locationInfo.get("latitude"));
-    	model.addAttribute("longitude", locationInfo.get("longitude"));
-    	return "schedule_detail";
-    	
+    @ResponseBody // JSON 형식으로 응답
+    public ResponseEntity<Map<String, BigDecimal>> getDestination(@PathVariable int eventId, Model model) {
+        Map<String, BigDecimal> locationInfo = scheduleService.getLatitudeLongitude(eventId); 
+        return ResponseEntity.ok().body(locationInfo);
     }
+
+    
+    
     
     
 }

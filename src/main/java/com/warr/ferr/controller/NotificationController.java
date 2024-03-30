@@ -1,51 +1,59 @@
 package com.warr.ferr.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
+
 import com.warr.ferr.model.Notification;
 import com.warr.ferr.service.NotificationService;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
-@Controller
+@RestController
 public class NotificationController {
 
-    private final NotificationService notificationService;
-
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping("/newNotification")
-    public String newNotification(@RequestParam("id") Integer eventId,
-                                  @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime date,
-                                  @ModelAttribute Notification notification,
-                                  @SessionAttribute("userId") Integer userId,
-                                  RedirectAttributes redirectAttributes) {
-
-        notification.setNotificationTime(Timestamp.valueOf(date));
-        notification.setEventId(eventId);
-        notificationService.createNotification(notification, userId);
-
-        redirectAttributes.addAttribute("id", eventId);
-        return "redirect:/schedule-detail";
+    public ResponseEntity<?> newNotification(@RequestBody Notification notification,
+                                             @SessionAttribute("userId") Integer userId) {
+        try {
+            notification.setUserId(userId); // Optional: 세션에서 가져온 userId 설정
+            Notification createdNotification = notificationService.createNotification(notification, userId);
+            System.out.println("Received notification: " + notification);// 수정된 부분
+            return ResponseEntity.ok(createdNotification);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date", e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating notification(Internal Server Error): ", e);
+        }
     }
 
-    @GetMapping("/notification/delete")
-    public String deleteNotification(@RequestParam("id") Integer eventId,
-                                     @RequestParam("nid") Integer notificationId,
-                                     RedirectAttributes redirectAttributes) {
 
-        notificationService.deleteNotificationById(notificationId);
+    @PostMapping("/notification/delete/{notificationId}")
+    public ResponseEntity<?> deleteNotification(@PathVariable("notificationId") Integer notificationId) {
+        try {
+            notificationService.deleteNotificationById(notificationId);
+            return ResponseEntity.ok("Notification deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting notification: " + e.getMessage());
+        }
+    }
 
-        redirectAttributes.addAttribute("id", eventId);
-        return "redirect:/schedule-detail";
+    @PostMapping("/notification/update")
+    public ResponseEntity<?> updateNotification(@RequestBody Notification notification) {
+        try {
+            // 여기서는 notification 객체에 userId를 설정할 필요가 없습니다.
+            // 이미 기존에 있는 notification의 id를 기반으로 업데이트하므로
+            notificationService.updateNotification(notification);
+            return ResponseEntity.ok("Notification updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating notification: " + e.getMessage());
+        }
     }
 }

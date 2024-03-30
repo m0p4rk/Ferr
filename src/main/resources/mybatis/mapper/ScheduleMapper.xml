@@ -42,10 +42,9 @@
     </select>
 
     <!-- 스케줄 정보 업데이트 -->
-    <update id="updateByEventId" parameterType="map">
+    <update id="updateScheduleDateByEventId" parameterType="map">
         UPDATE user_events
-        SET content_id = #{scheduleUpdateDto.contentId},
-            promise_date = #{scheduleUpdateDto.promiseDate}
+        SET promise_date = #{promiseDate}
         WHERE event_id = #{eventId}
     </update>
 

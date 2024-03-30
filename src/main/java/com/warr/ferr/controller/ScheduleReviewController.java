@@ -1,16 +1,22 @@
 package com.warr.ferr.controller;
 
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.warr.ferr.model.ReviewFile;
 import com.warr.ferr.model.ScheduleReview;
 import com.warr.ferr.service.ReviewFileService;
 import com.warr.ferr.service.ScheduleReviewService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/reviews")
@@ -77,7 +83,7 @@ public class ScheduleReviewController {
 		
 		scheduleReviewService.updateReview(review);
 		redirectAttributes.addFlashAttribute("successMessage", "게시글이 수정되었습니다.");
-		return "redirect:/reviews";
+		return "redirect:/reviews/{id}";
 	}
     @GetMapping("/delete/{reviewId}")
     public String deleteReview(@PathVariable("reviewId") int reviewId) {

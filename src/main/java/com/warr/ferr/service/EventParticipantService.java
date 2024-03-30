@@ -54,8 +54,14 @@ public class EventParticipantService {
 
     @Transactional(readOnly = true)
     public List<EventParticipant> getParticipantsByEvent(int eventId) {
-        return eventParticipantMapper.selectByEventId(eventId);
+        List<EventParticipant> participants = eventParticipantMapper.selectByEventId(eventId);
+        System.out.println("Event ID: " + eventId + " has participants: ");
+        for (EventParticipant participant : participants) {
+            System.out.println("Participant ID: " + participant.getUserId());
+        }
+        return participants;
     }
+
 
     @Transactional
     public void updateParticipantStatus(int eventId, int userId, String status) {
@@ -66,5 +72,7 @@ public class EventParticipantService {
     public void removeParticipant(int eventId, int userId) {
         eventParticipantMapper.deleteByEventIdAndUserId(eventId, userId);
     }
+    
+    
 }
 

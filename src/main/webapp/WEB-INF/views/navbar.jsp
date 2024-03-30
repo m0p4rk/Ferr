@@ -13,18 +13,19 @@
 	rel="stylesheet">
 <style>
 .navbar {
-	height: 56px;
-	position: fixed;
-	top: 0;
-	width: 100%;
-	z-index: 1020;
+    height: 56px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1020;
+    background-color: #f8f9fa; /* 옅은 회색 배경 */
 }
 
 .navbar-brand img {
-	height: 40px;
-	width: 40px;
-	border-radius: 50%;
-	margin-top: -2px;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    margin-top: -2px;
 }
 
 .navbar-nav {
@@ -34,28 +35,78 @@
 }
 
 .nav-item {
-    margin-left: 10px;
+    margin: 0 5px; /* 좌우 여백 설정 */
 }
 
-
-@media ( max-width : 991.98px) {
-	.navbar-collapse {
-		background-color: #fff;
-		z-index: 1;
-	}
+@media (max-width: 768px) {
+    .navbar {
+        height: auto; /* 모바일 화면에서 높이 조정 */
+        padding: 10px 0; /* 상하 패딩 추가 */
+    }
+    .navbar-brand img {
+        margin-top: 0; /* 모바일에서의 마진 조정 */
+    }
+    .nav-item {
+        margin: 10px 5px; /* 모바일 환경에서의 네비 항목 여백 조정 */
+    }
 }
+
 
 body {
-	font-family: 'Noto Sans KR', sans-serif;
-	font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
 }
+
+.notification-btn {
+    display: inline-block;
+    background-color: #f8d568; /* 노란색 배경 */
+    padding: 10px;
+    border-radius: 5px; /* 모서리 처리 */
+    position: relative; /* 상대 위치 설정 */
+}
+
+.notification-btn img {
+    width: 30px; /* 이미지 크기 조정 */
+    height: auto;
+}
+
+#notification-count {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%; /* 원 모양 유지 */
+    width: 20px; /* 고정 너비 */
+    height: 20px; /* 고정 높이 */
+    padding: 0; /* padding 조절 */
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+@keyframes shake {
+  0% { transform: rotate(-5deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.notification-btn img.shake-animation {
+  animation: shake 0.5s infinite;
+}
+
+
 </style>
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-custom">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="/"> <img src="/css/img/ferr.png"
-				alt="FERR" style="height: 30px; width: auto;"> <!-- 로고 이미지 크기 조절 -->
+				alt="FERR" style="height: 45px; width: auto;"> <!-- 로고 이미지 크기 조절 -->
 			</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
 				data-target="#navbarSupportedContent"
@@ -68,13 +119,24 @@ body {
 				<ul class="navbar-nav ml-auto">
 					<c:if test="${sessionScope.userId != null}">
 						<li class="nav-item"><a href="/my-page" class="navbar-brand">
-								<img src="${sessionScope.profileImageUrl}" alt="프로필">
+								<c:choose>
+									<c:when test="${not empty sessionScope.profileImageUrl}">
+										<img src="${sessionScope.profileImageUrl}" alt="Profile Image">
+										<small>${sessionScope.nickname}</small>
+									</c:when>
+									<c:otherwise>
+										<img src="/css/img/noprofile.png" alt="no profile">
+									</c:otherwise>
+								</c:choose>
+
 						</a></li>
 						<li class="nav-item"><a href="/dashboard-schedule"
-							class="btn btn-primary">일정 관리</a></li>
-						<li class="nav-item"><a href="/logout" class="btn btn-danger">로그아웃</a></li>
+							class="btn btn-secondary">내 일정</a></li>
+						<li class="nav-item"><a href="/reviews"
+							class="btn btn-secondary">리뷰</a></li>
 						<li class="nav-item"><a href="/chat/rooms"
 							class="btn btn-warning">채팅</a></li>
+						<li class="nav-item"><a href="/logout" class="btn btn-danger">로그아웃</a></li>
 					</c:if>
 					<c:if test="${sessionScope.userId == null}">
 						<li class="nav-item"><button type="button"
@@ -122,37 +184,63 @@ body {
 		</div>
 	</div>
 
-	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
-	<script
-		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	<script src="https://kit.fontawesome.com/a076d05399.js"></script>
-	<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+	<!-- 알림 확인 버튼 -->
+	<c:if test="${not empty sessionScope.userId}">
+		<div id="notification-toggle"
+     style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+    <div class="notification-btn">
+        <img src="/css/img/bell.png" alt="알림"/>
+        <span id="notification-count" class="badge badge-light">0</span>
+    </div>
+</div>
+	</c:if>
 
+
+
+	<!-- 알림 모달 -->
+	<div class="modal fade" id="notificationModal" tabindex="-1"
+		role="dialog" aria-labelledby="notificationModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="notificationModalLabel">알림</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<ul class="list-group" id="notificationList">
+						<!-- 알림 내용이 동적으로 여기에 추가됩니다 -->
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+	<script src="/js/alarm.js"></script>
 	<script>
 		document
-				.getElementById('kakao-login-btn')
-				.addEventListener(
-						'click',
-						function() {
-							window.location.href = 'http://kauth.kakao.com/oauth/authorize?response_type=code&client_id=a1c0a96f3d1b22d355a2beb880950df0&redirect_uri=http://localhost:8080/login';
-						});
-
-		$(document).ready(
+			.getElementById('kakao-login-btn')
+			.addEventListener(
+					'click',
 				function() {
-					var $navbarCollapse = $('.navbar-collapse');
+				window.location.href = 'http://kauth.kakao.com/oauth/authorize?response_type=code&client_id=a1c0a96f3d1b22d355a2beb880950df0&redirect_uri=http://localhost:8080/login';
+		});
 
-					$navbarCollapse.on(
-							'show.bs.collapse',
-							function() {
-								// 메뉴가 펼쳐질 때 실행될 코드
-								$('.main-content').css('padding-top',
-										$('.navbar').outerHeight() + 'px');
-							}).on('hide.bs.collapse', function() {
-						// 메뉴가 접혀질 때 실행될 코드
-						$('.main-content').css('padding-top', '0');
-					});
+		$(document).ready(function() {
+		    var $navbarCollapse = $('.navbar-collapse');
 
 					$(window).resize(
 							function() {
@@ -193,6 +281,21 @@ body {
 		}
 		}); */
 		
+		    function adjustMainContentPadding() {
+		        var navbarHeight = $('.navbar').outerHeight();
+		        $('.main-content').css('padding-top', navbarHeight + 'px');
+		    }
+
+		    $navbarCollapse.on('show.bs.collapse', adjustMainContentPadding).on('hide.bs.collapse', function() {
+		        $('.main-content').css('padding-top', '0');
+		    });
+
+		    $(window).resize(function() {
+		        if ($navbarCollapse.hasClass('show')) {
+		            adjustMainContentPadding();
+		        }
+		    });
+		});
 	</script>
 </body>
 </html>
