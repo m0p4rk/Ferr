@@ -370,10 +370,10 @@ function resetModalContent() {
   var searchResults = document.getElementById("searchResults");
   searchResults.innerHTML = '';
 
-  // 선택된 항목 초기화
+  //선택된 항목 초기화
   var selectedItemsContainer = document.getElementById("selectedItems");
-	  selectedItemsContainer.innerHTML = '';
-  selectedItems = []; // 뭐가 문젠데 이걸로 초기화하면 값 추가가안될까..
+  selectedItemsContainer.innerHTML = '';
+  selectedListId = [];	
 }
 
 
