@@ -104,4 +104,10 @@
 		#{preferredLocation}
 		WHERE user_id = #{userId}
 	</update>
+	
+	<select id="findNicknameByUserId" resultType="String" parameterType="int">
+        SELECT nickname
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

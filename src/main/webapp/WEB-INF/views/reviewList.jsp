@@ -68,47 +68,70 @@ body {
 </style>
 </head>
 <body>
-	<jsp:include page="navbar.jsp" />
-	<div class="container">
-		<h2>Searched - ${param.query}</h2>
-		<form action="/posts/search" method="get">
-			<div class="input-group mb-3">
-				<input type="text" class="form-control" placeholder="검색어 입력"
-					name="query">
-				<div class="input-group-append">
-					<button class="btn btn-outline-secondary" type="submit">검색</button>
-				</div>
-			</div>
-		</form>
-		<c:choose>
-			<c:when test="${not empty posts}">
-				<c:forEach items="${posts}" var="post">
-					<div class="post-preview"
-						onclick="location.href='/reviews/${post.reviewId}'">
-						<h3>${post.title}</h3>
-						<p>${fn:substring(post.content, 0, 10)}...</p>
-					</div>
-				</c:forEach>
-			</c:when>
-			<c:otherwise>
-				<div class="empty-post">게시글이 없습니다.</div>
-			</c:otherwise>
-		</c:choose>
-		<nav id="pagination">
-			<c:forEach begin="1" end="${totalPages}" var="pageNum">
-				<c:choose>
-					<c:when test="${pageNum == currentPage}">
-						<span>${pageNum}</span>
-					</c:when>
-					<c:otherwise>
-						<a href="?page=${pageNum}&query=${param.query}">${pageNum}</a>
-					</c:otherwise>
-				</c:choose>
-			</c:forEach>
-		</nav>
-	</div>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script
-		src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <jsp:include page="navbar.jsp" />
+    <div class="container">
+        <h2>Searched - ${param.query}</h2>
+        <form action="/posts/search" method="get">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="검색어 입력"
+                    name="query">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">검색</button>
+                </div>
+            </div>
+        </form>
+        <c:choose>
+            <c:when test="${not empty posts}">
+                <c:forEach items="${posts}" var="post">
+                    <div class="post-preview" onclick="location.href='/reviews/${post.reviewId}'">
+                        <h3>${post.title}</h3>
+                        <p>${fn:substring(post.content, 0, 10)}...</p>
+                        <!-- 작성자의 닉네임을 표시할 span 요소 -->
+                        <p>작성자: <span class="nickname" data-userid="${post.userId}"></span></p>
+                    </div>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <div class="empty-post">게시글이 없습니다.</div>
+            </c:otherwise>
+        </c:choose>
+        <nav id="pagination">
+            <c:forEach begin="1" end="${totalPages}" var="pageNum">
+                <c:choose>
+                    <c:when test="${pageNum == currentPage}">
+                        <span>${pageNum}</span>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="?page=${pageNum}&query=${param.query}">${pageNum}</a>
+                    </c:otherwise>
+                </c:choose>
+            </c:forEach>
+        </nav>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('.nickname').each(function() {
+                var userId = $(this).data('userid');
+                var $nicknameSpan = $(this);
+
+                $.ajax({
+                    url: '/getNickname', // 닉네임을 가져올 서버의 URL
+                    type: 'GET',
+                    data: { userId: userId },
+                    success: function(response) {
+                        // Ajax 요청이 성공하면 받은 닉네임을 span에 표시
+                        $nicknameSpan.text(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('닉네임을 가져오는 중 오류 발생:', error);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
