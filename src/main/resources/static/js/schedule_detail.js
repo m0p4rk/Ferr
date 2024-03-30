@@ -67,26 +67,34 @@ $(document).ready(function() {
             var longitude = response.longitude;
 
             var mapContainer = document.getElementById('map');
-            var centerPosition = new kakao.maps.LatLng(currentlatitude, currentlongitude);
             var mapOption = {
-                center: centerPosition,
-                level: 8
+                center: new kakao.maps.LatLng(latitude, longitude),
+                level: 4
             };
 
             var map = new kakao.maps.Map(mapContainer, mapOption);
 
-            // 목적지의 위도와 경도를 LatLng 객체로 생성
             var destinationPosition = new kakao.maps.LatLng(latitude, longitude);
-            // 목적지 마커 생성
-            var destinationMarker = new kakao.maps.Marker({ position: destinationPosition });
-            // 목적지 마커를 지도에 추가
+            var destinationMarker = new kakao.maps.Marker({
+                position: destinationPosition
+            });
             destinationMarker.setMap(map);
 
-            var marker = new kakao.maps.Marker({ position: centerPosition });
-            marker.setMap(map);
+            // 커스텀 오버레이에 표시할 내용
+            var content = '<div class="customOverlay">' +
+                '<span class="title">행사 위치</span>' + 
+                '</div>';
+
+            // 커스텀 오버레이 생성
+            var customOverlay = new kakao.maps.CustomOverlay({
+                map: map,
+                position: destinationPosition,
+                content: content,
+                yAnchor: 1 
+            });
         },
         error: function(xhr, status, error) {
-            console.error('목적지 좌표를 가져오는 중 오류 발생:', error);
+            console.error('축제장소 좌표를 가져오는 중 오류 발생:', error);
         }
     });
 });
@@ -108,9 +116,9 @@ $(document).ready(function() {
             success: function(weatherResponse) {
                 // 날씨 온도계 사진 선택 + 온도 멘트
                 var weatherVar = weatherResponse.weather[0].main;
-                var weatherInfo = '날씨: ' + weatherVar;
+                var weatherInfo = weatherVar;
                 var temperature = (weatherResponse.main.temp - 273.15).toFixed(1);
-                var weatherTemp = '온도: ' + temperature + '°C';
+                var weatherTemp = temperature + '°C';
                 var infoMessage = '현재 기온은 ' + temperature + '°C입니다. ';
                 var tempIconUrl;
                 if (temperature <= -10) {
@@ -147,7 +155,7 @@ $(document).ready(function() {
                 // 날씨 멘트
                 infoMessage += '현재 행사 위치 부근 기준으로 ';
                 switch (weatherVar) {
-                    case "Cloud":
+                    case "Clouds":
                         infoMessage += '대체적으로 흐린 편입니다. 혹시 모를 우천에 대비하세요. <br>';
                         break;
                     case "Rain":

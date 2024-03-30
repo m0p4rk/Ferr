@@ -30,9 +30,12 @@ body {
 .rating>span {
 	display: inline-block;
 	position: relative;
-	width: 1.1em;
+	width: 1.2em; /* 별의 기본 너비 유지 */
+	font-size: 30px; /* 별의 크기를 24px로 조정 */
 	cursor: pointer;
 }
+
+
 
 .rating>span.active {
 	color: gold;
@@ -71,7 +74,7 @@ body {
 					class="form-control-file" id="file" name="file">
 			</div>
 			<div class="form-group">
-				<label for="rating">평점</label>
+				<label for="rating">별점</label>
 				<div class="rating">
 					<span data-value="1">&#9733;</span>
 					<!-- 점수가 1인 별 -->

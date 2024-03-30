@@ -57,6 +57,7 @@
 					onclick="scrollContainer('rankcontainer', 'right')">&#10095;</button>
 			</div>
 		</div>
+		<br>
 		<!-- Example Container 0 -->
 		<div class="row">
 			<div class="col-12">
@@ -91,7 +92,7 @@
 					onclick="scrollContainer('searchcontainer', 'right')">&#10095;</button>
 			</div>
 		</div>
-
+		<br>
 		<div class="row">
 			<div class="col-12">
 				<div class="title-container">
@@ -127,7 +128,7 @@
 					onclick="scrollContainer('recommendcontainer', 'right')">&#10095;</button>
 			</div>
 		</div>
-
+		<br>
 		<div class="row">
 			<div class="col-12">
 				<div class="title-container">

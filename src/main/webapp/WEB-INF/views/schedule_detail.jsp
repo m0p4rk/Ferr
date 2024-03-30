@@ -54,11 +54,52 @@
         width: 100%;
         margin-top: 1px;
     }
+    
+    .weather-display {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* 요소들 사이의 간격 */
+}
+
+.weather-widget {
+    margin: 0; /* 기본 마진 제거 */
+}
+
+.alert-heading {
+    margin-bottom: 20px; /* 제목과 날씨 정보 사이의 간격 조절 */
+}
+
+#weatherInfoMessage {
+    margin-top: 20px; /* 메시지와 나머지 정보 사이의 간격 조절 */
+}
+    
+    
     #tIcon {
         margin-left: 10px;
         width: 50px;
         height: auto;
     }
+    
+    .customOverlay {
+    position: absolute;
+    bottom: 25px; /* 마커 상단으로부터의 거리 */
+    left: -50%; /* 중앙 정렬을 위해 */
+    transform: translateX(-50%); /* 중앙 정렬을 위해 */
+    border: 1px solid #ccc; /* 테두리 */
+    border-radius: 4px; /* 테두리 둥글기 */
+    background-color: white; /* 배경 색상 */
+    padding: 5px; /* 내부 여백 */
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1); /* 그림자 */
+}
+
+.title {
+    display: block; /* 블록 레벨 요소로 만들기 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    font-weight: bold; /* 글꼴 두께 */
+    color: #000; /* 글꼴 색상 */
+    font-size: 14px; /* 글꼴 크기 */
+}
+    
 </style>
 <body>
     <div class="container mt-5">
@@ -73,17 +114,20 @@
 
         <!-- 날씨 섹션 -->
         <section id="weatherSection" class="section-block">
-            <div class="alert">
-                <h4 class="alert-heading">날씨 정보</h4>
-                <span id="weatherInfo" class="weather-widget"></span>
-                <span id="weatherIcon"><img id="wIcon" src="" alt="Weather icon"></span>
-                <div></div>
-                <span id="weatherTemp" class="weather-widget"></span>
-                <span id="temperatureIcon"><img id="tIcon" src="" alt="Thermometer Icon"></span>
-                <hr>
-                <div id="weatherInfoMessage" class="weather-widget alert alert-info mb-0"></div>
-            </div>
-        </section>
+    <div class="alert">
+        <h4 class="alert-heading">행사장 날씨</h4>
+        <!-- 날씨 정보와 아이콘을 포함할 새로운 컨테이너 -->
+        <div id="weatherDisplay" class="weather-display">
+            <span id="weatherIcon"><img id="wIcon" src="" alt="Weather icon"></span>
+            <span id="weatherInfo" class="weather-widget"></span>
+            <span id="temperatureIcon"><img id="tIcon" src="" alt="Thermometer Icon"></span>
+            <span id="weatherTemp" class="weather-widget"></span>
+        </div>
+        <hr>
+        <div id="weatherInfoMessage" class="weather-widget alert alert-info mb-0"></div>
+    </div>
+</section>
+
 
         <!-- 날짜 변경 섹션 -->
         <section id="promiseDateSection" class="section-block">

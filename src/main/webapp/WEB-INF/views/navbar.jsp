@@ -38,24 +38,67 @@
     margin: 0 5px; /* 좌우 여백 설정 */
 }
 
-@media (max-width: 991.98px) {
-    .navbar-toggler {
-        border-color: rgba(0,0,0,.1); /* 토글 버튼 테두리 색상 설정 */
-        color: rgba(0,0,0,.5); /* 토글 버튼 아이콘 색상 설정 */
+@media (max-width: 768px) {
+    .navbar {
+        height: auto; /* 모바일 화면에서 높이 조정 */
+        padding: 10px 0; /* 상하 패딩 추가 */
     }
-    .navbar-collapse {
-        background-color: #f8f9fa; /* 드롭다운 메뉴 배경색을 옅은 회색으로 설정 */
+    .navbar-brand img {
+        margin-top: 0; /* 모바일에서의 마진 조정 */
     }
-    .navbar-nav {
-        flex-direction: row; /* 항목들을 가로로 정렬 */
-        justify-content: space-around; /* 항목들 사이에 공간을 동등하게 배분 */
+    .nav-item {
+        margin: 10px 5px; /* 모바일 환경에서의 네비 항목 여백 조정 */
     }
 }
+
 
 body {
     font-family: 'Noto Sans KR', sans-serif;
     font-weight: 600;
 }
+
+.notification-btn {
+    display: inline-block;
+    background-color: #f8d568; /* 노란색 배경 */
+    padding: 10px;
+    border-radius: 5px; /* 모서리 처리 */
+    position: relative; /* 상대 위치 설정 */
+}
+
+.notification-btn img {
+    width: 30px; /* 이미지 크기 조정 */
+    height: auto;
+}
+
+#notification-count {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%; /* 원 모양 유지 */
+    width: 20px; /* 고정 너비 */
+    height: 20px; /* 고정 높이 */
+    padding: 0; /* padding 조절 */
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+@keyframes shake {
+  0% { transform: rotate(-5deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.notification-btn img.shake-animation {
+  animation: shake 0.5s infinite;
+}
+
 
 </style>
 </head>
@@ -144,12 +187,12 @@ body {
 	<!-- 알림 확인 버튼 -->
 	<c:if test="${not empty sessionScope.userId}">
 		<div id="notification-toggle"
-			style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
-			<button type="button" class="btn btn-warning" data-toggle="modal"
-				data-target="#notificationModal">
-				<span id="notification-count" class="badge badge-light">0</span>
-			</button>
-		</div>
+     style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+    <div class="notification-btn">
+        <img src="/css/img/bell.png" alt="알림"/>
+        <span id="notification-count" class="badge badge-light">0</span>
+    </div>
+</div>
 	</c:if>
 
 
@@ -183,73 +226,37 @@ body {
 
 
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
-	<script
-		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 	<script src="/js/alarm.js"></script>
 	<script>
 		document
-				.getElementById('kakao-login-btn')
-				.addEventListener(
-						'click',
-						function() {
-							window.location.href = 'http://kauth.kakao.com/oauth/authorize?response_type=code&client_id=a1c0a96f3d1b22d355a2beb880950df0&redirect_uri=http://localhost:8080/login';
-						});
-
-		$(document).ready(
+			.getElementById('kakao-login-btn')
+			.addEventListener(
+					'click',
 				function() {
-					var $navbarCollapse = $('.navbar-collapse');
+				window.location.href = 'http://kauth.kakao.com/oauth/authorize?response_type=code&client_id=a1c0a96f3d1b22d355a2beb880950df0&redirect_uri=http://localhost:8080/login';
+		});
 
-					$navbarCollapse.on(
-							'show.bs.collapse',
-							function() {
-								// 메뉴가 펼쳐질 때 실행될 코드
-								$('.main-content').css('padding-top',
-										$('.navbar').outerHeight() + 'px');
-							}).on('hide.bs.collapse', function() {
-						// 메뉴가 접혀질 때 실행될 코드
-						$('.main-content').css('padding-top', '0');
-					});
+		$(document).ready(function() {
+		    var $navbarCollapse = $('.navbar-collapse');
 
-					$(window).resize(
-							function() {
-								if ($navbarCollapse.hasClass('show')) {
-									$('.main-content').css('padding-top',
-											$('.navbar').outerHeight() + 'px');
-								}
-							});
-				});
+		    function adjustMainContentPadding() {
+		        var navbarHeight = $('.navbar').outerHeight();
+		        $('.main-content').css('padding-top', navbarHeight + 'px');
+		    }
 
-		/*          function sendAlarmRequest() {
-		setInterval(function() {
-		    // AJAX 요청 보내기
-		    $.ajax({
-		        type: "GET",
-		        url: "/chat/alarm",
-		        success: function(response) {
-		            // 요청이 성공한 경우 처리
-		            console.log("안 읽은 메시지 : " + response);
-		            // 받은 응답 처리
-		            // 예: 받은 데이터를 이용하여 특정 동작 수행
-		        },
-		        error: function(xhr, status, error) {
-		            // 요청이 실패한 경우 처리
-		            console.error("알람 요청이 실패했습니다:", error);
+		    $navbarCollapse.on('show.bs.collapse', adjustMainContentPadding).on('hide.bs.collapse', function() {
+		        $('.main-content').css('padding-top', '0');
+		    });
+
+		    $(window).resize(function() {
+		        if ($navbarCollapse.hasClass('show')) {
+		            adjustMainContentPadding();
 		        }
 		    });
-		}, 2000); // 2초마다 요청 보내도록 설정
-		}
-		var sessionId = "${sessionScope.userId}";
-		$(document).ready(function() {
-		// 세션 ID가 있는지 확인
-		if (sessionId != null && sessionId != '') {
-		sendAlarmRequest();
-		}else {
-		console.log(sessionId);
-		}
-		}); */
+		});
 	</script>
 </body>
 </html>

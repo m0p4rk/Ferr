@@ -20,8 +20,10 @@ $(document).ready(function() {
                 $("#notification-count").text(notificationCount); // 알림 개수 업데이트
 
                 if (notificationCount > 0) {
+					$(".notification-btn img").addClass("shake-animation");
                     $("#notification-toggle").show().addClass("pulse"); // 알림 있으면 버튼 표시 및 애니메이션 추가
                 } else {
+					$(".notification-btn img").removeClass("shake-animation");
                     $("#notification-toggle").hide().removeClass("pulse"); // 알림 없으면 버튼 숨김 및 애니메이션 제거
                 }
             },
