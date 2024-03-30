@@ -17,75 +17,8 @@ var eventId = $(this).data('eventId');
     });
 }
 
-
-// 위 전역 함수를 제외한 모든 기능은 여기부터 구현됨 참고하세요
-$(document).ready(function() {
-    var eventId = $('#eventId').val(); // 이벤트 ID를 저장
-
-    navigator.geolocation.getCurrentPosition(function(position) {
-        var currentLatitude = position.coords.latitude;
-        var currentLongitude = position.coords.longitude;
-
-        // 현재 위치의 날씨 정보 가져오기
-        getWeatherInfo(currentLatitude, currentLongitude, "현재 위치");
-
-        // 서버에서 축제장소 위도 경도 받아오는 로직 
-        $.ajax({
-            url: '/destination/' + eventId,
-            type: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                var latitude = response.latitude;
-                var longitude = response.longitude;
-
-                // 목적지의 날씨 정보 가져오기
-                getWeatherInfo(latitude, longitude, "축제 위치");
-
-                var mapContainer = document.getElementById('map'); // 지도를 표시할 div
-                var mapOption = {
-                    center: new kakao.maps.LatLng(currentLatitude, currentLongitude), // 중심좌표: 현재 위치
-                    level: 8
-                };
-
-                var map = new kakao.maps.Map(mapContainer, mapOption); // 지도 생성
-
-                // 목적지 마커 생성 및 표시
-                var destinationPosition = new kakao.maps.LatLng(latitude, longitude);
-                new kakao.maps.Marker({
-                    map: map,
-                    position: destinationPosition
-                });
-
-                // 현재 위치 마커 생성 및 표시
-                new kakao.maps.Marker({
-                    map: map,
-                    position: new kakao.maps.LatLng(currentLatitude, currentLongitude)
-                });
-
-                // UI 업데이트 함수 호출, 현재 위치 정보도 전달
-                updateUI(latitude, longitude, currentLatitude, currentLongitude);
-            },
-            error: function(xhr, status, error) {
-                console.error('목적지 좌표를 가져오는 중 오류 발생:', error);
-            }
-        });
-    });
-
-    function getWeatherInfo(latitude, longitude, locationName) {
-        $.ajax({
-            url: 'https://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude + '&appid=a62c831d0ac8f869133bcde70421b3b5',
-            method: 'GET',
-            success: function(weatherResponse) {
-                var weatherInfo = `${locationName} 날씨: ${weatherResponse.weather[0].main}, 온도: ${(weatherResponse.main.temp - 273.15).toFixed(1)}°C`;
-                $('#weatherInfo').append(`<p>${weatherInfo}</p>`);
-            },
-            error: function(xhr, status, error) {
-                console.error(`${locationName} 날씨 정보를 불러오는 중 오류 발생:`, error);
-            }
-        });
-    }
-    
-    function checkIsAwesomeTemp(humidity, temperature) {
+// 습도에 따른 적정 온도
+function checkIsAwesomeTemp(humidity, temperature) {
     let lowerBound, upperBound;
 
     if (humidity >= 10 && humidity < 20) {
@@ -117,11 +50,175 @@ $(document).ready(function() {
     }
 }
 
-    function updateUI(latitude, longitude, currentLatitude, currentLongitude) {
+
+// 위 전역 함수를 제외한 모든 기능은 여기부터 구현됨 참고하세요
+$(document).ready(function() {
+    var eventId = $('#eventId').val(); // 이벤트 ID를 저장
+    
+    navigator.geolocation.getCurrentPosition(function(position) {
+    var currentlatitude = position.coords.latitude;
+    var currentlongitude = position.coords.longitude;
+
+    $.ajax({
+        url: '/destination/' + eventId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            var latitude = response.latitude;
+            var longitude = response.longitude;
+
+            var mapContainer = document.getElementById('map');
+            var centerPosition = new kakao.maps.LatLng(currentlatitude, currentlongitude);
+            var mapOption = {
+                center: centerPosition,
+                level: 8
+            };
+
+            var map = new kakao.maps.Map(mapContainer, mapOption);
+
+            // 목적지의 위도와 경도를 LatLng 객체로 생성
+            var destinationPosition = new kakao.maps.LatLng(latitude, longitude);
+            // 목적지 마커 생성
+            var destinationMarker = new kakao.maps.Marker({ position: destinationPosition });
+            // 목적지 마커를 지도에 추가
+            destinationMarker.setMap(map);
+
+            var marker = new kakao.maps.Marker({ position: centerPosition });
+            marker.setMap(map);
+        },
+        error: function(xhr, status, error) {
+            console.error('목적지 좌표를 가져오는 중 오류 발생:', error);
+        }
+    });
+});
+
+       
+      //서버에서 축제장소 위도 경도 받아오는 로직 
+    $.ajax({
+        url: '/destination/' + eventId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            var latitude = response.latitude;
+			var longitude = response.longitude;
+		
+		// 목적지 위도와 경도를 사용하여 날씨 정보 가져오기
+        $.ajax({
+            url: 'https://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude + '&appid=a62c831d0ac8f869133bcde70421b3b5',
+            method: 'GET',
+            success: function(weatherResponse) {
+                // 날씨 온도계 사진 선택 + 온도 멘트
+                var weatherVar = weatherResponse.weather[0].main;
+                var weatherInfo = '날씨: ' + weatherVar;
+                var temperature = (weatherResponse.main.temp - 273.15).toFixed(1);
+                var weatherTemp = '온도: ' + temperature + '°C';
+                var infoMessage = '현재 기온은 ' + temperature + '°C입니다. ';
+                var tempIconUrl;
+                if (temperature <= -10) {
+                    tempIconUrl = '/temp-img/tempCold.png'; // ~ -10
+                    infoMessage += '두꺼운 옷차림으로 한파에 대비하세요. <br>';
+                } else if (temperature > -10 && temperature <= 0) {
+                    tempIconUrl = '/temp-img/temp1.JPG'; // -10 ~ 0
+                    infoMessage += '추운 날씨에 대비하여 따뜻한 옷차림을 추천합니다. <br>';
+                } else if (temperature > 0 && temperature <= 8) {
+                    tempIconUrl = '/temp-img/temp2.JPG'; // 0 ~ 8
+                    infoMessage += '쌀쌀한 날씨로 인해 가벼운 겉옷을 준비하시면 좋습니다. <br>';
+                } else if (temperature > 8 && temperature <= 16) {
+                    tempIconUrl = '/temp-img/temp3.JPG'; // 8 ~ 16
+                    infoMessage += '선선한 날씨로, 외출하기 좋은 날씨입니다. <br>';
+                } else if (temperature > 16 && temperature <= 23) {
+                    tempIconUrl = '/temp-img/temp4.JPG'; // 16 ~ 23
+                    infoMessage += '따뜻한 봄날씨로, 가벼운 옷차림을 추천합니다. <br>';
+                } else if (temperature > 23 && temperature <= 28) {
+                    tempIconUrl = '/temp-img/temp5.JPG'; // 23 ~ 28
+                    infoMessage += '조금은 더운 여름 날씨로, 반팔을 준비하세요. <br>';
+                } else if (temperature > 28 && temperature <= 33) {
+                    tempIconUrl = '/temp-img/temp6.JPG'; // 28 ~ 33
+                    infoMessage += '무더운 여름 날씨로, 더위 조심하시길 바랍니다. <br>';
+                } else if (temperature > 33) {
+                    tempIconUrl = '/temp-img/tempHot.png'; // 33 ~
+                    infoMessage += '폭염에 대비하시길 바라며, 수분 섭취는 수시로 하시는 것을 권장합니다. <br>';
+                } else {
+                    tempIconUrl = '/temp-img/tempError.png'; // Exception(Error)
+                    infoMessage += 'None;<br>';
+                }
+                var weatherIcon = weatherResponse.weather[0]['icon']; // 날씨 아이콘 쿼리 파라미터
+                var iconurl = "http://openweathermap.org/img/w/" + weatherIcon + ".png"; // Openweather API에서 이미지 가져오기
+
+                // 날씨 멘트
+                infoMessage += '현재 행사 위치 부근 기준으로 ';
+                switch (weatherVar) {
+                    case "Cloud":
+                        infoMessage += '대체적으로 흐린 편입니다. 혹시 모를 우천에 대비하세요. <br>';
+                        break;
+                    case "Rain":
+                        infoMessage += '비가 내리는 중입니다. 우산을 꼭 챙기시길 바랍니다. <br>';
+                        break;
+                    case "Snow":
+                        infoMessage += '눈이 내리는 중입니다. 미끄러운 빙판길에 유의하세요. <br>';
+                        break;
+                    case "Clear":
+                        infoMessage += '하늘이 아주 맑습니다. 기분 좋게 외출하기 좋을 것 같습니다. <br>';
+                        break;
+                    default:
+                        infoMessage += 'None;<br>';
+                }
+
+                // 풍속 멘트
+                var windSpeed = weatherResponse.wind['speed'].toFixed(0);
+                infoMessage += '풍속은 현재 ' + windSpeed + 'm/s로 ';
+                if (windSpeed >= 0 && windSpeed <= 2) {
+                    infoMessage += '바람이 거의 느껴지지 않는 조용한 날입니다. <br>';
+                } else if (windSpeed >= 3 && windSpeed <= 5) {
+                    infoMessage += '가벼운 바람이 불어 산책하기 좋은 날씨입니다. <br>';
+                } else if (windSpeed >= 6 && windSpeed <= 9) {
+                    infoMessage += '바람이 조금씩 불고 있습니다. <br>';
+                } else if (windSpeed >= 10 && windSpeed <= 14) {
+                    infoMessage += '다소 강한 바람입니다. <br>';
+                } else if (windSpeed >= 15 && windSpeed <= 19) {
+                    infoMessage += '강한 바람이 불어 우산 사용 시 날아가지 않게 유의하세요. <br>';
+                } else if (windSpeed >= 20 && windSpeed <= 24) {
+                    infoMessage += '매우 강한 바람이 불고 있습니다. 실내에 머무르시는 것이 좋겠습니다. <br>';
+                } else if (windSpeed >= 25) {
+                    infoMessage += '안전한 곳에 대피하신 후 폭풍에 대비하세요. <br>';
+                } else {
+                    infoMessage += 'None;<br>';
+                }
+
+                // 온도에 따른 습도 멘트
+                var humidity = weatherResponse.main['humidity'];
+                infoMessage += '습도는 ' + humidity + '%로, ';
+                infoMessage += checkIsAwesomeTemp(humidity, temperature);
+
+                // 날씨 정보를 UI에 표시
+                $('#weatherInfo').html(weatherInfo);
+                $('#weatherTemp').html(weatherTemp);
+                $('#wIcon').attr('src', iconurl);
+                $('#tIcon').attr('src', tempIconUrl);
+                $('#weatherInfoMessage').html(infoMessage);
+            },
+            error: function(xhr, status, error) {
+                console.error('목적지 날씨 정보를 불러오는 중 오류 발생:', error);
+            }
+        });
+
+            // UI 업데이트를 AJAX 요청 성공 콜백 함수 내부에 위치시킵니다.
+            updateUI(latitude, longitude);
+        },
+        error: function(xhr, status, error) {
+            console.error('목적지 좌표를 가져오는 중 오류 발생:', error);
+        }
+    });
+        // UI를 업데이트하는 함수를 정의합니다.
+    function updateUI(latitude, longitude) {
+        // UI를 업데이트합니다.
+        console.log("위도: " + latitude + ", 경도: " + longitude);
         $('#viewRouteBtn').on('click', function() {
-            // 카카오 지도 길찾기 URL 생성 및 팝업으로 띄우기
-            var kakaoMapRouteUrl = `https://map.kakao.com/?sX=${currentLongitude}&sY=${currentLatitude}&sName=현재 위치&eX=${longitude}&eY=${latitude}&eName=축제장소`;
-            window.open(kakaoMapRouteUrl, '_blank');
+            // 카카오 지도 길찾기 URL 생성 : 목적지만 지정 가능
+            var destinationName = "축제장소"; // 목적지 이름 예시
+            var kakaoMapUrl = 'https://map.kakao.com/link/to/' + destinationName + ',' + latitude + ',' + longitude;
+            // 팝업으로 카카오 지도창 띄우기
+            window.open(kakaoMapUrl, '_blank');
         });
     }
 });
