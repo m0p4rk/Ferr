@@ -88,7 +88,7 @@ body {
 
 						</a></li>
 						<li class="nav-item"><a href="/dashboard-schedule"
-							class="btn btn-secondary">일정 관리</a></li>
+							class="btn btn-secondary">내 일정</a></li>
 						<li class="nav-item"><a href="/reviews"
 							class="btn btn-secondary">리뷰</a></li>
 						<li class="nav-item"><a href="/chat/rooms"

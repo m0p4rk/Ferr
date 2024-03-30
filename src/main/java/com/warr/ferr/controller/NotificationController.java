@@ -1,6 +1,7 @@
 package com.warr.ferr.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.warr.ferr.model.Notification;
 import com.warr.ferr.service.NotificationService;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class NotificationController {
@@ -25,8 +27,10 @@ public class NotificationController {
             Notification createdNotification = notificationService.createNotification(notification, userId);
             System.out.println("Received notification: " + notification);// 수정된 부분
             return ResponseEntity.ok(createdNotification);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date", e);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error creating notification: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating notification(Internal Server Error): ", e);
         }
     }
 

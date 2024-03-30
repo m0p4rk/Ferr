@@ -50,7 +50,6 @@ function checkIsAwesomeTemp(humidity, temperature) {
     }
 }
 
-
 // 위 전역 함수를 제외한 모든 기능은 여기부터 구현됨 참고하세요
 $(document).ready(function() {
     var eventId = $('#eventId').val(); // 이벤트 ID를 저장
@@ -312,8 +311,18 @@ $('#addNoteBtn').click(function() {
             alert('알림이 추가되었습니다.');
             loadNotifications(); // 알림 목록을 새로고침
         },
-        error: function(xhr, status, error) {
-            alert('알림 추가 중 오류가 발생했습니다: ' + error);
+        error: function(xhr) {
+            switch (xhr.status) {
+                case 400:
+                    alert('지난 날짜를 지정할 수 없습니다.');
+                    break;
+                case 500:
+                    alert('서버 내부 오류입니다. 나중에 다시 시도해주세요.');
+                    break;
+                default:
+                    alert('알림 추가 중 알 수 없는 오류가 발생했습니다.');
+                    break;
+            }
         }
     });
 });

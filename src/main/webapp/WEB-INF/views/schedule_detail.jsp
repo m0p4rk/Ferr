@@ -9,7 +9,8 @@
     <title>일정 관리 대시보드</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/common.css">
-    <style>
+</head>
+<style>
     body {
         font-family: 'Noto Sans KR', sans-serif;
         background-color: #f8f9fa;
@@ -30,74 +31,94 @@
     .btn {
         margin-right: 10px;
     }
-    .note-item:not(:last-child) {
-        border-bottom: 1px solid #e0e0e0;
-        padding-bottom: 15px;
-        margin-bottom: 15px;
+    .note-item {
+        border-top: 1px solid #9d9d9d;
+        padding-top: 15px;
+        margin-top: 15px;
     }
-    .delete-button-container {
-        position: relative;
-        bottom: 5px;
-        right: 15px;
-        text-align: right;
+    .section-block {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
     }
-    </style>
-</head>
+    .btn-sec {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 15px;
+    }
+    #weatherTemp {
+        width: 100%;
+        margin-top: 1px;
+    }
+    #tIcon {
+        margin-left: 10px;
+        width: 50px;
+        height: auto;
+    }
+</style>
 <body>
     <div class="container mt-5">
-        <h1 id="eventTitle">${schedule.eventTitle}</h1><br>
+        <h1 id="eventTitle" style="text-align: center">${schedule.eventTitle}</h1><br>
         <input type="hidden" id="eventId" value="${schedule.eventId}" />
         
         <!-- 카카오맵 섹션 -->
-    
-<section id="mapSection" style="position: relative;">
-    <div id="map" style="width: 100%; height: 400px;"></div>
-    <button id="viewRouteBtn" class="btn btn-primary mt-2" style="position: absolute; bottom: 10px; right: 10px; opacity: 0.8; z-index: 1000;">경로 및 지도 상세 확인</button>
-</section>
+        <section id="mapSection" class="section-block" style="position: relative;">
+            <div id="map" style="width: 100%; height: 400px;"></div>
+            <button id="viewRouteBtn" class="btn btn-primary mt-2" style="position: absolute; bottom: 10px; right: 10px; opacity: 0.8; z-index: 1000;">경로 및 지도 상세 확인</button>
+        </section>
 
-
-
-
-    <!-- 날씨 섹션 -->
-    <section id="weatherSection">
-        <h2>날씨 정보</h2>
-        <div id="weatherInfo" class="weather-widget"></div>
-    </section>
-
+        <!-- 날씨 섹션 -->
+        <section id="weatherSection" class="section-block">
+            <div class="alert">
+                <h4 class="alert-heading">날씨 정보</h4>
+                <span id="weatherInfo" class="weather-widget"></span>
+                <span id="weatherIcon"><img id="wIcon" src="" alt="Weather icon"></span>
+                <div></div>
+                <span id="weatherTemp" class="weather-widget"></span>
+                <span id="temperatureIcon"><img id="tIcon" src="" alt="Thermometer Icon"></span>
+                <hr>
+                <div id="weatherInfoMessage" class="weather-widget alert alert-info mb-0"></div>
+            </div>
+        </section>
 
         <!-- 날짜 변경 섹션 -->
-        <section id="promiseDateSection">
-            <div class="form-group">
-                <label for="promiseDate">약속 날짜:</label>
+        <section id="promiseDateSection" class="section-block">
+            <div class="alert">
+                <h4 class="alert-heading">약속 날짜</h4>
+                <label for="promiseDate"></label>
                 <input type="date" class="form-control" id="promiseDate" name="promiseDate"
-                       min="${schedule.eventStartDate}" max="${schedule.eventEndDate}" 
+                       min="${schedule.eventStartDate}" max="${schedule.eventEndDate}"
                        value="${schedule.promiseDate}" data-event-id="${schedule.eventId}">
             </div>
         </section>
 
         <!-- 노트 추가 섹션 -->
-        <section id="noteAndAlertForm">
-            <div class="form-group">
-                <label for="noteContent">알림</label>
+        <section id="noteAndAlertForm" class="section-block">
+            <div class="alert">
+                <h4 class="alert-heading">알림</h4>
+                <label for="noteContent"></label>
                 <textarea class="form-control" id="noteContent" name="content" rows="3"></textarea>
             </div>
-            <div class="form-row align-items-center">
+            <div class="form-row align-items-center alert">
                 <div class="col-auto">
                     <label for="noteDateTime" class="sr-only">알림 예약:</label>
                     <input type="datetime-local" class="form-control mb-2" id="noteDateTime" name="date">
                 </div>
                 <div class="col-auto">
                     <button type="button" id="addNoteBtn" class="btn btn-primary mb-2">알림 추가</button>
-                     <button id="loadNotesBtn" class="btn btn-info mb-2">알림 불러오기</button>
+                    <button id="loadNotesBtn" class="btn btn-info mb-2">알림 불러오기</button>
                 </div>
-               
+            </div>
+            <div id="notesList" class="mt-3 alert">
+                <!-- 여기에 AJAX로 추가된 노트와 알림이 표시됩니다. -->
             </div>
         </section>
-        
-        <div id="notesList" class="mt-3">
-            <!-- 여기에 AJAX로 추가된 노트와 알림이 표시됩니다. -->
-        </div>
-        
+
+
         <!-- 노트 수정 모달 -->
         <div class="modal fade" id="editNoteModal" tabindex="-1" role="dialog" aria-labelledby="editNoteModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -128,18 +149,13 @@
                 </div>
             </div>
         </div>
-    	<section id="reviewsAndLogs">
-			<div class="mt-3">
-				<h6>후기 및 일지</h6>
-				<a href="/reviews/add?eventId=${schedule.eventId}"
-					class="btn btn-primary">작성하기</a>
-			</div>
-		</section>
 
-        <!-- 일정 삭제 버튼 -->
-        <div class="delete-button-container" style="margin-top: 20px;">
-            <button type="button" id="deleteButton" class="btn btn-danger" onclick="confirmDelete()">일정 삭제</button>
-        </div>
+        <section class="btn-sec">
+            <!-- 후기 및 일지 작성하기 버튼 -->
+            <a href="/reviews/add?eventId=${schedule.eventId}" class="btn btn-primary" style="margin-right: 12px;">후기 및 일지 작성하기</a>
+            <!-- 일정 삭제 버튼 -->
+            <button type="button" id="deleteButton" class="btn btn-danger">일정 삭제</button>
+        </section>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

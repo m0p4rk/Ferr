@@ -4,6 +4,8 @@ import com.warr.ferr.mapper.NotificationMapper;
 import com.warr.ferr.model.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -16,6 +18,11 @@ public class NotificationService {
         // UserId가 유효한지 확인
         if (userId == null || userId == 0) {
             throw new IllegalArgumentException("Notification must have a valid userId");
+        }
+
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        if (notification.getNotificationTime().before(now)) {
+            throw new IllegalArgumentException("notificationTime cannot be int the past");
         }
 
         // Notification 객체에 userId 설정
