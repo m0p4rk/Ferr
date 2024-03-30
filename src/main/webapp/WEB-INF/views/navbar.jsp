@@ -242,14 +242,21 @@ body {
 		$(document).ready(function() {
 		    var $navbarCollapse = $('.navbar-collapse');
 
-					$(window).resize(
-							function() {
-								if ($navbarCollapse.hasClass('show')) {
-									$('.main-content').css('padding-top',
-											$('.navbar').outerHeight() + 'px');
-								}
-							});
-				});
+		    function adjustMainContentPadding() {
+		        var navbarHeight = $('.navbar').outerHeight();
+		        $('.main-content').css('padding-top', navbarHeight + 'px');
+		    }
+
+		    $navbarCollapse.on('show.bs.collapse', adjustMainContentPadding).on('hide.bs.collapse', function() {
+		        $('.main-content').css('padding-top', '0');
+		    });
+
+		    $(window).resize(function() {
+		        if ($navbarCollapse.hasClass('show')) {
+		            adjustMainContentPadding();
+		        }
+		    });
+		});
 		
 		// 주석해제하면 안읽은메시지 몇개인지 갯수받아옴
         /* function sendAlarmRequest() {
@@ -280,22 +287,6 @@ body {
 			console.log(sessionId);
 		}
 		}); */
-		
-		    function adjustMainContentPadding() {
-		        var navbarHeight = $('.navbar').outerHeight();
-		        $('.main-content').css('padding-top', navbarHeight + 'px');
-		    }
-
-		    $navbarCollapse.on('show.bs.collapse', adjustMainContentPadding).on('hide.bs.collapse', function() {
-		        $('.main-content').css('padding-top', '0');
-		    });
-
-		    $(window).resize(function() {
-		        if ($navbarCollapse.hasClass('show')) {
-		            adjustMainContentPadding();
-		        }
-		    });
-		});
 	</script>
 </body>
 </html>
