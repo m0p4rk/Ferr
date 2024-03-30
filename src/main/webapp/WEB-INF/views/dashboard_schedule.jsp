@@ -110,68 +110,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
         promiseDateElem.textContent = promiseDateStr + ' (' + (diffDays >= 0 ? 'D-' + diffDays : 'D+' + Math.abs(diffDays)) + ')';
         card.querySelector('.d-day').textContent = diffDays >= 0 ? 'D-' + diffDays : 'D+' + Math.abs(diffDays);
-        card.querySelector('.promise-date').textContent = promiseDateStr;
     }
 
-    futureContainer.innerHTML = '';
-    pastContainer.innerHTML = '';
+    // 카드를 남은 일수(diffDays)에 따라 정렬하기 위한 함수
+    function sortCards(cardsArray, today) {
+        return cardsArray.sort((a, b) => {
+            const dateA = new Date(a.querySelector('.promise-date').getAttribute('data-date'));
+            dateA.setHours(0, 0, 0, 0);
+            const timeDiffA = dateA - today;
 
-    Array.from(cards).forEach(card => {
-        const clonedCard = card.cloneNode(true);
-        updateCardDday(clonedCard, today);
+            const dateB = new Date(b.querySelector('.promise-date').getAttribute('data-date'));
+            dateB.setHours(0, 0, 0, 0);
+            const timeDiffB = dateB - today;
 
-        const promiseDate = new Date(clonedCard.querySelector('.promise-date').getAttribute('data-date'));
-        promiseDate.setHours(0, 0, 0, 0);
-
-        if (promiseDate >= today) {
-            futureContainer.appendChild(clonedCard);
-        } else {
-            pastContainer.appendChild(clonedCard);
-        }
-    });
-
-    if (futureContainer.children.length === 0) {
-        futureContainer.innerHTML = '<div class="col-12"><p>일정이 없습니다.</p></div>';
-    }
-    if (pastContainer.children.length === 0) {
-        pastContainer.innerHTML = '<div class="col-12"><p>일정이 없습니다.</p></div>';
+            return timeDiffA - timeDiffB;
+        });
     }
 
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const searchText = this.value.toLowerCase();
+    function clearAndAppendSortedCards(cards, today) {
         futureContainer.innerHTML = '';
         pastContainer.innerHTML = '';
-        let futureVisible = false;
-        let pastVisible = false;
 
-        Array.from(cards).forEach(card => {
-            const eventTitle = card.querySelector('.card-title').textContent.toLowerCase();
-            const promiseDate = new Date(card.querySelector('.promise-date').getAttribute('data-date'));
+        const sortedCards = sortCards(Array.from(cards), today);
+
+        sortedCards.forEach(card => {
+            const clonedCard = card.cloneNode(true);
+            updateCardDday(clonedCard, today);
+
+            const promiseDate = new Date(clonedCard.querySelector('.promise-date').getAttribute('data-date'));
             promiseDate.setHours(0, 0, 0, 0);
-            const isInFuture = promiseDate >= today;
 
-            if (eventTitle.includes(searchText)) {
-                const clonedCard = card.cloneNode(true);
-                updateCardDday(clonedCard, today); // 검색 시에도 D-Day 계산 및 업데이트
-
-                if (isInFuture) {
-                    futureContainer.appendChild(clonedCard);
-                    futureVisible = true;
-                } else {
-                    pastContainer.appendChild(clonedCard);
-                    pastVisible = true;
-                }
+            if (promiseDate >= today) {
+                futureContainer.appendChild(clonedCard);
+            } else {
+                pastContainer.appendChild(clonedCard);
             }
         });
 
-        if (!futureVisible) {
+        if (futureContainer.children.length === 0) {
             futureContainer.innerHTML = '<div class="col-12"><p>일정이 없습니다.</p></div>';
         }
-        if (!pastVisible) {
+        if (pastContainer.children.length === 0) {
             pastContainer.innerHTML = '<div class="col-12"><p>일정이 없습니다.</p></div>';
         }
+    }
+
+    clearAndAppendSortedCards(cards, today);
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+
+        const filteredCards = Array.from(cards).filter(card => {
+            const eventTitle = card.querySelector('.card-title').textContent.toLowerCase();
+            return eventTitle.includes(searchText);
+        });
+
+        clearAndAppendSortedCards(filteredCards, today);
     });
 });
+
 </script>
 </body>
 </html>

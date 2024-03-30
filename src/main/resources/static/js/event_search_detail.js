@@ -63,12 +63,14 @@ function commonFetchEvent(url, containerParam, append = false) {
 
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
+                const contentId = item.getElementsByTagName("contentid")[0].textContent;
                 const colDiv = document.createElement('div');
                 colDiv.className = 'col-lg-4 col-md-6 col-sm-12 mb-4'; // 대, 중, 소 화면에서의 반응형 그리드 설정
 
                 const imageItem = document.createElement("div");
                 imageItem.className = "image-item";
                 imageItem.style.backgroundImage = `url('${item.getElementsByTagName("firstimage")[0] ? item.getElementsByTagName("firstimage")[0].textContent : '/css/img/noimage_ferr.png'}')`;
+				imageItem.setAttribute('data-event-id', contentId);
 
                 const imageElement = document.createElement("img");
                 imageElement.src = item.getElementsByTagName("firstimage")[0] ? item.getElementsByTagName("firstimage")[0].textContent : '/css/img/noimage_ferr.png';
@@ -80,6 +82,10 @@ function commonFetchEvent(url, containerParam, append = false) {
                     this.src = '/css/img/noimage_ferr.png';
                 };
                 imageItem.appendChild(imageElement);
+                
+                imageItem.addEventListener('click', function() {
+                    redirectToEventDetail(this.getAttribute('data-event-id'));
+                });
 
                 const imageText = document.createElement("div");
                 imageText.className = "image-text";
@@ -91,6 +97,10 @@ function commonFetchEvent(url, containerParam, append = false) {
             }
         })
         .catch(error => console.error('Error:', error));
+}
+
+function redirectToEventDetail(contentId) {
+    window.location.href = `/event-detail?contentId=${contentId}`;
 }
 
 
