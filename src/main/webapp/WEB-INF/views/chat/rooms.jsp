@@ -256,7 +256,6 @@ function displayChatrooms(chatrooms) {
     chatrooms.forEach(function(chatroom) {
     	console.log(chatroom.messageType);
     	
-    	if(chatroom.messageType != "SYSTEM"){
 	        var str = '';
 	        // 각 채팅방을 표시할 HTML 코드 생성
 	        str += "<ul class='list-group'>";
@@ -264,7 +263,7 @@ function displayChatrooms(chatrooms) {
 	        str += "<a href='#' onclick='openChatRoom(" + chatroom.chatroomId + ")' value=" + chatroom.chatroomId + ">" + chatroom.chatroomName + "</a>" + " 참여인원 : " + chatroom.members;
 	        str += "<div id='lastMsg_" + chatroom.chatroomId + "'>";
 	        if(chatroom.content != null){
-		        str += chatroom.nickname + " : " +  chatroom.content + "<br>";
+		        str += chatroom.content + "<br>";
 	        }
 	        str += dateConversion(chatroom); // 변환된 날짜와 시간을 추가
 	        
@@ -276,23 +275,6 @@ function displayChatrooms(chatrooms) {
 	        // 안읽은 메시지 등 추가 정보도 여기에 표시
 	        str += "</div>" + "</li>" + "</ul>";
 	        chatroomList.innerHTML += str; // 생성한 HTML 코드를 컨테이너에 추가
-    	} else{
-    		var str = '';
-	        // 각 채팅방을 표시할 HTML 코드 생성
-	        str += "<ul class='list-group'>";
-	        str += "<li class='list-group-item'>";
-	        str += "<a href='#' onclick='openChatRoom(" + chatroom.chatroomId + ")' value=" + chatroom.chatroomId + ">" + chatroom.chatroomName + "</a>" + " 참여인원 : " + chatroom.members;
-	        str += "<div id='lastMsg_" + chatroom.chatroomId + "'>";
-		    str += chatroom.content + "<br>";
-	        str += dateConversion(chatroom); // 변환된 날짜와 시간을 추가
-	        
-	     	// receiveCount가 0보다 크고 null이 아닌 경우에만 출력
-	        /* if (chatroom.receiveCount > 0 && chatroom.receiveCount != null) {
-	            str += "<span id='receiveCount'>  안 읽은 메시지 : " + chatroom.receiveCount + "</span>";
-	        } */
-	        str += "</div>" + "</li>" + "</ul>";
-	        chatroomList.innerHTML += str;
-    	}
     });
 }
 // ----------------------------------------------------------------------------------------------------
@@ -360,10 +342,13 @@ function closeModal(modal) {
 window.onclick = function(event) {
   if (event.target == modal) {
     closeModal(modal);
+    resetModalContent();
   } else if (event.target == modal2) {
     closeModal(modal2);
+    resetModalContent();
   } else if (event.target == modal3) {
     closeModal(modal3);
+    resetModalContent();
     /* var roomNameInput = document.getElementById("roomName");
     roomNameInput.value = '';  */
   }
@@ -387,20 +372,14 @@ function resetModalContent() {
 
   // 선택된 항목 초기화
   var selectedItemsContainer = document.getElementById("selectedItems");
-  selectedItemsContainer.innerHTML = '';
-  selectedItems = [];	
-  // 체크된 상태 초기화
-  var checkboxes = document.querySelectorAll('#searchResults input[type="checkbox"]');
-  checkboxes.forEach(function(checkbox) {
-    checkbox.checked = false;
-  });
+	  selectedItemsContainer.innerHTML = '';
+  selectedItems = []; // 뭐가 문젠데 이걸로 초기화하면 값 추가가안될까..
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
 
 //선택된 항목을 저장할 배열
-var selectedItemsContainer = document.getElementById("selectedItems");
 var selectedItems = [];
 
 //검색 입력 상자 요소 가져오기
@@ -542,7 +521,8 @@ document.getElementById("createBtn").addEventListener("click", function() {
       console.log("선택된 항목을 서버로 전송했습니다.");
       modal.style.display = "none"; // 모달 닫기
       resetModalContent();
-      location.reload();
+      createRoomMsg();
+      updateChatroomList();
     },
     error: function(xhr, status, error) {
       // 에러 발생 시 처리
@@ -737,6 +717,21 @@ function leaveMessage() {
     stomp.send('/pub/chat/message', {}, 
     		JSON.stringify({chatroomId: clickedRoomId, content: msg, senderId: sessionId, messageType: messageType}));
     });
+    updateChatroomList();
+}
+
+function createRoomMsg() {
+	var sockJs = new SockJS("/stomp/chat");
+	// SockJS를 STOMP로 전달
+	var stomp = Stomp.over(sockJs);
+    // 연결
+    stomp.connect({}, function () {
+    	
+    var msg = '채팅에 참여합니다.';
+    var messageType = 'SYSTEM';
+    stomp.send('/pub/chat/message', {}, 
+    		JSON.stringify({chatroomId: clickedRoomId, content: msg, senderId: sessionId, messageType: messageType}));
+    });
 }
 
 //모달2의 예 버튼 클릭 시 AJAX 요청 보내기
@@ -767,7 +762,7 @@ if (modal2YesBtn) {
           // 누가 방 나갔는지 시스템메시지 보내기
           leaveMessage();
           // 새로고침
-          location.reload();
+          updateChatroomList();
         },
         error: function(xhr, status, error) {
           // 요청이 실패한 경우 처리
@@ -819,8 +814,7 @@ if (modal3SaveBtn) {
       success: function(response) {
         // 요청이 성공한 경우 처리
         console.log("제목 수정 요청이 성공했습니다.");
-        // 새로고침
-        location.reload();
+        updateChatroomList();
       },
       error: function(xhr, status, error) {
         // 요청이 실패한 경우 처리

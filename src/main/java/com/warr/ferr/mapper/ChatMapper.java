@@ -48,10 +48,13 @@ public interface ChatMapper {
 	public List<ChatroomMembers> findLeaveMember(int chatroomId);
 
 	// 채팅에 멤버 추가할때 떠난유저인지 확인하고 다시 JOIN상태로 바꿀때
-	public void reJoinMember(ChatroomMembers chatroom);
+	public int reJoinMember(ChatroomMembers chatroom);
 
 	// 채팅에 멤버 초대(추가)
-	public void addChatMember(ChatroomMembers chatroom);
+	public int addChatMember(ChatroomMembers chatroom);
+
+	// 채팅 초대시 기존에 나간유저인지 찾을때
+	public int leaveMemberByUserId(Integer userId, int chatroomId);
 
 
 }

@@ -137,6 +137,14 @@
 	        CURRENT_TIMESTAMP)
 	</insert>
 	
+    <!-- 기존의 채팅방유저인지 확인할때 사용 -->    
+    <select id="leaveMemberByUserId"
+            parameterType="int">
+        SELECT COUNT(*) AS row_count
+        FROM chatroom_members
+        WHERE chatroom_id = #{chatroomId} AND status = 'LEAVE' AND user_id = #{userId}
+    </select>
+	
 	<!-- 채팅룸id 삭제 -->
 	<!-- <delete id="deleteRoom" parameterType="java.util.List">
 	    DELETE FROM chatrooms

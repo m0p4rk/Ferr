@@ -84,7 +84,7 @@ nav {
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
        <!--  <a class="navbar-brand" href="#"></a> -->
-        <span id="title"><h3>${room.chatroomName}</h3></span>
+        <span id="title"><font size=5>${room.chatroomName}</font></span>
         <!-- 참여중인 유저 인원수 출력 + 카톡기본이미지같은거 하나 넣어두고 -->
         <!-- 클릭하면 유저 검색해서 추가할수있게 기능추가할것 -->
         <!-- 클릭 가능한 요소 -->
@@ -172,17 +172,9 @@ var users = ${roomUserList}.length - leaveUser.length;
 document.getElementById("countUser").innerHTML = "현재 참여인원" + users;
 console.log(roomId);
 // 여러명일때 제목 그룹채팅으로 변경
-window.onload = function() {
-	var title = document.getElementById("chatTitle");
-    title.innerHTML = "";
-    if(users > 2){
-		   title.innerHTML = "그룹 채팅";
-    }
-};
-
 if(roomUserList.length > 2) {
 document.getElementById("title").innerHTML = '';
-document.getElementById("title").innerHTML = '<b>그룹 채팅</b>';
+document.getElementById("title").innerHTML = '<font size=5>그룹 채팅</font>';
 }
 //========================================================================
 //날짜 형태 변환
@@ -598,9 +590,9 @@ const display = document.getElementsByClassName("container");
 	    success: function(response) {
 	      // 성공 시 처리
 	      console.log("선택된 항목을 서버로 전송했습니다.");
+	      inviteMsg();
 	      modal5.style.display = "none"; // 모달 닫기
 	      resetModalContent();
-	      location.reload();
 	    },
 	    error: function(xhr, status, error) {
 	      // 에러 발생 시 처리
@@ -610,7 +602,23 @@ const display = document.getElementsByClassName("container");
 	  
 	});
 
-	
+	function inviteMsg() {
+		var selectNickname = '';
+		for(var i = 0; i < selectedListId.length; i++) {
+			for(var j = 0; j < userList.length; j++) {
+				if(selectedListId[i] == userList[j].userId){
+					selectNickname += userList[j].nickname + " ";
+				}
+			}
+		}
+	    var msg = nickname + "님이 " + selectNickname + "님을 초대하였습니다.";
+	    var messageType = 'SYSTEM';
+	    console.log(userId + ":" + msg);
+	    stomp.send('/pub/chat/message', {}, 
+	    		JSON.stringify({chatroomId: roomId, content: msg, senderId: userId, messageType: messageType}));
+	    msgInput.value = '';
+		
+	}
 	
 	//==========================================================================
 	

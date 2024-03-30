@@ -3,7 +3,6 @@ package com.warr.ferr.service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -270,45 +269,36 @@ public class ChatService {
 	}
 
 	// 채팅 멤버 추가
-	public void addChatMember(List<Integer> userList, int roomId) {
-	    List<ChatroomMembers> leaveMember = chatMapper.findLeaveMember(roomId);
-	    List<Integer> num = new ArrayList<>();
-	    
-	    // 방을 떠난 유저가 있는지 검증 >> 있으면 status값만 변경
-	    for(int i = 0; i < userList.size(); i++) {
-	    	for (int j = 0; j < leaveMember.size(); j++) {
-				if(userList.get(i) == leaveMember.get(j).getUserId()) {
-					ChatroomMembers roomMembers = ChatroomMembers.builder()
-																	.chatroomId(roomId)
-																	.userId(userList.get(i))
-																	.build();
-					chatMapper.reJoinMember(roomMembers);
-				} else {
-					num.add(userList.get(i));
-				}
-			}
-	    }
-	    if(num.size() != 0) {
-	    	// 기존 방을 떠난 유저가 있을때 제외하는 로직
-	    	ChatroomMembers roomMember = new ChatroomMembers();
-	    	for (int i = 0; i < num.size(); i++) {
-	    		roomMember = ChatroomMembers.builder()
-	    				.chatroomId(roomId)
-	    				.userId(num.get(i))
-	    				.build();
-	    		chatMapper.addChatMember(roomMember);
-	    	} 
-	    } else {
-	    	// 방 떠난 유저 없을 땐 리스트 전부 추가
-	    	for(int i = 0; i < userList.size(); i++) {
-	    		ChatroomMembers roomMembers = ChatroomMembers.builder()
-						.chatroomId(roomId)
-						.userId(userList.get(i))
-						.build();
-	    		chatMapper.addChatMember(roomMembers);
-	    	}
-	    }
-	}
+		public boolean addChatMember(List<Integer> userList, int roomId) {
+		    boolean result = false;
+		    int res = 0;
+		    
+		    for (int i = 0; i < userList.size(); i++) {
+		    	int leaveMember = chatMapper.leaveMemberByUserId(userList.get(i), roomId); // userId로 기존유저인지 판단
+		    	
+		    	// 기존유저였던사람이 없으면 리스트 전부 추가
+		    	if(leaveMember == 0) {
+		    		ChatroomMembers roomMembers = ChatroomMembers.builder()
+							.chatroomId(roomId)
+							.userId(userList.get(i))
+							.build();
+		    		
+		    		res += chatMapper.addChatMember(roomMembers);
+			    	
+		    	}else {
+		    		// 기존 유저였던 사람은 상태값 전환
+						ChatroomMembers roomMembers = ChatroomMembers.builder()
+																		.chatroomId(roomId)
+																		.userId(userList.get(i))
+																		.build();
+						res += chatMapper.reJoinMember(roomMembers);
+		    	}
+		  	}
+		    if(res > 0) {
+		    	result = true;
+		    }
+		    return result;
+		}
 
 
     // 채팅방 삭제 - 모든유저가 leave 상태인 채팅룸 id 기준으로 삭제
