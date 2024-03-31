@@ -18,7 +18,6 @@
 	rel="stylesheet">
 </head>
 <body>
-
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
@@ -165,6 +164,9 @@
 			</div>
 		</div>
 	</div>
+	
+	<br>
+	<br>
 
 	<footer class="text-center text-lg-start bg-light text-muted"
 		style="background-color: #f8f9fa !important;">

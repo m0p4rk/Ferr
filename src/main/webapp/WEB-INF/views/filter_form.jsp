@@ -31,7 +31,7 @@
         </div>
         <div class="col-md-3">
             <button type="submit" class="btn btn-secondary" id="searchButton">검색</button>
-            <a href="/total-search" class="btn btn-secondary">통합검색</a>        
+            <a href="/total-search" class="btn btn-warning">통합검색</a>        
         </div>
     </div>
 </form>

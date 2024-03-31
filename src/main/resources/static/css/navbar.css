@@ -1,0 +1,113 @@
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
+}
+
+/* Navbar 스타일 */
+.navbar {
+    height: 60px; /* 높이 조정 */
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1020;
+    background-color: #ffffff; /* 배경색을 밝은 톤으로 변경 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 그림자 효과 추가로 깊이감 부여 */
+    padding: 0 1rem; /* 좌우 패딩 조정 */
+    transition: height 0.3s ease; /* 높이 변경 시 부드러운 전환 효과 */
+}
+
+.navbar-brand img {
+    height: auto; /* 높이 자동 조정으로 이미지 원본 비율 유지 */
+    width: 45px; /* 너비 조정 */
+    border-radius: 50%; /* 원형 이미지 유지 */
+}
+
+.navbar-nav {
+    display: flex;
+    align-items: center; /* 수직 방향으로 중앙 정렬 */
+}
+
+.nav-item {
+    margin: 0 5px; /* 좌우 여백 늘림 */
+    /* 버튼 스타일 변경 원하지 않으므로 유지 */
+}
+
+@media (max-width: 992px) {
+    .navbar-nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-nav .nav-item {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .navbar-collapse {
+        background-color: white; /* 배경색을 흰색으로 설정 */
+    }
+
+    .navbar-nav .nav-item:not(:last-child) {
+        margin-bottom: 10px;
+    }
+
+    .navbar-nav .nav-item a.btn {
+        width: 90%; /* 버튼의 너비를 조정하여 패딩을 줄임 */
+    }
+}
+
+/* 로그아웃 버튼을 위한 추가 스타일 */
+.navbar-nav .nav-item a.btn-danger {
+   display: flex;
+        width: 100%;
+        justify-content: center;
+    
+}
+
+.navbar .navbar-collapse .dropdown-menu {
+    background-color: white; /* 또는 원하는 배경색 */
+}
+
+/* 알림 관련 스타일 */
+.notification-btn {
+    display: inline-block;
+    background-color: #f8d568; /* 노란색 배경 */
+    padding: 10px;
+    border-radius: 5px; /* 모서리 처리 */
+    position: relative; /* 상대 위치 설정 */
+}
+
+.notification-btn img {
+    width: 30px; /* 이미지 크기 조정 */
+    height: auto;
+}
+
+#notification-count {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%; /* 원 모양 유지 */
+    width: 20px; /* 고정 너비 */
+    height: 20px; /* 고정 높이 */
+    padding: 0; /* padding 조절 */
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+@keyframes shake {
+  0% { transform: rotate(-5deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.notification-btn img.shake-animation {
+  animation: shake 0.5s infinite;
+}
