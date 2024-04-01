@@ -161,16 +161,7 @@ nav {
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Features</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Pricing</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    <a class="nav-link">목록 <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </div>
@@ -248,6 +239,20 @@ if (roomUserList.length > 2) {
     var msgArea = $('#msgArea');
     msgArea.scrollTop(msgArea.prop('scrollHeight'));
 }
+
+	// 버튼 클릭 이벤트 처리
+    $(document).ready(function(){
+        $('.navbar-toggler').click(function(){
+            // localhost:8080/chat/rooms로 이동
+            window.location.href = 'http://localhost:8080/chat/rooms';
+        });
+    });
+    $(document).ready(function(){
+        $('.nav-link').click(function(){
+            // localhost:8080/chat/rooms로 이동
+            window.location.href = 'http://localhost:8080/chat/rooms';
+        });
+    });
 //날짜 형태 변환
 function dateConversion(chatroom) {
     // 주어진 날짜 문자열을 Date 객체로 변환
@@ -255,15 +260,19 @@ function dateConversion(chatroom) {
 
     // 현재 날짜
     var currentDate = new Date();
-    // 날짜 차이 계산 (단위: 밀리초)
-    var timeDiff = currentDate - sentAtDate;
-    var dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+ 	// 날짜가 다르면 무조건 하루로 간주
+    var timeDiff = Math.abs(currentDate - sentAtDate); // 두 날짜 사이의 차이를 절댓값으로 계산하여 음수값 방지
+	var dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
     // 년, 월, 일을 가져오기
-    var year = sentAtDate.getFullYear();
     var month = sentAtDate.getMonth() + 1; // 월 (0부터 시작하기 때문에 1을 더해줍니다.)
     var day = sentAtDate.getDate(); // 일
-
+	var currentDaty = currentDate.getDate()
+	var diffDay = Math.abs(day - currentDaty); // 날짜가 다르면 무조건 하루로 간주하기위한 값
+	
     // 시간을 가져오기
+    var year = sentAtDate.getFullYear();
     var hours = sentAtDate.getHours(); // 시간 (0부터 23까지)
     var minutes = sentAtDate.getMinutes(); // 분 (0부터 59까지)
 
@@ -276,16 +285,17 @@ function dateConversion(chatroom) {
     // 현재 날짜와의 차이에 따라 날짜를 표시하는 방식 선택
     var formattedDate = '';
     if (dayDiff === 0) {
-        // 오늘일 경우 시간만 표시
-        formattedDate = ampm + ' ' + hours + ':' + minutes;
-    } else if (dayDiff === 1) {
-        // 어제일 경우 '어제' 표시
-        formattedDate = '어제';
-    } else {
+    	if(diffDay ===0){
+    		// 오늘일 경우 시간만 표시
+            formattedDate = ampm + ' ' + hours + ':' + minutes;
+    	} else {
+    		// 어제일 경우 '어제' 표시
+            formattedDate = '어제';
+    	}
+    }  else {
         // 그 외에는 월 일 표시
         formattedDate = year + '-' + month + '-' + day;
     }
-
     // 반환
     return formattedDate;
 }
@@ -301,13 +311,13 @@ function loadDataInterval() {
                 if (item.messageType === 'SYSTEM') {
                     str += "<div class='col-12'>";
                     str += "<div class='system-message'>";
-                    str += "<b>" + item.content + "</b><br>" + item.sentAt;
+                    str += "<b>" + item.content + "</b><br><small>" + dateConversion(item) + "</small>";
                     str += "</div></div>";
                 } else {
                     var bubbleClass = item.senderId == userId ? 'my-message' : 'their-message';
                     str += "<div class='col-12'>";
                     str += "<div class='bubble " + bubbleClass + "'>";
-                    str += "<b>" + (item.senderId == userId ? "" : item.nickname) + " </b>" + item.content + "<br><small>" + item.sentAt + "</small>";
+                    str += "<b>" + (item.senderId == userId ? "" : item.nickname) + " </b>" + item.content + "<br><small>" + dateConversion(item) + "</small>";
                     if (item.count > 0) {
                         str += "<br><small>읽음 표시 : " + item.count + "</small>";
                     }
@@ -318,6 +328,7 @@ function loadDataInterval() {
             });
             $('#msgArea').html(messages);
             $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
+            window.scrollTo(0,document.body.scrollHeight);
         },
         error: function(xhr, status, error) {
             console.error('Failed to load previous chat history:', error);
@@ -408,7 +419,6 @@ const display = document.getElementsByClassName("container");
 	            count: users
 	        }));
 	        msgInput.value = ''; // 메시지 입력란 비우기
-	        scrollToBottom(); // 스크롤 맨 아래로 이동
 	    }
 	}
 

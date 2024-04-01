@@ -28,7 +28,6 @@ public class MessageDto {
 	@Default private MessageType messageType = MessageType.MESSAGE;
 	private String nickname;
 	private int count;
-	@JsonFormat(pattern = "MM월dd일 HH:mm", timezone = "Asia/Seoul")
     private Timestamp sentAt; // 현재시간
 	
 	public enum MessageType{ // nn
