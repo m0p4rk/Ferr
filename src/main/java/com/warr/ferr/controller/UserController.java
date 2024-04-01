@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.warr.ferr.api.KakaoAPI;
@@ -173,5 +174,14 @@ public class UserController {
 
 	    return "redirect:/my-page";
 	}
-
+	
+	// 3/31 3:25 am 추가 닉네임 출력기능
+    @GetMapping("/getNickname")
+    @ResponseBody
+    public String getNickname(@RequestParam("userId") int userId) {
+        // userId를 이용하여 해당 사용자의 닉네임을 가져옴
+        String nickname = userService.findNicknameByUserId(userId);
+        // 닉네임을 클라이언트에게 반환
+        return nickname;
+    }
 }

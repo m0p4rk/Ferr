@@ -17,62 +17,75 @@
 	max-width: 100%;
 	height: auto;
 }
+    .image-wrapper {
+        position: relative;
+    }
+
+    .btn-primary {
+        position: absolute;
+        bottom: 20px; /* 원하는 위치로 조정 */
+        right: 20px; /* 원하는 위치로 조정 */
+    }
 </style>
 </head>
 <body>
 
-	<div class="container mt-5">
-		<h1 id="eventTitle" class="mb-4">상세정보</h1>
+<body>
+    <div class="container mt-5">
+        <h1 id="eventTitle" class="mb-4">상세정보</h1>
+		<!-- 2024 04 01 이벤트 디테일 구조변경  -->
+        <div class="row">
+            <div class="col-md-6 image-container">
+                <div class="image-wrapper">
+                    <img id="eventImage" alt="Loading.." class="img-fluid">
+                    <!-- <img id="eventImage2" alt="Loading.." class="img-fluid"> -->
+                </div>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createScheduleModal" id="createScheduleBtn">일정 생성</button>
+            </div>
+            <div class="col-md-6">
+                <div class="container mt-5">
+                    <div class="row">
+                        <div class="col-md-12 table-container">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">주소</th>
+                                        <td id="eventAddress"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">전화번호</th>
+                                        <td id="eventTel"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">상세 설명</th>
+                                        <td id="eventOverview"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">행사 시작일</th>
+                                        <td id="eventStartDate"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">행사 종료일</th>
+                                        <td id="eventEndDate"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">공연 시간</th>
+                                        <td id="playTime"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">이용 요금</th>
+                                        <td id="useTimeFestival"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 
-		<div class="row">
-			<div class="col-md-6 image-container">
-				<img id="eventImage" alt="Loading.." class="img-fluid">
-				<!-- <img id="eventImage2" alt="Loading.." class="img-fluid"> -->
-			</div>
-			<div class="container mt-5">
-				<h1 id="eventTitle" class="mb-4">상세정보</h1>
-				<div class="row">
-					<div class="col-md-12 table-container">
-						<table class="table">
-							<tbody>
-								<tr>
-									<th scope="row">주소</th>
-									<td id="eventAddress"></td>
-								</tr>
-								<tr>
-									<th scope="row">전화번호</th>
-									<td id="eventTel"></td>
-								</tr>
-								<tr>
-									<th scope="row">상세 설명</th>
-									<td id="eventOverview"></td>
-								</tr>
-								<tr>
-									<th scope="row">행사 시작일</th>
-									<td id="eventStartDate"></td>
-								</tr>
-								<tr>
-									<th scope="row">행사 종료일</th>
-									<td id="eventEndDate"></td>
-								</tr>
-								<tr>
-									<th scope="row">공연 시간</th>
-									<td id="playTime"></td>
-								</tr>
-								<tr>
-									<th scope="row">이용 요금</th>
-									<td id="useTimeFestival"></td>
-								</tr>
-							</tbody>
-						</table>
-						<button type="button" class="btn btn-primary" data-toggle="modal"
-							data-target="#createScheduleModal" id="createScheduleBtn">일정
-							생성</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 
 	<div class="modal fade" id="createScheduleModal" tabindex="-1"
 		aria-labelledby="createScheduleModalLabel" aria-hidden="true">
