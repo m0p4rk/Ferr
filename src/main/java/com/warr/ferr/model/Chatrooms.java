@@ -15,6 +15,8 @@ public class Chatrooms implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int chatroomId;
 	private String name;
+	private int eventId;
+	
 }
 //import java.util.List;
 //import jakarta.servlet.http.HttpSession;

@@ -17,4 +17,5 @@ public class ScheduleListDto {
     private Timestamp eventEndDate;
     private Date promiseDate;
     private String contentId;
+    private int chatroomId;
 }

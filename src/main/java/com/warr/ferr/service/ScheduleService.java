@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.warr.ferr.dto.ScheduleListDto;
 import com.warr.ferr.mapper.ScheduleMapper;
+import com.warr.ferr.model.Chatrooms;
 import com.warr.ferr.model.Schedule;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleMapper scheduleMapper;
+    private final ChatService chatService;
 
     // 스케줄 저장 후 자동 생성된 이벤트 ID를 반환
     public int saveSchedule(Schedule schedule) {
@@ -45,7 +47,16 @@ public class ScheduleService {
 
     // 모든 스케줄 목록 조회
     public List<ScheduleListDto> findAllSchedules() {
-        return scheduleMapper.findAllSchedules();
+    	List<ScheduleListDto> scheduleListDto = scheduleMapper.findAllSchedules();
+    	List<Chatrooms> chatrooms = chatService.findChatroomByEventId();
+    	for(int i = 0; i <scheduleListDto.size(); i++) {
+    		for(int j = 0; j < chatrooms.size(); j++) {
+    			if(scheduleListDto.get(i).getEventId() == chatrooms.get(j).getEventId()) {
+    				scheduleListDto.get(i).setChatroomId(chatrooms.get(j).getChatroomId());
+    			}
+    		}
+    	}
+        return scheduleListDto;
     }
 
  // 이벤트 ID에 해당하는 위도와 경도 정보를 조회하여 반환

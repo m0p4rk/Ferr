@@ -3,6 +3,8 @@ package com.warr.ferr.model;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
+import com.warr.ferr.dto.MessageDto.MessageType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +39,7 @@ public class Messages {
 
 	@Builder
 	public Messages(int messageId, int chatroomId, int senderId, int receiverId, String content,
-			Timestamp notificationTime, Timestamp sentAt, int count) {
+			Timestamp notificationTime, Timestamp sentAt, int count, MessageType messageType) {
 		super();
 		this.messageId = messageId;
 		this.chatroomId = chatroomId;
@@ -47,6 +49,7 @@ public class Messages {
 		this.notificationTime = notificationTime;
 		this.sentAt = sentAt;
 		this.count = count;
+		this.messageType = messageType;
     }
 	
 	// sentAt을 String 형태로 반환하는 메서드

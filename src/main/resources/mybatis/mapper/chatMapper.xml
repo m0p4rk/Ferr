@@ -13,8 +13,16 @@
 	<!-- 모든 채팅방 리스트. 채팅방 생성시 사용 -->
 	<select id="findAllRooms"
 			resultType="com.warr.ferr.model.Chatrooms">
-		SELECT chatroom_id as chatroomId, name
+		SELECT chatroom_id as chatroomId, name, event_id as eventId
 		FROM chatrooms
+	</select>
+	
+	<!-- 이벤트 채팅방 리스트 -->
+	<select id="findChatroomByEventId"
+			resultType="com.warr.ferr.model.Chatrooms">
+		SELECT chatroom_id as chatroomId, name, event_id as eventId
+		FROM chatrooms
+		WHERE event_id != 0
 	</select>
 	
 	<!-- userid 기준 리스트조회 -->
@@ -61,7 +69,7 @@
 			useGeneratedKeys="true"
 			keyColumn="chatroom_id"
 			keyProperty="chatroomId">
-		INSERT INTO chatrooms (name) VALUE (#{name})	
+		INSERT INTO chatrooms (name, event_id) VALUE (#{name}, #{eventId})	
 	</insert>
 	
 	<!-- chatroom members 구성원 -->

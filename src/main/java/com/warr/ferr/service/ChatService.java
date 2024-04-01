@@ -11,12 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.warr.ferr.dto.ChatroomDto;
+import com.warr.ferr.dto.ScheduleRequest;
 import com.warr.ferr.mapper.ChatMapper;
 import com.warr.ferr.mapper.MessagesMapper;
 import com.warr.ferr.mapper.UserMapper;
 import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Chatrooms;
 import com.warr.ferr.model.Messages;
+import com.warr.ferr.model.Messages.MessageType;
 import com.warr.ferr.model.Users;
 
 import lombok.RequiredArgsConstructor;
@@ -124,9 +126,11 @@ public class ChatService {
 
         userList.add(user); // 사용자 포함 유저 리스트 (userId, nickname)
         
-        Chatrooms name = new Chatrooms(); // 객체 생성
-        name.setName(UUID.randomUUID().toString());
-        resId = chatMapper.createRoomId(name); // chatroomId 생성
+        int eventId = 0;
+        Chatrooms chatroom = new Chatrooms(); // 객체 생성
+        chatroom.setName(UUID.randomUUID().toString());
+        chatroom.setEventId(eventId);
+        resId = chatMapper.createRoomId(chatroom); // chatroomId 생성
 
         if (resId != 0) {
         	String groupName = "";
@@ -138,7 +142,7 @@ public class ChatService {
             // roomId 생성시 AI 설정빼버리고 uuid를 roomid에 직접넣어주면
             // 해당 for문 생략가능, chatroomName 칼럼도 삭제가능
             for (int i = chatroomList.size()-1; i >= 0;  i--) {
-                if (chatroomList.get(i).getName().equals(name.getName())) {
+                if (chatroomList.get(i).getName().equals(chatroom.getName())) {
                     chatroomId = chatroomList.get(i).getChatroomId();
                     break;
                 }
@@ -180,11 +184,14 @@ public class ChatService {
             res = chatMapper.createRoom(chatroomMembers);
             if (res != 0) {
                 result = true;
+                String content = allName + "님이 채팅에 참여합니다.";
+                sendSystemMsg(chatroomId, content, userList.get(0).getUserId());
             }
         }
         return result;
     }
 
+    
     // 채팅방 제목 수정
     public boolean roomNameUpdate(ChatroomMembers chatroomMember) {
     	int res;
@@ -298,6 +305,66 @@ public class ChatService {
 		    	result = true;
 		    }
 		    return result;
+		}
+
+		// 그룹일정 생성시 자동으로 채팅 만들기
+		public boolean scheduleChatCreate(ScheduleRequest scheduleRequest) {
+			int res = 0;
+			int resId = 0;
+			boolean result = false;
+			
+			if(scheduleRequest.getParticipantUserIds().size() != 1) {
+				
+				Chatrooms chatroom = new Chatrooms(); // 객체 생성
+				chatroom.setName(UUID.randomUUID().toString());
+				chatroom.setEventId(scheduleRequest.getSchedule().getEventId());
+				resId = chatMapper.createRoomId(chatroom); // 챗 방생성
+				if(resId != 0) {
+					List<ChatroomMembers> chatroomMembers = new ArrayList<>();
+					List<Chatrooms> chatroomList = chatMapper.findAllRooms();
+					int chatroomId = 0;
+					
+					for(Chatrooms chatName : chatroomList) {
+						if(chatName.getName().equals(chatroom.getName())) {
+							chatroomId = chatName.getChatroomId();
+							break;
+						}
+					}
+					
+					for (Integer userId : scheduleRequest.getParticipantUserIds()) {
+						chatroomMembers.add(ChatroomMembers.builder()
+		        				.chatroomId(chatroomId)
+		        				.chatroomName(scheduleRequest.getSchedule().getEventTitle())
+		        				.userId(userId)
+		        				.build());
+					}
+					
+					res = chatMapper.createRoom(chatroomMembers);
+		            if (res != 0) {
+		                result = true;
+		                String content = scheduleRequest.getSchedule().getEventTitle() + " 채팅에 참여합니다.";
+		                sendSystemMsg(chatroomId, content, scheduleRequest.getUserId());
+		            }
+				}
+	        }
+	        return result;
+	    }
+				
+			
+		// system 메시지
+	    public void sendSystemMsg(int chatroomId, String content, int userId) {
+	        Messages msg = Messages.builder()
+	        							.chatroomId(chatroomId)
+	        							.senderId(userId)
+	        							.content(content)
+	        							.messageType(MessageType.SYSTEM)
+	        							.build();
+	        messagesMapper.sendMessage(msg);
+	    }
+
+	    // 이벤트 채팅 리스트
+		public List<Chatrooms> findChatroomByEventId() {
+			return chatMapper.findChatroomByEventId();
 		}
 
 

@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.warr.ferr.controller.RoomController;
 import com.warr.ferr.dto.EventIdDTO;
 import com.warr.ferr.dto.ScheduleListDto;
 import com.warr.ferr.dto.ScheduleRequest;
 import com.warr.ferr.model.Notification;
 import com.warr.ferr.model.Schedule;
+import com.warr.ferr.service.ChatService;
 import com.warr.ferr.service.EventParticipantService;
 import com.warr.ferr.service.NotificationService;
 import com.warr.ferr.service.ScheduleService;
@@ -27,11 +29,13 @@ public class ScheduleAPI {
     private final ScheduleService scheduleService;
     private final EventParticipantService eventParticipantService;
     private final NotificationService notificationService;
+    private final ChatService chatService;
 
-    public ScheduleAPI(ScheduleService scheduleService, EventParticipantService eventParticipantService, NotificationService notificationService) {
+    public ScheduleAPI(ScheduleService scheduleService, EventParticipantService eventParticipantService, NotificationService notificationService, ChatService chatService) {
         this.scheduleService = scheduleService;
         this.eventParticipantService = eventParticipantService;
         this.notificationService = notificationService; // 생성자를 통한 의존성 주입
+        this.chatService = chatService;
     }
 
     @PostMapping("/saveSchedule")
@@ -59,6 +63,7 @@ public class ScheduleAPI {
             // 예를 들어, 모든 참가자를 'INVITED' 상태로 추가
             if (scheduleRequest.getParticipantUserIds() != null) {
                 eventParticipantService.saveParticipantsWithDefaultStatus(eventId, scheduleRequest.getParticipantUserIds(), "INVITED");
+                chatService.scheduleChatCreate(scheduleRequest); // 그룹채팅 자동생성 
             }
 
             return ResponseEntity.ok().body("일정이 성공적으로 저장되었습니다. Event ID: " + eventId);

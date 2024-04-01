@@ -56,5 +56,8 @@ public interface ChatMapper {
 	// 채팅 초대시 기존에 나간유저인지 찾을때
 	public int leaveMemberByUserId(Integer userId, int chatroomId);
 
+	// 이벤트 채팅방 리스트
+	public List<Chatrooms> findChatroomByEventId();
+
 
 }

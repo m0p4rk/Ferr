@@ -254,7 +254,6 @@ function displayChatrooms(chatrooms) {
 
     // 받아온 채팅방 리스트를 순회하면서 화면에 표시
     chatrooms.forEach(function(chatroom) {
-    	console.log(chatroom.messageType);
     	
 	        var str = '';
 	        // 각 채팅방을 표시할 HTML 코드 생성
@@ -797,7 +796,6 @@ if (modal3SaveBtn) {
 
     // 클릭된 방의 ID 가져오기
     var chatRoomId = clickedRoomId;
-	console.log(chatRoomId);
     // 요청 데이터 생성
     var requestData = {
       chatroomId: chatRoomId,
