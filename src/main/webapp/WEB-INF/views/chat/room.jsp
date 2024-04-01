@@ -11,11 +11,17 @@
     <title>Chat Room</title>
     <!-- 임시로 사용함 지워도 무방 -->
      <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600&display=swap"
+	rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
    <style>
+   body {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
+}
    
 nav {
     position: fixed; /* 화면 상단에 고정 */
@@ -78,6 +84,65 @@ nav {
     max-height: 150px; /* 최대 높이를 200px로 제한 */
     overflow: auto; /* 내용이 영역을 넘어갈 경우 스크롤이 표시 */
 }
+.chat-title {
+    font-size: 1.5rem; /* 5번 크기에 해당하는 폰트 사이즈 */
+}
+
+.participants-count {
+    font-size: 1rem; /* 기본 폰트 사이즈 */
+}
+
+/* 기본 말풍선 스타일 */
+.bubble {
+    padding: 10px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    max-width: 60%; /* 말풍선의 최대 너비를 조정 */
+    margin-bottom: 5px; /* 메시지 간 간격 */
+}
+
+/* 보내는 사람(나)의 말풍선 스타일 */
+.my-message {
+    background-color: #DCF8C6; /* 라이트 그린 */
+    margin-right: 0;
+    margin-left: auto; /* 오른쪽 정렬을 위해 auto 사용 */
+    border-bottom-right-radius: 0;
+    float: right; /* 오른쪽에 위치 */
+}
+
+/* 받는 사람의 말풍선 스타일 */
+.their-message {
+    background-color: #ECECEC; /* 라이트 그레이 */
+    margin-left: 0;
+    margin-right: auto; /* 왼쪽 정렬을 위해 auto 사용 */
+    border-bottom-left-radius: 0;
+    float: left; /* 왼쪽에 위치 */
+}
+
+/* 시스템 메시지 스타일 */
+.system-message {
+    background-color: #FFFFE0; /* 라이트 옐로우 */
+    text-align: center;
+    margin: 10px auto; /* 중앙 정렬 */
+    width: 100%; /* 전체 너비 사용 */
+}
+
+/* 말풍선 아래에 clearfix 추가 */
+.message-clearfix {
+    clear: both;
+}
+
+.system-message {
+    text-align: center; /* 텍스트를 중앙으로 정렬 */
+    margin: 10px 0; /* 상하 여백 추가 */
+    display: block; /* 블록 레벨 요소로 설정 */
+    background-color: #f0f0f0; /* 배경색 설정, 필요에 따라 조정 */
+    border-radius: 10px; /* 테두리 둥글게 */
+    padding: 5px; /* 내부 여백 */
+}
+
+
+
     </style>
 </head>
 <body class="bg-gray-100 h-screen antialiasd leading-none">
@@ -88,7 +153,7 @@ nav {
         <!-- 참여중인 유저 인원수 출력 + 카톡기본이미지같은거 하나 넣어두고 -->
         <!-- 클릭하면 유저 검색해서 추가할수있게 기능추가할것 -->
         <!-- 클릭 가능한 요소 -->
-<span id="countUser">현재 참여인원</span>
+<span id="countUser">현재 참여인원:</span>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -169,14 +234,20 @@ var leaveUser =  JSON.parse('${leaveUser}'); // 방을 떠난 유저
 // 참여중인 유저 수
 var users = ${roomUserList}.length - leaveUser.length;
 
-document.getElementById("countUser").innerHTML = "현재 참여인원" + users;
+document.getElementById("countUser").innerHTML = "현재 참여인원: " + users;
+document.getElementById("countUser").classList.add("participants-count");
 console.log(roomId);
-// 여러명일때 제목 그룹채팅으로 변경
-if(roomUserList.length > 2) {
-document.getElementById("title").innerHTML = '';
-document.getElementById("title").innerHTML = '<font size=5>그룹 채팅</font>';
+
+// 여러 명일 때 제목 '그룹채팅'으로 변경
+if (roomUserList.length > 2) {
+    document.getElementById("title").innerHTML = '그룹';
+    document.getElementById("title").classList.add("chat-title");
 }
 //========================================================================
+	function scrollToBottom() {
+    var msgArea = $('#msgArea');
+    msgArea.scrollTop(msgArea.prop('scrollHeight'));
+}
 //날짜 형태 변환
 function dateConversion(chatroom) {
     // 주어진 날짜 문자열을 Date 객체로 변환
@@ -219,65 +290,42 @@ function dateConversion(chatroom) {
     return formattedDate;
 }
 function loadDataInterval() {
-    // 페이지 로딩 시 이전 채팅 이력을 서버로부터 받아와서 표시
     $.ajax({
-        url: '/chat/ajaxInfo', // 서버의 데이터를 가져올 URL
+        url: '/chat/ajaxInfo',
         type: 'GET',
-        data: { 
-        	roomId: roomId 
-        	}, // 요청 시 필요한 데이터 (예: 채팅방 ID)
+        data: { roomId: roomId },
         success: function(response) {
-        	
-        	 // Ajax 요청이 성공한 경우 이전 채팅 이력을 표시
             var messages = '';
-            var leaveUser = response.length;
             response.forEach(function(item) {
-                var str = '';
-                
-                if (item.senderId == userId) {
-                	if(item.messageType === 'SYSTEM'){
-                		str += "<div class='col-6'>";
-                        str += "<div class='alert alert-success'>";
-                        str += "<b>" + item.content + "</b><br>" + item.sentAt + "<br>";
-                        str += "</div></div>";
-                	} else {
-	                    str += "<div class='col-6'>";
-	                    str += "<div class='alert alert-warning'>";
-	                    str += "<b>" + item.content + "</b><br>" + item.sentAt + "<br>";
-	                    if (item.count > 0) {
-	                        str += "읽음 표시 : " + item.count;
-	                        }
-	                    str += "</div></div>";
-                	}
-                } else if (item.senderId != userId) {
-                	if(item.messageType === 'SYSTEM'){
-                		str += "<div class='col-6'>";
-                        str += "<div class='alert alert-success'>";
-                        str += "<b>" + item.content + "</b><br>" + item.sentAt + "<br>";
-                        str += "</div></div>";
-                	} else{
-	                	str += "<div class='col-6'>";
-	                    str += "<div class='alert alert-info'>";
-	                    str += "<b>" + item.nickname + ": " + item.content + "</b><br>" + item.sentAt + "<br>";
-	                    if (item.count > 0) {
-		                    str += "읽음 표시 : " + item.count;
-		                    }
-	                    str += "</div></div>";
-                	}
+                var str = '<div class="row">'; // 메시지를 row로 시작
+                if (item.messageType === 'SYSTEM') {
+                    str += "<div class='col-12'>";
+                    str += "<div class='system-message'>";
+                    str += "<b>" + item.content + "</b><br>" + item.sentAt;
+                    str += "</div></div>";
+                } else {
+                    var bubbleClass = item.senderId == userId ? 'my-message' : 'their-message';
+                    str += "<div class='col-12'>";
+                    str += "<div class='bubble " + bubbleClass + "'>";
+                    str += "<b>" + (item.senderId == userId ? "" : item.nickname) + " </b>" + item.content + "<br><small>" + item.sentAt + "</small>";
+                    if (item.count > 0) {
+                        str += "<br><small>읽음 표시 : " + item.count + "</small>";
+                    }
+                    str += "</div></div>";
                 }
+                str += '</div>'; // row 닫기
                 messages += str;
             });
-            $('#preMsgArea').html(messages);
-            // 스크롤을 맨 아래로 이동
-            $('#preMsgArea').scrollTop($('#preMsgArea')[0].scrollHeight);
-            window.scrollTo(0, document.body.scrollHeight);
+            $('#msgArea').html(messages);
+            $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
         },
         error: function(xhr, status, error) {
-            // Ajax 요청이 실패한 경우 에러 처리
             console.error('Failed to load previous chat history:', error);
         }
     });
-};
+}
+
+
 	
 // 스크롤 위치 내리기, 기존채팅 가져오기
 // $(document).ready(function() {
@@ -343,13 +391,27 @@ const display = document.getElementsByClassName("container");
 	         }
 	    }
 	});
-	function sendMessage() {
-	    var msg = msgInput.value;
-	    console.log(userId + ":" + msg);
-	    stomp.send('/pub/chat/message', {}, 
-	    		JSON.stringify({chatroomId: roomId, content: msg, senderId: userId, count: users}));
-	    msgInput.value = '';
+	
+	function scrollToBottom() {
+	    var msgArea = document.getElementById('msgArea');
+	    msgArea.scrollTop = msgArea.scrollHeight;
 	}
+	
+	function sendMessage() {
+	    var msg = msgInput.value.trim(); // 입력된 메시지 가져오기 및 공백 제거
+	    if (msg) { // 메시지가 비어있지 않은 경우에만 실행
+	        console.log(userId + ":" + msg);
+	        stomp.send('/pub/chat/message', {}, JSON.stringify({
+	            chatroomId: roomId,
+	            content: msg,
+	            senderId: userId,
+	            count: users
+	        }));
+	        msgInput.value = ''; // 메시지 입력란 비우기
+	        scrollToBottom(); // 스크롤 맨 아래로 이동
+	    }
+	}
+
 	
 		
 		
