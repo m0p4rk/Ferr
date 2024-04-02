@@ -17,7 +17,7 @@
   .modal {
     display: none; /* 초기에는 숨겨진 상태 */
     position: fixed; /* 고정 위치 */
-    z-index: 1; /* 다른 요소 위에 표시 */
+    z-index: -1; /* 다른 요소 위에 표시 */
     left: 0;
     top: 0;
     width: 100%;
@@ -157,7 +157,7 @@
             </div>
             <div class="modal-footer">
                 <button id="createBtn" class="btn btn-primary">확인</button> <!-- 저장 버튼 -->
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button> <!-- 닫기 버튼 -->
+                <button type="button" id="btn-close" class="btn btn-secondary" data-dismiss="modal">취소</button> <!-- 닫기 버튼 -->
             </div>
         </div>
     </div>
@@ -340,6 +340,7 @@ var modal3 = document.getElementById("myModal3");
 
 // 닫기 버튼 요소 가져오기
 var closeBtn = modal.querySelector(".close");
+var closeSeconBtn = modal.querySelector("#btn-close");
 var yesBtn = modal2.querySelector("#yesBtn"); // 모달2
 var noBtn = modal2.querySelector(".close"); // 모달2
 var closeBtn3 = modal3.querySelector(".close");
@@ -361,7 +362,10 @@ closeBtn3.onclick = function() {
   var roomNameInput = document.getElementById("roomName");
   roomNameInput.value = ''; 
 };
-
+closeSeconBtn.onclick = function() {
+	  closeModal(modal);
+	  resetModalContent();
+	};
 // 방 생성 모달1 열기
 function openModal(modal) {
   modal.style.display = "block";
