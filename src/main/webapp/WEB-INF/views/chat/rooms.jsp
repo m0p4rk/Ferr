@@ -5,19 +5,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+<link rel="icon" href="../favicon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-<title>chat room</title>
+<title>Ferr!</title>
 <style>
   /* 모달 스타일링 */
   .modal {
     display: none; /* 초기에는 숨겨진 상태 */
     position: fixed; /* 고정 위치 */
-    z-index: -1; /* 다른 요소 위에 표시 */
+    z-index: 1; /* 다른 요소 위에 표시 */
     left: 0;
     top: 0;
     width: 100%;
@@ -299,12 +299,12 @@ function displayChatrooms(chatrooms) {
         str += "<div class='list-group mb-2'>"; // 각 채팅방을 위한 컨테이너 시작
         str += "<a href='#' class='list-group-item list-group-item-action flex-column align-items-start' onclick='openChatRoom(" + chatroom.chatroomId + ")'>";
         str += "<div class='d-flex w-100 justify-content-between'>"; // 제목과 참여인원을 나란히 표시하기 위한 div
-        str += "<h5 class='mb-1'>" + chatroom.chatroomName + "</h5>"; // 채팅방 이름
+        str += "<h5 class='mt-1'>" + chatroom.chatroomName + "</h5>"; // 채팅방 이름
         str += "<small>참여인원: " + chatroom.members + "</small>"; // 참여인원
         str += "</div>";
         
         if(chatroom.content != null){
-            str += "<p class='mb-1'>" + chatroom.content + "</p>"; // 마지막 메시지 내용
+            str += "<p class='mt-1'>" + chatroom.content + "</p>"; // 마지막 메시지 내용
         }
         // 마지막 메시지 시간
         str += "<small>" + dateConversion(chatroom) + "</small>"; // 변환된 날짜와 시간을 추가
@@ -595,7 +595,7 @@ document.addEventListener('mousedown', function(event) {
         if (event.target.tagName === "A") {
             // 오른쪽 클릭된 room의 ID와 이름을 저장
             clickedRoomId = event.target.getAttribute("onclick").match(/\d+/)[0];
-            clickedRoomName = event.target.textContent.trim();
+            clickedRoomName = event.target.querySelector('h5').textContent.trim();
 
             // 메뉴를 표시할 위치를 정의.  오른쪽 클릭된 위치를 기준으로 함
             var menuX = event.pageX;
@@ -615,6 +615,7 @@ document.addEventListener('mousedown', function(event) {
             menu.style.top = menuY + "px";
             menu.style.backgroundColor = "white";
             menu.style.border = "1px solid black";
+            menu.style.zIndex = "10";
 
             // 메뉴에 내용 추가
             menu.innerHTML = `
@@ -648,7 +649,7 @@ document.addEventListener('contextmenu', function(event) {
     if (event.target.tagName === "A") {
         // 클릭된 room의 ID와 이름을 저장
         clickedRoomId = event.target.getAttribute("onclick").match(/\d+/)[0];
-        clickedRoomName = event.target.textContent.trim();
+        clickedRoomName = event.target.querySelector('h5').textContent.trim();
 
         // 메뉴를 표시할 위치를 정의.  오른쪽 클릭된 위치를 기준으로 함
         var menuX = event.pageX;
@@ -668,6 +669,7 @@ document.addEventListener('contextmenu', function(event) {
         menu.style.top = menuY + "px";
         menu.style.backgroundColor = "white";
         menu.style.border = "1px solid black";
+        menu.style.zIndex = "10";
 
         // 메뉴에 내용 추가
         menu.innerHTML = `

@@ -5,10 +5,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<link rel="icon" href="../favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Chat Room</title>
+    <title>Ferr!</title>
     <!-- 임시로 사용함 지워도 무방 -->
      <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link
@@ -193,11 +194,29 @@ nav {
 <div id="myModal4" class="modal">
   <div class="modal-content">
       <div class="countUser">
-        <ul id="userList"></ul>
+        <ul id="userList">
+	        <c:forEach items="${roomUserList}" var="user">
+		        <li><!-- src = user.profile_image_url  -->
+			        <img id="user-img" src="/img/1581304118739.jpg" alt="${user.userId}" style="width: 25px; heigt: 25px;">
+			        <span>${user.nickname}</span>
+		        </li>
+	        </c:forEach>
+	        </ul>
         <button id="modalBtn" class="btn user-insert-btn" type="button">+ 대화상대 초대</button>
       </div>
   </div>
 </div>
+
+<!-- var str = '';
+	str += "<span class='checkList'><img src='" + "/img/1581304118739.jpg'" + " class='user-img' alt='"  // item.profileImageUrl 로 바꿔야함
+				+ user.userId + "' style='width: 25px; height: 25px;'>";
+	str += "<label='checkbox'>" + user.nickname + "</label>";
+	str += "<input type='checkbox' checked disabled id='list-user '"; 
+	str += "checked "; 
+	str += "userId='" + user.userId + "'></span>";
+	
+	document.getElementById("ingMembers").innerHTML += str;
+	dump.push(user.userId); -->
 <!-- 대화상대 추가 모달 -->
 <div id="myModal5" class="modal">
 	<div class="modal-content">
@@ -253,6 +272,23 @@ if (roomUserList.length > 2) {
             window.location.href = 'http://localhost:8080/chat/rooms';
         });
     });
+    // 인원 최신화
+    function userUpdate() {
+        $.ajax({
+            url: '/chat/userInfo',
+            type: 'POST',
+            data: { roomId: roomId },
+            success: function(response) {
+                var messages = '';
+                roomUserList = [];
+                response.forEach(function(item) {
+                	roomUserList.push(item);
+                });
+            }
+        });
+            console.log(roomUserList);
+    }
+              
 //날짜 형태 변환
 function dateConversion(chatroom) {
     // 주어진 날짜 문자열을 Date 객체로 변환
@@ -326,6 +362,9 @@ function loadDataInterval() {
                 str += '</div>'; // row 닫기
                 messages += str;
             });
+            stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: userId}))
+            userUpdate();
+            console.log('채팅 들어올떄 :' + users);
             $('#msgArea').html(messages);
             $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
             window.scrollTo(0,document.body.scrollHeight);
@@ -671,7 +710,7 @@ const display = document.getElementsByClassName("container");
 	      console.error("서버로의 전송에 실패했습니다:", error);
 	    }
 	  }); //$
-	  
+	  userUpdate();
 	});
 
 	function inviteMsg() {
@@ -729,7 +768,7 @@ function updateUserList() {
 
     // 리스트 초기화
     userListElement.innerHTML = "";
-
+    userUpdate();
     // userList와 leaveUser를 비교하여 중복되지 않는 사용자만을 리스트에 추가
     roomUserList.forEach(function(user) {
         // 중복되지 않은 사용자인지를 나타내는 플래그 변수
