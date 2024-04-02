@@ -59,5 +59,8 @@ public interface ChatMapper {
 	// 이벤트 채팅방 리스트
 	public List<Chatrooms> findChatroomByEventId();
 
+	// 참여 유저 리스트
+	public List<ChatroomMembers> findJoinUserByRoomId(int chatroomId);
+
 
 }

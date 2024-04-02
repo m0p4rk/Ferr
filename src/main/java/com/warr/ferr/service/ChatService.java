@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -365,6 +366,16 @@ public class ChatService {
 	    // 이벤트 채팅 리스트
 		public List<Chatrooms> findChatroomByEventId() {
 			return chatMapper.findChatroomByEventId();
+		}
+
+		// 참여유저 리스트
+		public List<Users> findJoinUserByRoomId(int roomId) {
+			List<ChatroomMembers> users = chatMapper.findJoinUserByRoomId(roomId);
+			List<Users> userList = new ArrayList<>();
+			for(ChatroomMembers user : users) {
+				 userList.add(userMapper.findUserByUserId(user.getUserId()));
+			}
+			return userList;
 		}
 
 

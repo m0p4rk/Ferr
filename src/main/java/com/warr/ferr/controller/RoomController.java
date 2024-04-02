@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.warr.ferr.dto.ChatroomDto;
@@ -124,6 +126,7 @@ public class RoomController {
         // user list 검색할때 사용
         List<Users> userList = userService.searchUser(userId);
 		model.addAttribute("userList", JSONArray.fromObject(userList));
+		System.out.println("eeeeeeeeeeeeeeeee");
     }
     
     // room에서 최신화할때 사용함
@@ -190,13 +193,21 @@ public class RoomController {
     	return alarm;
     }
     
-    // room 에서 유저 검색
-    @PostMapping("/search")
+    @PostMapping("/userInfo")
     @ResponseBody
-    public List<Users> searchUser(HttpSession session) {
-    	List<Users> searchList = userService.searchUser((Integer)session.getAttribute("userId"));
-    	return searchList;
+    public List<Users> userInfo(@RequestParam("roomId") int roomId, Model model) {
+        List<Users> userList = chatService.findJoinUserByRoomId(roomId);
+        model.addAttribute("roomUserList", JSONArray.fromObject(userList));
+        return userList;
     }
+
+    // room 에서 유저 검색
+//    @PostMapping("/search")
+//    @ResponseBody
+//    public List<Users> searchUser(HttpSession session) {
+//    	List<Users> searchList = userService.searchUser((Integer)session.getAttribute("userId"));
+//    	return searchList;
+//    }
     
     
     // 채팅방 삭제 - 모든유저가 leave 상태인 채팅룸 id 기준으로 삭제

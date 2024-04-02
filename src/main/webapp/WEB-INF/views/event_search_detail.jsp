@@ -15,6 +15,22 @@
 	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600&display=swap"
 	rel="stylesheet">
 <style>
+@media (max-width: 768px) { /* 모바일 화면 크기에 따라 조정 */
+    .container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .image-item {
+        margin: 0 auto; /* 모바일 환경에서 이미지 아이템 중앙 정렬 */
+        width: 90%; /* 너비를 줄여서 좀 더 중앙에 오도록 조정 */
+    }
+    .input-group, .pagination {
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%; /* 검색창과 페이지네이션 너비 조정 */
+    }
+}
+
 	/* 기본 컨테이너 및 타이틀 스타일링 */
 .image-item {
     position: relative;

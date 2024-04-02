@@ -3,15 +3,13 @@ package com.warr.ferr.model;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
-import com.warr.ferr.dto.MessageDto.MessageType;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.Builder.Default;
 
 @NoArgsConstructor
 @AllArgsConstructor

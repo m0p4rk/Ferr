@@ -38,5 +38,8 @@ public interface UserMapper {
 	
 	List<Users> findByNickname(@Param("nickname") String nickname);
 
+	// 3/31 3:25 am 추가 닉네임 출력기능
+	public String findNicknameByUserId(int userId);
+
 
 }

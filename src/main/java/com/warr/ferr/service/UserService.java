@@ -150,4 +150,9 @@ public class UserService {
         return userMapper.findByNickname(nickname);
     }
 
+	// 3/31 3:25 am 추가 닉네임 출력기능
+	public String findNicknameByUserId(int userId) {
+		return userMapper.findNicknameByUserId(userId);
+	}
+
 }

@@ -34,6 +34,15 @@
 		WHERE user_id = #{userId} AND status = 'JOIN'
 	</select>
 	
+	<!-- 참여유저 리스트 -->
+	<select id="findJoinUserByRoomId"
+			parameterType="int"
+			resultMap="ChatroomMembers">
+		SELECT chatroom_id, user_id, chatroom_name, status, last_read_at
+		FROM chatroom_members
+		WHERE chatroom_id = #{chatroomId} AND status = 'JOIN'
+	</select>
+	
 	<!-- 유저id로 채팅방 찾아들어갈때 -->
 	<select id="findRoomById"
 			parameterType="int"

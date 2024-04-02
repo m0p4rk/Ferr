@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.warr.ferr.controller.RoomController;
 import com.warr.ferr.dto.EventIdDTO;
 import com.warr.ferr.dto.ScheduleListDto;
 import com.warr.ferr.dto.ScheduleRequest;

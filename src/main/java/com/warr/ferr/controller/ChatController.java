@@ -3,8 +3,8 @@ package com.warr.ferr.controller;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+
 import com.warr.ferr.dto.MessageDto;
-import com.warr.ferr.model.ChatroomMembers;
 import com.warr.ferr.model.Messages;
 import com.warr.ferr.model.Users;
 import com.warr.ferr.service.ChatService;
@@ -29,19 +29,15 @@ public class ChatController {
     @MessageMapping(value = "/chat/enter")
     public void enterChatRoom(Messages messages){
     	log.info("StompChatController : enterChatRoom()");
-    	boolean result = false;
 //    	 chatroomId, senderId, messageId, content, messageType, sentAt
     	Users user = userService.findUserById(messages.getSenderId());
 //    	messages.setContent(user.getNickname() + "님이 채팅방에 참여하였습니다.");
 //    	MessageDto msg = messagesService.sendMessage(messages, user.getNickname());
-    	ChatroomMembers chatroomId = chatService.findRoomById(messages.getChatroomId(), messages.getSenderId());
-    	result = messagesService.readMsgCount(chatroomId); // 채팅 마지막 이용시간 최신화
-    	if(result) {
-    		// 필요한 곳에 뿌려줌
-    		template.convertAndSend("/sub/chat/room/" + messages.getChatroomId(), user);
-    		template.convertAndSend("/sub/chat/rooms/" + messages.getChatroomId(), user);
-    		template.convertAndSend("/sub/chat/navbar/" + messages.getChatroomId(), user);
-    	}
+//    	ChatroomMembers chatroomId = chatService.findRoomById(messages.getChatroomId(), messages.getSenderId());
+		// 필요한 곳에 뿌려줌
+		template.convertAndSend("/sub/chat/room/" + messages.getChatroomId(), user);
+		template.convertAndSend("/sub/chat/rooms/" + messages.getChatroomId(), user);
+		template.convertAndSend("/sub/chat/navbar/" + messages.getChatroomId(), user);
     }
 
     @MessageMapping(value = "/chat/message")

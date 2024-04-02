@@ -218,16 +218,28 @@ $(document).ready(function() {
     });
         // UI를 업데이트하는 함수를 정의합니다.
     function updateUI(latitude, longitude) {
-        // UI를 업데이트합니다.
-        console.log("위도: " + latitude + ", 경도: " + longitude);
-        $('#viewRouteBtn').on('click', function() {
-            // 카카오 지도 길찾기 URL 생성 : 목적지만 지정 가능
-            var destinationName = "축제장소"; // 목적지 이름 예시
-            var kakaoMapUrl = 'https://map.kakao.com/link/to/' + destinationName + ',' + latitude + ',' + longitude;
-            // 팝업으로 카카오 지도창 띄우기
-            window.open(kakaoMapUrl, '_blank');
-        });
-    }
+    // UI를 업데이트합니다.
+    console.log("위도: " + latitude + ", 경도: " + longitude);
+    $('#viewRouteBtn').on('click', function() {
+        // 목적지 이름
+        var destinationName = "축제장소";
+
+        // 모바일 디바이스에서 카카오맵 앱을 바로 열기 위한 링크 생성
+        var kakaoMapMobileUrl = 'kakaomap://route?sp=' + latitude + ',' + longitude + '&ep=' + latitude + ',' + longitude + '&by=FOOT';
+
+        // 모바일 환경인지 확인
+        var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+            // 모바일 환경이라면, 카카오맵 앱 링크 사용
+            window.open(kakaoMapMobileUrl, '_blank');
+        } else {
+            // PC 환경이라면, 웹 URL 사용
+            var kakaoMapWebUrl = 'https://map.kakao.com/link/to/' + encodeURIComponent(destinationName) + ',' + latitude + ',' + longitude;
+            window.open(kakaoMapWebUrl, '_blank');
+        }
+    });
+}
+
 });
 
 

@@ -26,7 +26,7 @@
     });
 });
 		
-		// 주석해제하면 안읽은메시지 몇개인지 갯수받아옴
+		// 안읽은 메시지 있을때 알림해주는거
         /* function sendAlarmRequest() {
         	setInterval(function() {
             // AJAX 요청 보내기

@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/navbar.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6vP0kwbampKt2cd8t9uwjz9lV8t5Tv2K5Ea0n3UHdFPWNrpDsq9etpwHjJG8mtZ" crossorigin="anonymous">
+<link rel="icon" href="./favicon.png">
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-custom">
@@ -17,8 +19,9 @@
             <img src="/css/img/ferr.png" alt="FERR" style="height: 45px; width: auto;">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <i class="fas fa-bars"></i>
+</button>
+
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">

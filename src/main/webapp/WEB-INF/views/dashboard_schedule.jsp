@@ -75,7 +75,6 @@
                     <div class="d-day"></div>
                 </div>
             </div>
-           <button class="group-msg" onclick="chatLocation(${schedule.chatroomId})">채팅으로</button>
         </div>
         </c:forEach>
     </div>
@@ -91,14 +90,5 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.10/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
 <script src="/js/dashboard_schedule.js"></script>
-<script>
-function chatLocation(chatroomId) {
-	var leftPosition = (window.screen.width * 2 / 3) // / 2) - (512 / 2); 가운데 띄울때
-	var topPosition = (window.screen.height * 2 / 5) // / 2) - (568 / 2);
-	window.open('http://localhost:8080/chat/room?roomId=' + chatroomId, 'win0', 'width=512,height=568,left=' + leftPosition + ',top=' + topPosition + ',status=no,toolbar=no,scrollbars=no');
-
-//    location.href = '/chat/room?roomId=' + chatroomId;
-}
-</script>
 </body>
 </html>

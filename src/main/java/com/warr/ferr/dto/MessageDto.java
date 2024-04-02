@@ -4,15 +4,13 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.Builder.Default;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +26,6 @@ public class MessageDto {
 	@Default private MessageType messageType = MessageType.MESSAGE;
 	private String nickname;
 	private int count;
-	@JsonFormat(pattern = "MM월dd일 HH:mm", timezone = "Asia/Seoul")
     private Timestamp sentAt; // 현재시간
 	
 	public enum MessageType{ // nn

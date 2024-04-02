@@ -1,23 +1,23 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ include file="/WEB-INF/views/navbar.jsp"%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+<link rel="icon" href="../favicon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-<title>chat room</title>
+<title>Ferr!</title>
 <style>
   /* 모달 스타일링 */
   .modal {
     display: none; /* 초기에는 숨겨진 상태 */
     position: fixed; /* 고정 위치 */
-    z-index: 1; /* 다른 요소 위에 표시 */
+    z-index: -1; /* 다른 요소 위에 표시 */
     left: 0;
     top: 0;
     width: 100%;
@@ -83,13 +83,40 @@
     max-height: 200px; /* 최대 높이를 200px로 제한 */
     overflow: auto; /* 내용이 영역을 넘어갈 경우 스크롤이 표시 */
 }
+
+/* #openModalBtn {
+    background-image: url('/css/img/comment.png'); /* 버튼 배경으로 들어갈 아이콘 이미지 주소 */
+    background-size: contain; /* 아이콘을 버튼 안에 전체적으로 맞추되, 비율을 유지 */
+    background-repeat: no-repeat; /* 아이콘 이미지를 반복하지 않음 */
+    background-position: center; /* 아이콘 이미지 위치를 버튼 중앙으로 설정 */
+    background-color: white;
+    border: none; /* 버튼의 테두리 제거 */
+    width: 50px; /* 버튼의 너비, 아이콘의 크기에 따라 조정 필요 */
+    height: 50px; /* 버튼의 높이, 아이콘의 크기에 따라 조정 필요 */
+    cursor: pointer; /* 마우스 오버 시 커서를 손가락 모양으로 변경 */
+    outline: none; /* 포커스 시 발생하는 외곽선 제거 */
+} */
+
+#openModalBtn {
+	margin-left : 50px;
+}
+
+
 </style>
 
 <!-- Font Awesome 아이콘 CDN 링크 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-<button id="openModalBtn">채팅룸 생성</button>
+<%@ include file="/WEB-INF/views/navbar.jsp"%>
+<br>
+<br>
+<br>
+<button id="openModalBtn" class="btn btn-primary ml-3 mb-2" aria-label="채팅룸 생성">
+    <i class="fas fa-plus"></i> 생성
+</button>
+
+
 <div class="container">
     <div id="chatroomList">
     	<c:forEach items="${rooms}" var="room">
@@ -113,18 +140,29 @@
 <!-- 모달 버튼 -->
 
 <!-- 유저목록조회 + 방 생성 -->
-<div id="myModal" class="modal">
-	<div class="modal-content">
-	    <div>대화상대 선택</div>
-	    <div id="selectedItems"></div> <!-- 선택된 항목을 표시할 영역 -->
-	    <input type="text" id="searchInput" placeholder="검색"> <!-- 검색 입력 상자 -->
-	    <div id="searchResults"></div> <!-- 검색 결과를 표시할 리스트 -->
-	    <div>
-	    <button id="createBtn">확인</button> <!-- 저장 버튼 -->
-	    <button class="close">취소</button> <!-- 닫기 버튼 -->
-	    </div>
-	</div>
+<div id="myModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">대화상대 선택</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="searchInput" class="form-control mb-3" placeholder="검색"> <!-- 검색 입력 상자 -->
+                <div id="selectedItems" class="mb-3"></div> <!-- 선택된 항목을 표시할 영역 -->
+                <hr>
+                <div id="searchResults"></div> <!-- 검색 결과를 표시할 리스트 -->
+            </div>
+            <div class="modal-footer">
+                <button id="createBtn" class="btn btn-primary">확인</button> <!-- 저장 버튼 -->
+                <button type="button" id="btn-close" class="btn btn-secondary" data-dismiss="modal">취소</button> <!-- 닫기 버튼 -->
+            </div>
+        </div>
+    </div>
 </div>
+
 <!-- 방 나가기 -->
 <div id="myModal2" class="modal">
 	<div class="modal-content">
@@ -254,39 +292,39 @@ function displayChatrooms(chatrooms) {
 
     // 받아온 채팅방 리스트를 순회하면서 화면에 표시
     chatrooms.forEach(function(chatroom) {
-    	
-	        var str = '';
-	        // 각 채팅방을 표시할 HTML 코드 생성
-	        str += "<ul class='list-group'>";
-	        str += "<li class='list-group-item'>";
-	        str += "<a href='#' onclick='openChatRoom(" + chatroom.chatroomId + ")' value=" + chatroom.chatroomId + ">" + chatroom.chatroomName + "</a>" + " 참여인원 : " + chatroom.members;
-	        str += "<div id='lastMsg_" + chatroom.chatroomId + "'>";
-	        if(chatroom.content != null){
-		        str += chatroom.content + "<br>";
-	        }
-	        str += dateConversion(chatroom); // 변환된 날짜와 시간을 추가
-	        
-	     	// receiveCount가 0보다 크고 null이 아닌 경우에만 출력
-	        if (chatroom.receiveCount > 0 && chatroom.receiveCount != null) {
-	            str += "<span id='receiveCount'>  안 읽은 메시지 : " + chatroom.receiveCount + "</span>";
-	        }
-	        
-	        // 안읽은 메시지 등 추가 정보도 여기에 표시
-	        str += "</div>" + "</li>" + "</ul>";
-	        chatroomList.innerHTML += str; // 생성한 HTML 코드를 컨테이너에 추가
+        console.log(chatroom.messageType);
+
+        var str = '';
+        // 각 채팅방을 표시할 HTML 코드 생성 (Bootstrap 4 스타일 적용)
+        str += "<div class='list-group mb-2'>"; // 각 채팅방을 위한 컨테이너 시작
+        str += "<a href='#' class='list-group-item list-group-item-action flex-column align-items-start' onclick='openChatRoom(" + chatroom.chatroomId + ")'>";
+        str += "<div class='d-flex w-100 justify-content-between'>"; // 제목과 참여인원을 나란히 표시하기 위한 div
+        str += "<h5 class='mb-1'>" + chatroom.chatroomName + "</h5>"; // 채팅방 이름
+        str += "<small>참여인원: " + chatroom.members + "</small>"; // 참여인원
+        str += "</div>";
+        
+        if(chatroom.content != null){
+            str += "<p class='mt-1'>" + chatroom.content + "</p>"; // 마지막 메시지 내용
+        }
+        // 마지막 메시지 시간
+        str += "<small>" + dateConversion(chatroom) + "</small>"; // 변환된 날짜와 시간을 추가
+
+        // receiveCount가 0보다 크고 null이 아닌 경우에만 출력
+        if (chatroom.receiveCount > 0 && chatroom.receiveCount != null) {
+            str += "<span class='badge badge-primary float-right mt-1'>안 읽은 메시지: " + chatroom.receiveCount + "</span>";
+        }
+
+        str += "</a>"; // 리스트 아이템 링크 종료
+        str += "</div>"; // list-group 종료
+        chatroomList.innerHTML += str; // 생성한 HTML 코드를 컨테이너에 추가
     });
 }
+
 // ----------------------------------------------------------------------------------------------------
 
 // 채팅창 띄우기
 function openChatRoom(roomId) {
- 	var leftPosition = (window.screen.width * 2 / 3) // / 2) - (512 / 2); 가운데 띄울때
-	var topPosition = (window.screen.height * 2 / 5) // / 2) - (568 / 2);
-	window.open('http://localhost:8080/chat/room?roomId=' + roomId, 'win0', 'width=512,height=568,left=' + leftPosition + ',top=' + topPosition + ',status=no,toolbar=no,scrollbars=no');
-	updateChatroomList();
-	
-	// 페이지 이동으로 할때 사용
-	//window.location.href = 'http://localhost:8080/chat/room?roomId=' + roomId;
+	window.location.href = 'http://localhost:8080/chat/room?roomId=' + roomId;
 }
 
 // json 데이터 가져오기
@@ -302,6 +340,7 @@ var modal3 = document.getElementById("myModal3");
 
 // 닫기 버튼 요소 가져오기
 var closeBtn = modal.querySelector(".close");
+var closeSeconBtn = modal.querySelector("#btn-close");
 var yesBtn = modal2.querySelector("#yesBtn"); // 모달2
 var noBtn = modal2.querySelector(".close"); // 모달2
 var closeBtn3 = modal3.querySelector(".close");
@@ -323,7 +362,10 @@ closeBtn3.onclick = function() {
   var roomNameInput = document.getElementById("roomName");
   roomNameInput.value = ''; 
 };
-
+closeSeconBtn.onclick = function() {
+	  closeModal(modal);
+	  resetModalContent();
+	};
 // 방 생성 모달1 열기
 function openModal(modal) {
   modal.style.display = "block";
@@ -553,7 +595,7 @@ document.addEventListener('mousedown', function(event) {
         if (event.target.tagName === "A") {
             // 오른쪽 클릭된 room의 ID와 이름을 저장
             clickedRoomId = event.target.getAttribute("onclick").match(/\d+/)[0];
-            clickedRoomName = event.target.textContent.trim();
+            clickedRoomName = event.target.querySelector('h5').textContent.trim();
 
             // 메뉴를 표시할 위치를 정의.  오른쪽 클릭된 위치를 기준으로 함
             var menuX = event.pageX;
@@ -573,6 +615,7 @@ document.addEventListener('mousedown', function(event) {
             menu.style.top = menuY + "px";
             menu.style.backgroundColor = "white";
             menu.style.border = "1px solid black";
+            menu.style.zIndex = "10";
 
             // 메뉴에 내용 추가
             menu.innerHTML = `
@@ -606,7 +649,7 @@ document.addEventListener('contextmenu', function(event) {
     if (event.target.tagName === "A") {
         // 클릭된 room의 ID와 이름을 저장
         clickedRoomId = event.target.getAttribute("onclick").match(/\d+/)[0];
-        clickedRoomName = event.target.textContent.trim();
+        clickedRoomName = event.target.querySelector('h5').textContent.trim();
 
         // 메뉴를 표시할 위치를 정의.  오른쪽 클릭된 위치를 기준으로 함
         var menuX = event.pageX;
@@ -626,6 +669,7 @@ document.addEventListener('contextmenu', function(event) {
         menu.style.top = menuY + "px";
         menu.style.backgroundColor = "white";
         menu.style.border = "1px solid black";
+        menu.style.zIndex = "10";
 
         // 메뉴에 내용 추가
         menu.innerHTML = `
@@ -796,6 +840,7 @@ if (modal3SaveBtn) {
 
     // 클릭된 방의 ID 가져오기
     var chatRoomId = clickedRoomId;
+	console.log(chatRoomId);
     // 요청 데이터 생성
     var requestData = {
       chatroomId: chatRoomId,
